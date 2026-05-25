@@ -220,6 +220,12 @@ export default function DashboardPage() {
   const [exportCustomTo2, setExportCustomTo2] = useState("2026-05-25")
   const [exportCustomChecks, setExportCustomChecks] = useState<Record<string,boolean>>({ Ingresos:true, Gastos:true, Comisiones:true, Sueldos:true, IVA:false, Comprobantes:false })
   const [exportGenState, setExportGenState] = useState<"idle"|"loading"|"done">("idle")
+  const [wsView, setWsView] = useState<"home"|"chat"|"history"|"search"|"reports"|"settings"|"onboarding">("home")
+  const [wsTasks, setWsTasks] = useState<Record<number,boolean>>({ 4: true })
+  const [histSearch, setHistSearch] = useState("")
+  const [histModulo, setHistModulo] = useState("Todos")
+  const [histTipo, setHistTipo] = useState("Todos")
+  const [histPeriodo, setHistPeriodo] = useState("Esta semana")
   const [exportChecks, setExportChecks] = useState<boolean[]>([true, true, true, true, true, true])
   const [exportPeriod, setExportPeriod] = useState("Este mes")
   const [exportCustomFrom, setExportCustomFrom] = useState("")
@@ -7212,6 +7218,262 @@ export default function DashboardPage() {
                           </div>
                         )
                       })()}
+                    </div>
+                  )
+                })()
+              ) : activeNode.id === 6 ? (
+                // ── WORKSPACE MODULE ──
+                (() => {
+                  const WS_NAV: { key: typeof wsView; label: string }[] = [
+                    { key:"home",       label:"Inicio"        },
+                    { key:"chat",       label:"Chat con Pupi" },
+                    { key:"history",    label:"Historial"     },
+                    { key:"search",     label:"Buscador"      },
+                    { key:"reports",    label:"Reportes"      },
+                    { key:"settings",   label:"Configuración" },
+                    { key:"onboarding", label:"Onboarding"    },
+                  ]
+                  const ALERTS = [
+                    { color:"#ef4444", title:"Laura Sánchez — Riesgo renuncia",      sub:"RRHH · Hace 3 semanas"  },
+                    { color:"#ef4444", title:"Proveedor A vence — $12.400",           sub:"Contabilidad · Hoy"     },
+                    { color:"#eab308", title:"Carlos Mendoza — 14 días sin cierre",  sub:"Ventas · Hace 2 días"   },
+                    { color:"#eab308", title:"Carlos Acosta — Sobrecargado",          sub:"RRHH · Esta semana"     },
+                    { color:"#2563EB", title:"Campaña WhatsApp — ROI negativo",       sub:"Marketing · Esta semana"},
+                  ]
+                  const TASKS = [
+                    { id:1, text:"Llamar a Laura Sánchez",            sub:"Urgente · RRHH · Alta prioridad",              prio:"Alta"  },
+                    { id:2, text:"Cobrar a Tech Solutions — $18.500", sub:"Contabilidad · Vence hoy · Alta",               prio:"Alta"  },
+                    { id:3, text:"Revisar cierre Carlos Mendoza",     sub:"Ventas · Alta prioridad",                       prio:"Alta"  },
+                    { id:4, text:"Revisar resumen semanal equipo",    sub:"RRHH · Completada",                             prio:"done"  },
+                    { id:5, text:"Aprobar campaña noviembre",         sub:"Marketing · Esta semana · Media",               prio:"Media" },
+                    { id:6, text:"Liquidar sueldos mayo",             sub:"Contabilidad · Vence viernes · Media",          prio:"Media" },
+                  ]
+                  const MODULES_STATUS = [
+                    { name:"CRM",          icon:"👥", status:"8 clientes activos",             dot:"#22c55e" },
+                    { name:"Ventas",       icon:"💰", status:"2 cierres esta semana",          dot:"#22c55e" },
+                    { name:"Marketing",    icon:"📢", status:"1 campaña con alerta",            dot:"#eab308" },
+                    { name:"RRHH",         icon:"👤", status:"2 empleados requieren atención", dot:"#ef4444" },
+                    { name:"Contabilidad", icon:"📊", status:"Gasto inusual detectado",         dot:"#eab308" },
+                    { name:"Workspace",    icon:"⚡", status:"Todo actualizado",                dot:"#22c55e" },
+                  ]
+                  const QUICK_STATS = [
+                    { label:"Ventas del mes",    value:"$105.370", color:"#22c55e" },
+                    { label:"Clima laboral",      value:"7.8/10",   color:"#22c55e" },
+                    { label:"Tareas pendientes",  value:"4",        color:"#eab308" },
+                    { label:"Alertas activas",    value:"3",        color:"#ef4444" },
+                  ]
+                  const prioColor = (p: string) => p==="Alta" ? "#ef4444" : p==="Media" ? "#eab308" : p==="done" ? "#22c55e" : "rgba(255,255,255,0.3)"
+                  const cardStyle: React.CSSProperties = { background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:"14px 16px" }
+                  return (
+                    <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
+                      {/* Secondary nav */}
+                      <div style={{ display:"flex", gap:0, borderBottom:"1px solid rgba(255,255,255,0.06)", padding:"0 24px", flexShrink:0 }}>
+                        {WS_NAV.map(n => (
+                          <button key={n.key} onClick={()=>setWsView(n.key)} style={{ padding:"12px 16px", fontSize:13, background:"none", border:"none", cursor:"pointer", color:wsView===n.key?"white":"rgba(255,255,255,0.35)", borderBottom:`2px solid ${wsView===n.key?"#2563EB":"transparent"}`, transition:"color 0.15s, border-color 0.15s", marginBottom:-1, whiteSpace:"nowrap" as const }}>{n.label}</button>
+                        ))}
+                      </div>
+
+                      {/* Home view */}
+                      {wsView === "home" && (
+                        <div style={{ flex:1, overflowY:"auto", padding:24 }}>
+                          {/* Greeting */}
+                          <div style={{ marginBottom:24 }}>
+                            <div style={{ color:"white", fontSize:20, fontWeight:600 }}>Buenos días, Nacho 👋</div>
+                            <div style={{ color:"rgba(255,255,255,0.35)", fontSize:13, marginTop:4 }}>Lunes 25 de Mayo, 2026</div>
+                          </div>
+
+                          {/* AI daily summary */}
+                          <div style={{ background:"rgba(37,99,235,0.06)", border:"1px solid rgba(37,99,235,0.15)", borderRadius:14, padding:20, marginBottom:24 }}>
+                            <div style={{ color:"#2563EB", fontSize:11, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:12 }}>✦ Resumen del día — Pupi AI</div>
+                            <div style={{ color:"white", fontSize:14, lineHeight:1.8, marginBottom:16 }}>Hoy tenés 3 alertas que requieren atención: Carlos Acosta está sobrecargado, Laura muestra riesgo de renuncia y hay un gasto inusual en marketing. En ventas, Carlos Mendoza está a punto de cerrar por $18.500. El clima laboral subió a 7.8/10 — el mejor registro histórico.</div>
+                            <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+                              {[
+                                { label:"⚠ 3 alertas activas",      color:"#ef4444" },
+                                { label:"💰 1 cierre próximo",       color:"#22c55e" },
+                                { label:"📈 Mes récord en ventas",   color:"#2563EB" },
+                              ].map(p => (
+                                <span key={p.label} style={{ background:p.color+"22", color:p.color, border:`1px solid ${p.color}44`, borderRadius:20, padding:"4px 12px", fontSize:11 }}>{p.label}</span>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Priority alerts */}
+                          <div style={{ marginBottom:24 }}>
+                            <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:12 }}>Alertas prioritarias</div>
+                            {ALERTS.map(a => (
+                              <div key={a.title} style={{ display:"flex", alignItems:"center", gap:12, background:"rgba(255,255,255,0.02)", borderLeft:`3px solid ${a.color}`, borderTop:"1px solid rgba(255,255,255,0.06)", borderRight:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)", borderRadius:"0 8px 8px 0", padding:"12px 16px", marginBottom:6, cursor:"pointer" }}>
+                                <span style={{ color:a.color, fontSize:16, flexShrink:0 }}>●</span>
+                                <div style={{ flex:1, minWidth:0 }}>
+                                  <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{a.title}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>{a.sub}</div>
+                                </div>
+                                <span style={{ color:a.color, fontSize:11, flexShrink:0 }}>Ver →</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Today's tasks */}
+                          <div style={{ marginBottom:24 }}>
+                            <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Mis tareas de hoy</div>
+                            <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:12 }}>Generadas por Pupi según prioridad y contexto</div>
+                            {TASKS.map(t => {
+                              const done = wsTasks[t.id] ?? false
+                              const pc = prioColor(done ? "done" : t.prio)
+                              return (
+                                <div key={t.id} onClick={()=>setWsTasks(prev=>({...prev,[t.id]:!prev[t.id]}))} style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 12px", borderRadius:8, marginBottom:4, cursor:"pointer", background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.05)" }}>
+                                  <div style={{ width:16, height:16, borderRadius:"50%", border:`2px solid ${pc}`, background:done?"#22c55e":"transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                                    {done && <span style={{ color:"white", fontSize:9 }}>✓</span>}
+                                  </div>
+                                  <div style={{ flex:1, minWidth:0 }}>
+                                    <div style={{ color:done?"rgba(255,255,255,0.35)":"white", fontSize:13, textDecoration:done?"line-through":"none" }}>{t.text}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.3)", fontSize:10, marginTop:2 }}>{t.sub}</div>
+                                  </div>
+                                  <span style={{ background:pc+"22", color:pc, fontSize:10, borderRadius:20, padding:"1px 8px", flexShrink:0 }}>{done?"Completada":t.prio}</span>
+                                </div>
+                              )
+                            })}
+                          </div>
+
+                          {/* Module status */}
+                          <div style={{ marginBottom:24 }}>
+                            <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:12 }}>Estado de módulos</div>
+                            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
+                              {MODULES_STATUS.map(m => (
+                                <div key={m.name} style={{ ...cardStyle, display:"flex", alignItems:"center", gap:10, cursor:"pointer" }}>
+                                  <span style={{ fontSize:16, flexShrink:0 }}>{m.icon}</span>
+                                  <div style={{ flex:1, minWidth:0 }}>
+                                    <div style={{ color:"white", fontSize:12, fontWeight:500 }}>{m.name}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, marginTop:2 }}>{m.status}</div>
+                                  </div>
+                                  <div style={{ width:8, height:8, borderRadius:"50%", background:m.dot, flexShrink:0 }} />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Quick stats */}
+                          <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12 }}>
+                            {QUICK_STATS.map(s => (
+                              <div key={s.label} style={cardStyle}>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:6 }}>{s.label}</div>
+                                <div style={{ color:s.color, fontSize:20, fontWeight:600 }}>{s.value}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* History view */}
+                      {wsView === "history" && (() => {
+                        type HistEvent = { id:number; mod:string; title:string; time:string; detail:string; group:string; tipo:string }
+                        const ALL_EVENTS: HistEvent[] = [
+                          { id:1,  mod:"Ventas",       title:"Venta cerrada — Tech Solutions",       time:"Hace 2 horas",     detail:"JP cerró venta por $18.500. Registrado automáticamente en contabilidad.",               group:"HOY — 25 Mayo 2026",       tipo:"Ventas cerradas"    },
+                          { id:2,  mod:"Contabilidad", title:"Movimiento automático registrado",       time:"Hace 2 horas",     detail:"Ingreso de $18.500 categorizado como Ventas automáticamente.",                          group:"HOY — 25 Mayo 2026",       tipo:"Movimientos"        },
+                          { id:3,  mod:"RRHH",         title:"Alerta de riesgo — Laura Sánchez",      time:"Hace 4 horas",     detail:"Tercer semana consecutiva con satisfacción en caída. Pupi generó alerta automática.",    group:"HOY — 25 Mayo 2026",       tipo:"Alertas"            },
+                          { id:4,  mod:"CRM",          title:"Cliente actualizado — Tech Solutions",   time:"Hace 4 horas",     detail:"Temperatura actualizada a Caliente. Historial de compra actualizado.",                   group:"HOY — 25 Mayo 2026",       tipo:"Clientes nuevos"    },
+                          { id:5,  mod:"Marketing",    title:"Campaña pausada — WhatsApp broadcast",  time:"Ayer 15:30",       detail:"ROI negativo detectado. Pupi recomendó pausar la campaña.",                              group:"AYER — 24 Mayo 2026",      tipo:"Campañas"           },
+                          { id:6,  mod:"Ventas",       title:"Nueva oportunidad creada",               time:"Ayer 11:20",       detail:"Luis Herrera agregado al pipeline en etapa Prospecto por $28.500.",                      group:"AYER — 24 Mayo 2026",      tipo:"Ventas cerradas"    },
+                          { id:7,  mod:"CRM",          title:"3 clientes importados",                  time:"Ayer 10:00",       detail:"Importación desde Excel completada. Sin duplicados detectados.",                          group:"AYER — 24 Mayo 2026",      tipo:"Clientes nuevos"    },
+                          { id:8,  mod:"RRHH",         title:"Evaluación completada — Juan Pérez",     time:"22 Mayo 16:00",    detail:"Evaluación Q2 registrada. Puntuación: 4.8/5.",                                          group:"HACE 3 DÍAS — 22 Mayo 2026", tipo:"Cambios de equipo" },
+                          { id:9,  mod:"Contabilidad", title:"Alerta de gasto inusual",                time:"22 Mayo 09:30",    detail:"Gasto en marketing 180% sobre promedio histórico. Alerta generada.",                     group:"HACE 3 DÍAS — 22 Mayo 2026", tipo:"Alertas"           },
+                          { id:10, mod:"Ventas",       title:"Meta semanal alcanzada",                 time:"22 Mayo 09:00",    detail:"El equipo alcanzó el 94% de la meta semanal de ventas.",                                 group:"HACE 3 DÍAS — 22 Mayo 2026", tipo:"Ventas cerradas"   },
+                          { id:11, mod:"RRHH",         title:"Nuevo empleado — Sofía Reyes",          time:"20 Mayo 10:00",    detail:"Sofía Reyes incorporada como Analista de Operaciones. Onboarding iniciado.",              group:"HACE 5 DÍAS — 20 Mayo 2026", tipo:"Cambios de equipo" },
+                          { id:12, mod:"CRM",          title:"Cliente en riesgo — Ana Rodríguez",      time:"20 Mayo 08:00",    detail:"Sin contacto hace 31 días. Alerta automática generada.",                                  group:"HACE 5 DÍAS — 20 Mayo 2026", tipo:"Alertas"           },
+                          { id:13, mod:"Marketing",    title:"Nueva campaña lanzada",                  time:"20 Mayo 08:00",    detail:"Campaña Primavera 2026 lanzada. 2.840 contactos en segmento.",                            group:"HACE 5 DÍAS — 20 Mayo 2026", tipo:"Campañas"          },
+                        ]
+                        const modColor: Record<string,string> = { CRM:"#2563EB", Ventas:"#22c55e", Marketing:"#a855f7", RRHH:"#f97316", Contabilidad:"#eab308" }
+                        const modIcon: Record<string,string>  = { CRM:"👥", Ventas:"💰", Marketing:"📢", RRHH:"👤", Contabilidad:"📊" }
+                        let filtered = ALL_EVENTS
+                        if (histSearch.trim()) filtered = filtered.filter(e => e.title.toLowerCase().includes(histSearch.toLowerCase()) || e.detail.toLowerCase().includes(histSearch.toLowerCase()))
+                        if (histModulo !== "Todos") filtered = filtered.filter(e => e.mod === histModulo)
+                        if (histTipo   !== "Todos") filtered = filtered.filter(e => e.tipo === histTipo)
+                        const groups = Array.from(new Set(filtered.map(e => e.group)))
+                        const inputStyle: React.CSSProperties = { background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, padding:"7px 10px", color:"white", fontSize:12, outline:"none", width:"100%", boxSizing:"border-box" as const }
+                        const sideBtn = (label: string, active: boolean, onClick: ()=>void) => (
+                          <button key={label} onClick={onClick} style={{ display:"block", width:"100%", textAlign:"left", padding:"6px 10px", borderRadius:6, border:"none", cursor:"pointer", fontSize:12, background:active?"rgba(37,99,235,0.15)":"none", color:active?"white":"rgba(255,255,255,0.4)", marginBottom:2 }}>{label}</button>
+                        )
+                        return (
+                          <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
+                            {/* LEFT SIDEBAR */}
+                            <div style={{ width:"25%", minWidth:160, borderRight:"1px solid rgba(255,255,255,0.06)", padding:"20px 16px", display:"flex", flexDirection:"column", overflowY:"auto" }}>
+                              <input placeholder="Buscar en historial..." value={histSearch} onChange={e=>setHistSearch(e.target.value)} style={inputStyle} />
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:20, marginBottom:8 }}>Módulo</div>
+                              {["Todos","CRM","Ventas","Marketing","RRHH","Contabilidad"].map(v => sideBtn(v, histModulo===v, ()=>setHistModulo(v)))}
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Tipo</div>
+                              {["Todos","Ventas cerradas","Clientes nuevos","Alertas","Movimientos","Cambios de equipo","Campañas"].map(v => sideBtn(v, histTipo===v, ()=>setHistTipo(v)))}
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Período</div>
+                              {["Hoy","Esta semana","Este mes","Todo el historial"].map(v => sideBtn(v, histPeriodo===v, ()=>setHistPeriodo(v)))}
+                              {/* AI summary */}
+                              <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", marginTop:20, paddingTop:16 }}>
+                                <div style={{ color:"#2563EB", fontSize:11, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:10 }}>✦ Resumen Pupi</div>
+                                <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.6, marginBottom:12 }}>Esta semana hubo 14 eventos. 3 alertas generadas, 2 ventas cerradas y 1 empleado nuevo.</div>
+                                <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+                                  <span style={{ color:"white", fontSize:13 }}>14 eventos</span>
+                                  <span style={{ color:"#ef4444", fontSize:13 }}>3 alertas</span>
+                                  <span style={{ color:"#22c55e", fontSize:13 }}>2 ventas</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* RIGHT SECTION */}
+                            <div style={{ flex:1, padding:"20px 24px", display:"flex", flexDirection:"column", overflowY:"auto" }}>
+                              {/* Top bar */}
+                              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexShrink:0 }}>
+                                <div>
+                                  <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Historial de la empresa</div>
+                                  <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2 }}>Todo lo que pasó en Pupi</div>
+                                </div>
+                                <button style={{ padding:"6px 14px", fontSize:12, background:"none", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, color:"rgba(255,255,255,0.5)", cursor:"pointer" }}>↓ Exportar</button>
+                              </div>
+
+                              {/* Timeline */}
+                              {groups.length === 0 && (
+                                <div style={{ color:"rgba(255,255,255,0.2)", fontSize:13, textAlign:"center", marginTop:40 }}>Sin eventos</div>
+                              )}
+                              {groups.map((grp, gi) => (
+                                <div key={grp}>
+                                  <div style={{ color:"rgba(255,255,255,0.3)", fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", padding:"8px 0", marginTop: gi===0 ? 0 : 16 }}>{grp}</div>
+                                  {filtered.filter(e=>e.group===grp).map(evt => {
+                                    const mc = modColor[evt.mod] ?? "#2563EB"
+                                    const mi = modIcon[evt.mod] ?? "●"
+                                    return (
+                                      <div key={evt.id} style={{ display:"flex", gap:12, padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+                                        {/* Timeline line + dot */}
+                                        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", flexShrink:0, width:20 }}>
+                                          <div style={{ width:8, height:8, borderRadius:"50%", background:mc, marginTop:4, flexShrink:0 }} />
+                                          <div style={{ flex:1, width:1, background:"rgba(37,99,235,0.2)", marginTop:4 }} />
+                                        </div>
+                                        {/* Content */}
+                                        <div style={{ flex:1, minWidth:0, paddingBottom:4 }}>
+                                          <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:3 }}>{evt.title}</div>
+                                          <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
+                                            <span style={{ background:mc+"22", color:mc, borderRadius:20, padding:"1px 8px", fontSize:10 }}>{evt.mod}</span>
+                                            <span style={{ color:"rgba(255,255,255,0.35)", fontSize:11 }}>{evt.time}</span>
+                                          </div>
+                                          <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.5 }}>{evt.detail}</div>
+                                        </div>
+                                        {/* Module icon */}
+                                        <div style={{ width:28, height:28, borderRadius:"50%", background:mc+"22", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, flexShrink:0, marginTop:2 }}>{mi}</div>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              ))}
+                              {filtered.length > 0 && (
+                                <div style={{ color:"#2563EB", fontSize:12, textAlign:"center", marginTop:16, cursor:"pointer" }}>Ver más eventos →</div>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })()}
+
+                      {/* Placeholder for other ws views */}
+                      {wsView !== "home" && wsView !== "history" && (
+                        <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:12 }}>
+                          <span style={{ color:"rgba(255,255,255,0.15)", fontSize:13 }}>{WS_NAV.find(n=>n.key===wsView)?.label}</span>
+                          <span style={{ color:"rgba(255,255,255,0.1)", fontSize:11 }}>Próximamente</span>
+                        </div>
+                      )}
                     </div>
                   )
                 })()
