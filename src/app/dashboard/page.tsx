@@ -170,6 +170,56 @@ export default function DashboardPage() {
   const [rrhhAlertFilter, setRrhhAlertFilter] = useState("Sin alertas")
   const [rrhhSelectedEmp, setRrhhSelectedEmp] = useState<{ id: number; name: string; role: string; area: string; status: string; score: number; alert: string; seniority: string; initials: string } | null>(null)
   const [showRrhhAlertBanner, setShowRrhhAlertBanner] = useState(true)
+  const [rrhhDetailTab, setRrhhDetailTab] = useState<"Actividad" | "Tareas" | "Evaluaciones" | "Capacitaciones" | "Documentos" | "Feedback" | "Ausencias">("Actividad")
+  const [rrhhTaskFilter, setRrhhTaskFilter] = useState("Todas")
+  const [rrhhOrgZoom, setRrhhOrgZoom] = useState(100)
+  const [showPayrollDetailModal, setShowPayrollDetailModal] = useState(false)
+  const [payrollSelectedId, setPayrollSelectedId] = useState<number | null>(null)
+  const [showPayrollConfigModal, setShowPayrollConfigModal] = useState(false)
+  const [showLiquidateModal, setShowLiquidateModal] = useState(false)
+  const [payrollStatuses, setPayrollStatuses] = useState<Record<number, string>>({ 1: "Pendiente", 2: "Pendiente", 3: "Pendiente", 4: "Pendiente", 5: "Liquidado", 6: "Pendiente", 7: "Pendiente", 8: "Pendiente" })
+  const [payrollAntiguedadOn, setPayrollAntiguedadOn] = useState(true)
+  const [payrollPresentismoOn, setPayrollPresentismoOn] = useState(true)
+  const [payrollCargasOn, setPayrollCargasOn] = useState(true)
+  const [payrollAntiguedadPct, setPayrollAntiguedadPct] = useState("5")
+  const [payrollPresentismoAmt, setPayrollPresentismoAmt] = useState("8000")
+  const [showAssignTaskForm, setShowAssignTaskForm] = useState(false)
+  const [newTaskName, setNewTaskName] = useState("")
+  const [newTaskPriority, setNewTaskPriority] = useState("Media")
+  const [newTaskCategory, setNewTaskCategory] = useState("Ventas")
+  const [newTaskDue, setNewTaskDue] = useState("")
+  const [taskMenuOpenId, setTaskMenuOpenId] = useState<number | null>(null)
+  const [contabNavTab, setContabNavTab] = useState<"Dashboard" | "Movimientos" | "Análisis" | "Proyecciones" | "Exportar">("Dashboard")
+  const [showContabAlertBanner, setShowContabAlertBanner] = useState(true)
+  const [movSearch, setMovSearch] = useState("")
+  const [movTipoFilter, setMovTipoFilter] = useState("Todos")
+  const [movCatFilter, setMovCatFilter] = useState("Todas")
+  const [movPeriodoFilter, setMovPeriodoFilter] = useState("Este mes")
+  const [movOrigenFilter, setMovOrigenFilter] = useState("Todos")
+  const [movMenuOpenId, setMovMenuOpenId] = useState<number | null>(null)
+  const [showRegGasto, setShowRegGasto] = useState(false)
+  const [showRegIngreso, setShowRegIngreso] = useState(false)
+  const [regDesc, setRegDesc] = useState("")
+  const [regMonto, setRegMonto] = useState("")
+  const [regCat, setRegCat] = useState("Operaciones")
+  const [regFecha, setRegFecha] = useState("2026-05-25")
+  const [regDescIn, setRegDescIn] = useState("")
+  const [regMontoIn, setRegMontoIn] = useState("")
+  const [regCatIn, setRegCatIn] = useState("Ventas")
+  const [regFechaIn, setRegFechaIn] = useState("2026-05-25")
+  const [regVincularCliente, setRegVincularCliente] = useState(false)
+  const [regClienteIn, setRegClienteIn] = useState("Tech Solutions")
+  const [analisisPeriod, setAnalisisPeriod] = useState("Este mes")
+  const [proyPeriod, setProyPeriod] = useState("6 meses")
+  const [exportHistSearch, setExportHistSearch] = useState("")
+  const [exportHistPeriod, setExportHistPeriod] = useState("Todos los períodos")
+  const [exportHistType, setExportHistType] = useState("Todos")
+  const [exportHistExpanded, setExportHistExpanded] = useState(false)
+  const [exportCustomFmt, setExportCustomFmt] = useState("Excel")
+  const [exportCustomFrom2, setExportCustomFrom2] = useState("2026-01-01")
+  const [exportCustomTo2, setExportCustomTo2] = useState("2026-05-25")
+  const [exportCustomChecks, setExportCustomChecks] = useState<Record<string,boolean>>({ Ingresos:true, Gastos:true, Comisiones:true, Sueldos:true, IVA:false, Comprobantes:false })
+  const [exportGenState, setExportGenState] = useState<"idle"|"loading"|"done">("idle")
   const [exportChecks, setExportChecks] = useState<boolean[]>([true, true, true, true, true, true])
   const [exportPeriod, setExportPeriod] = useState("Este mes")
   const [exportCustomFrom, setExportCustomFrom] = useState("")
@@ -694,6 +744,12 @@ export default function DashboardPage() {
                       <button onClick={() => setMktView("campaigns")} style={{ color: "rgba(255,255,255,0.4)", fontSize: 16, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")} onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>{activeNode.title}</button>
                       <span style={{ color: "rgba(255,255,235,0.2)", fontSize: 14 }}>/</span>
                       <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>{mktSelectedCamp.name}</span>
+                    </>
+                  ) : activeNode.id === 4 && rrhhView === "detail" && rrhhSelectedEmp ? (
+                    <>
+                      <button onClick={() => setRrhhView("team")} style={{ color: "rgba(255,255,255,0.4)", fontSize: 16, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")} onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>Recursos Humanos</button>
+                      <span style={{ color: "rgba(255,255,235,0.2)", fontSize: 14 }}>/</span>
+                      <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>{rrhhSelectedEmp.name}</span>
                     </>
                   ) : (
                     <span style={{ color: "white", fontSize: 16, fontWeight: 500 }}>{activeNode.title}</span>
@@ -4711,6 +4767,472 @@ export default function DashboardPage() {
                       return true
                     })
                   const alertCount = EMPLOYEES.filter(e => e.alert).length
+
+                  // ── EMPLOYEE DETAIL VIEW ──
+                  if (rrhhView === "detail" && rrhhSelectedEmp) {
+                    const emp = rrhhSelectedEmp
+                    const st = STATUS_STYLE[emp.status as EmpStatus] ?? STATUS_STYLE["Activo"]
+                    const filledStars = Math.round(emp.score)
+                    const riskColor = emp.alert === "Riesgo renuncia" ? "#ef4444" : emp.alert === "Bajo desempeño" ? "#ef4444" : emp.alert === "Sobrecargado" ? "#eab308" : "#22c55e"
+                    const riskLabel = emp.alert === "Riesgo renuncia" ? "Alto" : emp.alert === "Bajo desempeño" ? "Medio" : emp.alert === "Sobrecargado" ? "Medio" : "Bajo"
+                    const aiCard: React.CSSProperties = { background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }
+                    const aiCardLabel: React.CSSProperties = { color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
+                    const divider = <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "16px 0" }} />
+                    const EMP_INFO: Record<number, { email: string; phone: string; salary: string; joinDate: string; goalAmt: string; goalTotal: string; goalPct: number; vacLeft: number; vacUsed: number }> = {
+                      1: { email: "jp@empresa.com",  phone: "+54 11 0000-0000", salary: "$280.000", joinDate: "12 Mayo 2023",    goalAmt: "$48.750", goalTotal: "$50.000", goalPct: 97, vacLeft: 12, vacUsed: 8  },
+                      2: { email: "ca@empresa.com",  phone: "+54 11 0001-0001", salary: "$220.000", joinDate: "3 Enero 2025",    goalAmt: "$28.200", goalTotal: "$50.000", goalPct: 56, vacLeft: 5,  vacUsed: 3  },
+                      3: { email: "mr@empresa.com",  phone: "+54 11 0002-0002", salary: "$240.000", joinDate: "15 Marzo 2024",   goalAmt: "$37.500", goalTotal: "$50.000", goalPct: 75, vacLeft: 8,  vacUsed: 5  },
+                      4: { email: "ag@empresa.com",  phone: "+54 11 0003-0003", salary: "$260.000", joinDate: "20 Agosto 2024",  goalAmt: "—",       goalTotal: "—",       goalPct: 0,  vacLeft: 10, vacUsed: 4  },
+                      5: { email: "pm@empresa.com",  phone: "+54 11 0004-0004", salary: "$200.000", joinDate: "1 Febrero 2022",  goalAmt: "—",       goalTotal: "—",       goalPct: 0,  vacLeft: 0,  vacUsed: 20 },
+                      6: { email: "ls@empresa.com",  phone: "+54 11 0005-0005", salary: "$270.000", joinDate: "10 Junio 2023",   goalAmt: "—",       goalTotal: "—",       goalPct: 0,  vacLeft: 9,  vacUsed: 5  },
+                      7: { email: "dt@empresa.com",  phone: "+54 11 0006-0006", salary: "$180.000", joinDate: "15 Septiembre 2025", goalAmt: "—",   goalTotal: "—",       goalPct: 0,  vacLeft: 2,  vacUsed: 0  },
+                      8: { email: "sr@empresa.com",  phone: "+54 11 0007-0007", salary: "$245.000", joinDate: "5 Mayo 2025",     goalAmt: "—",       goalTotal: "—",       goalPct: 0,  vacLeft: 11, vacUsed: 3  },
+                    }
+                    const info = EMP_INFO[emp.id] ?? EMP_INFO[1]
+                    const TASKS = [
+                      { id: 1, name: "Llamar a Carlos Mendoza",                  due: "Vence hoy",           priority: "Alta",  status: "Pendiente",  by: "Dueño", cat: "Ventas"        },
+                      { id: 2, name: "Preparar propuesta Tech Solutions",        due: "Vence mañana",        priority: "Alta",  status: "En proceso", by: "Dueño", cat: "Ventas"        },
+                      { id: 3, name: "Actualizar CRM con visitas",               due: "Vence viernes",       priority: "Media", status: "Pendiente",  by: "JP",    cat: "Admin"         },
+                      { id: 4, name: "Reunión con equipo de ventas",             due: "Completada ayer",     priority: "Media", status: "Completada", by: "Dueño", cat: "Admin"         },
+                      { id: 5, name: "Seguimiento Retail Express",               due: "Vence próx semana",   priority: "Baja",  status: "Pendiente",  by: "JP",    cat: "Ventas"        },
+                      { id: 6, name: "Capacitación negociación avanzada",        due: "Vence en 2 semanas",  priority: "Media", status: "En proceso", by: "Dueño", cat: "Capacitación"  },
+                    ]
+                    const filteredTasks = rrhhTaskFilter === "Todas" ? TASKS
+                      : rrhhTaskFilter === "Hoy"          ? TASKS.filter(t => t.due.toLowerCase().includes("hoy"))
+                      : rrhhTaskFilter === "Esta semana"  ? TASKS.filter(t => t.due.toLowerCase().includes("semana") || t.due.toLowerCase().includes("viernes") || t.due.toLowerCase().includes("mañana") || t.due.toLowerCase().includes("hoy"))
+                      : rrhhTaskFilter === "Pendientes"   ? TASKS.filter(t => t.status === "Pendiente")
+                      : rrhhTaskFilter === "En proceso"   ? TASKS.filter(t => t.status === "En proceso")
+                      : rrhhTaskFilter === "Completadas"  ? TASKS.filter(t => t.status === "Completada")
+                      : TASKS
+                    const prioColor = (p: string) => p === "Alta" ? "#ef4444" : p === "Media" ? "#eab308" : "#22c55e"
+                    const catColor = "#2563EB"
+                    const taskCount = (s: string) => TASKS.filter(t => t.status === s).length
+                    return (
+                      <div style={{ flex: 1, display: "flex", gap: 24, padding: "24px", overflow: "hidden" }}>
+                        {/* LEFT COLUMN */}
+                        <div style={{ width: "35%", flexShrink: 0, overflowY: "auto" }}>
+                          {/* Avatar + name */}
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                            <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 20, fontWeight: 500 }}>{emp.initials}</div>
+                            <div style={{ color: "white", fontSize: 16, fontWeight: 500, textAlign: "center" as const, marginTop: 12 }}>{emp.name}</div>
+                            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, textAlign: "center" as const }}>{emp.role} · {emp.area}</div>
+                            <span style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}`, borderRadius: 20, padding: "2px 8px", fontSize: 11, marginTop: 6 }}>{emp.status}</span>
+                          </div>
+
+                          {divider}
+
+                          {/* Info rows */}
+                          {([
+                            ["ÁREA",          emp.area],
+                            ["CARGO",         emp.role],
+                            ["ANTIGÜEDAD",    emp.seniority],
+                            ["FECHA INGRESO", info.joinDate],
+                            ["EMAIL",         info.email],
+                            ["TELÉFONO",      info.phone],
+                            ["SUELDO BASE",   info.salary],
+                          ] as [string, string][]).map(([label, val]) => (
+                            <div key={label} style={{ marginBottom: 12 }}>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 2 }}>{label}</div>
+                              <div style={{ color: "white", fontSize: 13 }}>{val}</div>
+                            </div>
+                          ))}
+
+                          {divider}
+
+                          {/* Performance */}
+                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>DESEMPEÑO GENERAL</div>
+                          <div style={{ display: "flex", justifyContent: "center", alignItems: "baseline", gap: 4, marginBottom: 8 }}>
+                            <span style={{ color: "white", fontSize: 32, fontWeight: 600 }}>{emp.score.toFixed(1)}</span>
+                            <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 16 }}>/5</span>
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "center", gap: 3, marginBottom: 6 }}>
+                            {[1,2,3,4,5].map(i => (
+                              <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill={i <= filledStars ? "#2563EB" : "rgba(255,255,255,0.1)"} stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            ))}
+                          </div>
+                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textAlign: "center" as const, marginTop: 6 }}>Top 10% del equipo</div>
+
+                          {divider}
+
+                          {/* Metas del mes */}
+                          {(() => {
+                            const isSeller = emp.area === "Ventas"
+                            const goals = isSeller
+                              ? [
+                                  { name: "Ventas cerradas",   actual: "8",       meta: "10",        pct: 80,  label: "8 / 10"              },
+                                  { name: "Monto vendido",     actual: "$48.750", meta: "$50.000",   pct: 97,  label: "$48.750 / $50.000"   },
+                                  { name: "Nuevos prospectos", actual: "3",       meta: "5",         pct: 60,  label: "3 / 5"               },
+                                ]
+                              : [
+                                  { name: "Tareas completadas",   actual: "18", meta: "20", pct: 90,  label: "18 / 20" },
+                                  { name: "Capacitaciones",       actual: "2",  meta: "3",  pct: 67,  label: "2 / 3"   },
+                                  { name: "Proyectos entregados", actual: "4",  meta: "4",  pct: 100, label: "4 / 4"   },
+                                ]
+                            const goalColor = (p: number) => p >= 80 ? "#22c55e" : p >= 50 ? "#eab308" : "#ef4444"
+                            return (
+                              <>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Metas del mes</div>
+                                {goals.map(g => {
+                                  const c = goalColor(g.pct)
+                                  return (
+                                    <div key={g.name} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }}>
+                                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                                        <span style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{g.name}</span>
+                                        <span style={{ color: c, fontSize: 12, fontWeight: 500 }}>{g.pct}%</span>
+                                      </div>
+                                      <div style={{ height: 3, borderRadius: 2, background: "rgba(255,255,255,0.06)", overflow: "hidden", marginBottom: 5 }}>
+                                        <div style={{ height: "100%", width: `${g.pct}%`, background: c, borderRadius: 2 }} />
+                                      </div>
+                                      <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Actual: {g.actual} / Meta: {g.meta}</div>
+                                    </div>
+                                  )
+                                })}
+                                <div style={{ color: "#2563EB", fontSize: 11, marginTop: 8, cursor: "pointer" }}>+ Agregar meta</div>
+                                {divider}
+                              </>
+                            )
+                          })()}
+
+                          {/* Vacaciones */}
+                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>VACACIONES</div>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                            <span style={{ color: "white", fontSize: 13 }}>Días disponibles</span>
+                            <span style={{ color: "white", fontSize: 13 }}>{info.vacLeft} días</span>
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                            <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>Días tomados</span>
+                            <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{info.vacUsed} días</span>
+                          </div>
+                          <div style={{ height: 6, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+                            <div style={{ height: "100%", width: `${Math.round(info.vacUsed / 20 * 100)}%`, background: "rgba(37,99,235,0.5)", borderRadius: 3 }} />
+                          </div>
+
+                          {divider}
+
+                          {/* AI section */}
+                          <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 12 }}>✦ Inteligencia Pupi</div>
+
+                          <div style={aiCard}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                              <span style={aiCardLabel}>Tendencia de desempeño</span>
+                            </div>
+                            <div style={{ color: "#22c55e", fontSize: 13, fontWeight: 500 }}>En crecimiento</div>
+                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 3 }}>+0.3 puntos vs mes anterior</div>
+                          </div>
+
+                          <div style={aiCard}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                              <span style={aiCardLabel}>Satisfacción estimada</span>
+                            </div>
+                            <div style={{ color: "white", fontSize: 13 }}>Alta — 8.4/10</div>
+                          </div>
+
+                          <div style={aiCard}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={riskColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                              <span style={aiCardLabel}>Riesgo de renuncia</span>
+                            </div>
+                            <div style={{ color: riskColor, fontSize: 13, fontWeight: 500 }}>{riskLabel}</div>
+                          </div>
+
+                          <div style={aiCard}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                              <span style={aiCardLabel}>Recomendación</span>
+                            </div>
+                            <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 3 }}>Candidato para ascenso</div>
+                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>Alto desempeño sostenido por 3 meses consecutivos</div>
+                          </div>
+
+                          {divider}
+
+                          {/* Notifications button */}
+                          <button style={{ width: "100%", background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.25)", borderRadius: 8, padding: "10px 16px", display: "flex", alignItems: "center", gap: 8, cursor: "pointer", color: "#2563EB", fontSize: 13 }}
+                            onMouseEnter={e => { e.currentTarget.style.background = "rgba(37,99,235,0.18)"; e.currentTarget.style.borderColor = "rgba(37,99,235,0.4)" }}
+                            onMouseLeave={e => { e.currentTarget.style.background = "rgba(37,99,235,0.1)"; e.currentTarget.style.borderColor = "rgba(37,99,235,0.25)" }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                            Ver notificaciones privadas
+                          </button>
+                        </div>
+
+                        {/* RIGHT COLUMN */}
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                          {/* Tabs */}
+                          <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,255,255,0.06)", flexShrink: 0 }}>
+                            {(["Actividad","Tareas","Evaluaciones","Capacitaciones","Documentos","Feedback","Ausencias"] as const).map(tab => (
+                              <button key={tab} onClick={() => setRrhhDetailTab(tab)} style={{ padding: "10px 14px", fontSize: 12, background: "none", border: "none", cursor: "pointer", color: rrhhDetailTab === tab ? "white" : "rgba(255,255,255,0.35)", borderBottom: `2px solid ${rrhhDetailTab === tab ? "#2563EB" : "transparent"}`, transition: "color 0.15s", marginBottom: -1, whiteSpace: "nowrap" as const }}>{tab}</button>
+                            ))}
+                          </div>
+
+                          <div style={{ flex: 1, overflowY: "auto", padding: "20px 0 20px 4px" }}>
+
+                            {/* ACTIVIDAD TAB */}
+                            {rrhhDetailTab === "Actividad" && (
+                              <div>
+                                {[
+                                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>, color: "#22c55e", title: "Meta mensual alcanzada al 97%", when: "Hoy" },
+                                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>, color: "#2563EB", title: "Evaluación de desempeño completada", when: "Hace 3 días" },
+                                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>, color: "#a855f7", title: "Capacitación CRM finalizada", when: "Hace 1 semana" },
+                                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>, color: "#22c55e", title: "8 ventas cerradas este mes", when: "Hace 2 semanas" },
+                                  { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, color: "#2563EB", title: "Ingresó al equipo", when: "Hace 3 años" },
+                                ].map((item, i) => (
+                                  <div key={i} style={{ display: "flex", gap: 12, paddingBottom: 16, marginBottom: 16, borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: `${item.color}15`, border: `1px solid ${item.color}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>
+                                    <div>
+                                      <div style={{ color: "white", fontSize: 13 }}>{item.title}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 3 }}>{item.when}</div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* TAREAS TAB */}
+                            {rrhhDetailTab === "Tareas" && (
+                              <div onClick={() => taskMenuOpenId !== null && setTaskMenuOpenId(null)}>
+                                {/* Summary mini cards */}
+                                <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+                                  {[
+                                    { label: "Pendientes",  count: taskCount("Pendiente"),  color: "#eab308" },
+                                    { label: "En proceso",  count: taskCount("En proceso"),  color: "#2563EB" },
+                                    { label: "Completadas", count: taskCount("Completada"), color: "#22c55e" },
+                                  ].map(c => (
+                                    <div key={c.label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, padding: "10px 12px" }}>
+                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginBottom: 4 }}>{c.label}</div>
+                                      <div style={{ color: c.color, fontSize: 18, fontWeight: 600 }}>{c.count}</div>
+                                    </div>
+                                  ))}
+                                </div>
+                                {/* Filter pills */}
+                                <div style={{ display: "flex", gap: 5, flexWrap: "wrap" as const, marginBottom: 14 }}>
+                                  {["Todas","Hoy","Esta semana","Pendientes","En proceso","Completadas"].map(f => (
+                                    <button key={f} onClick={() => setRrhhTaskFilter(f)} style={{ padding: "4px 10px", borderRadius: 20, fontSize: 11, border: "none", cursor: "pointer", background: rrhhTaskFilter === f ? "rgba(37,99,235,0.15)" : "rgba(255,255,255,0.05)", color: rrhhTaskFilter === f ? "#2563EB" : "rgba(255,255,255,0.4)", transition: "background 0.15s, color 0.15s" }}>{f}</button>
+                                  ))}
+                                </div>
+                                {/* Task list */}
+                                {filteredTasks.map(task => {
+                                  const isDone = task.status === "Completada"
+                                  const isInProgress = task.status === "En proceso"
+                                  const pc = prioColor(task.priority)
+                                  const checkBg = isDone ? "#2563EB" : "transparent"
+                                  const checkBorder = isDone ? "none" : isInProgress ? "1px solid #2563EB" : "1px solid rgba(255,255,255,0.15)"
+                                  return (
+                                    <div key={task.id} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, padding: "12px 14px", marginBottom: 6, display: "flex", gap: 10, alignItems: "flex-start", position: "relative" as const }}>
+                                      {/* Checkbox */}
+                                      <div style={{ width: 18, height: 18, borderRadius: "50%", background: checkBg, border: checkBorder, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+                                        {isDone && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                                      </div>
+                                      {/* Content */}
+                                      <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ color: "white", fontSize: 13, fontWeight: 500, opacity: isDone ? 0.4 : 1, textDecoration: isDone ? "line-through" : "none", marginBottom: 6 }}>{task.name}</div>
+                                        <div style={{ display: "flex", gap: 5, flexWrap: "wrap" as const, alignItems: "center" }}>
+                                          {/* Due date */}
+                                          <span style={{ display: "flex", alignItems: "center", gap: 3, background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.4)", borderRadius: 20, padding: "2px 8px", fontSize: 10 }}>
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                            {task.due}
+                                          </span>
+                                          {/* Priority */}
+                                          <span style={{ background: `${pc}18`, color: pc, borderRadius: 20, padding: "2px 8px", fontSize: 10 }}>{task.priority}</span>
+                                          {/* Category */}
+                                          <span style={{ background: "rgba(37,99,235,0.1)", color: catColor, borderRadius: 20, padding: "2px 8px", fontSize: 10 }}>{task.cat}</span>
+                                        </div>
+                                      </div>
+                                      {/* Right: assigned by + menu */}
+                                      <div style={{ display: "flex", flexDirection: "column" as const, alignItems: "flex-end", gap: 6, flexShrink: 0 }}>
+                                        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Por: {task.by}</span>
+                                        <div style={{ position: "relative" as const }}>
+                                          <button onClick={e => { e.stopPropagation(); setTaskMenuOpenId(taskMenuOpenId === task.id ? null : task.id) }} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.2)", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "0 4px" }}
+                                            onMouseEnter={e => (e.currentTarget.style.color = "white")}
+                                            onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.2)")}>⋯</button>
+                                          {taskMenuOpenId === task.id && (
+                                            <div onClick={e => e.stopPropagation()} style={{ position: "absolute" as const, right: 0, top: "100%", background: "#0f1623", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "4px 0", zIndex: 10, minWidth: 140, boxShadow: "0 4px 12px rgba(0,0,0,0.4)" }}>
+                                              {["Marcar completada","Editar","Eliminar"].map((opt, oi) => (
+                                                <button key={opt} onClick={() => setTaskMenuOpenId(null)} style={{ display: "block", width: "100%", padding: "8px 14px", background: "none", border: "none", color: oi === 2 ? "#ef4444" : "rgba(255,255,255,0.6)", fontSize: 12, cursor: "pointer", textAlign: "left" as const }}
+                                                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
+                                                  onMouseLeave={e => (e.currentTarget.style.background = "none")}>{opt}</button>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )
+                                })}
+                                {/* Assign task button + inline form */}
+                                {!showAssignTaskForm && (
+                                  <button onClick={() => setShowAssignTaskForm(true)} style={{ marginTop: 8, padding: "7px 14px", fontSize: 13, background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.25)", borderRadius: 8, color: "#2563EB", cursor: "pointer" }}>+ Asignar tarea</button>
+                                )}
+                                {showAssignTaskForm && (
+                                  <div style={{ marginTop: 8, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: 14 }}>
+                                    <input type="text" placeholder="Descripción de la tarea..." value={newTaskName} onChange={e => setNewTaskName(e.target.value)} style={{ width: "100%", padding: "8px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, color: "white", fontSize: 13, outline: "none", boxSizing: "border-box" as const, marginBottom: 10 }} />
+                                    <div style={{ display: "flex", gap: 5, marginBottom: 10 }}>
+                                      {["Alta","Media","Baja"].map(p => (
+                                        <button key={p} onClick={() => setNewTaskPriority(p)} style={{ padding: "4px 10px", borderRadius: 20, fontSize: 11, border: "none", cursor: "pointer", background: newTaskPriority === p ? `${prioColor(p)}20` : "rgba(255,255,255,0.05)", color: newTaskPriority === p ? prioColor(p) : "rgba(255,255,255,0.4)" }}>{p}</button>
+                                      ))}
+                                      <select value={newTaskCategory} onChange={e => setNewTaskCategory(e.target.value)} style={{ marginLeft: 4, padding: "4px 8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, color: "rgba(255,255,255,0.6)", fontSize: 11, outline: "none" }}>
+                                        {["Ventas","Admin","Capacitación","Otro"].map(c => <option key={c} value={c}>{c}</option>)}
+                                      </select>
+                                    </div>
+                                    <input type="date" value={newTaskDue} onChange={e => setNewTaskDue(e.target.value)} style={{ width: "100%", padding: "6px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, color: "rgba(255,255,255,0.6)", fontSize: 12, outline: "none", boxSizing: "border-box" as const, marginBottom: 10 }} />
+                                    <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                                      <button onClick={() => { setShowAssignTaskForm(false); setNewTaskName(""); setNewTaskDue("") }} style={{ padding: "6px 14px", fontSize: 12, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>Cancelar</button>
+                                      <button onClick={() => { setShowAssignTaskForm(false); setNewTaskName(""); setNewTaskDue("") }} style={{ padding: "6px 14px", fontSize: 12, background: "#2563EB", border: "none", borderRadius: 6, color: "white", cursor: "pointer" }}>Guardar</button>
+                                    </div>
+                                  </div>
+                                )}
+                                {/* AI recommendations */}
+                                <div style={{ marginTop: 20 }}>
+                                  <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 10 }}>✦ Distribución sugerida por Pupi</div>
+                                  {[
+                                    { icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>, title: "Carlos está sobrecargado", body: "Tiene 12 tareas pendientes vs promedio de 6. Reasignar 3 tareas a María Ruiz que tiene capacidad.", cta: "Redistribuir →" },
+                                    { icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>, title: "2 tareas llevan más de 5 días sin movimiento", body: "Recordar a JP sobre propuesta Tech Solutions y seguimiento Retail Express.", cta: "Enviar recordatorio →" },
+                                  ].map((rec, i) => (
+                                    <div key={i} style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }}>
+                                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                                        {rec.icon}
+                                        <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{rec.title}</span>
+                                      </div>
+                                      <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5, marginBottom: 6 }}>{rec.body}</div>
+                                      <div style={{ color: "#2563EB", fontSize: 11, cursor: "pointer" }}>{rec.cta}</div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* EVALUACIONES TAB */}
+                            {rrhhDetailTab === "Evaluaciones" && (
+                              <div>
+                                {[
+                                  { title: "Evaluación Q1 2026", date: "15 Enero 2026", score: "4.8/5", criteria: [["Productividad",4.8],["Trabajo en equipo",4.2],["Comunicación",4.7],["Iniciativa",4.5],["Cumplimiento",5.0],["Actitud",4.8]], comment: "Excelente rendimiento trimestral. Destacó en cumplimiento de metas y actitud proactiva." },
+                                  { title: "Evaluación Q4 2025", date: "20 Octubre 2025", score: "4.6/5", criteria: [["Productividad",4.5],["Trabajo en equipo",4.3],["Comunicación",4.4],["Iniciativa",4.7],["Cumplimiento",4.8],["Actitud",4.9]], comment: "Muy buen desempeño. Mejoró notablemente en iniciativa respecto al trimestre anterior." },
+                                  { title: "Evaluación Q3 2025", date: "15 Julio 2025", score: "4.4/5", criteria: [["Productividad",4.3],["Trabajo en equipo",4.5],["Comunicación",4.2],["Iniciativa",4.1],["Cumplimiento",4.6],["Actitud",4.8]], comment: "Buen trabajo en equipo. Oportunidad de mejora en comunicación con clientes." },
+                                ].map((ev, i) => (
+                                  <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 16, marginBottom: 8 }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                                      <div>
+                                        <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{ev.title}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{ev.date}</div>
+                                      </div>
+                                      <span style={{ background: "rgba(37,99,235,0.1)", color: "#2563EB", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 6, padding: "2px 8px", fontSize: 12, fontWeight: 500 }}>{ev.score}</span>
+                                    </div>
+                                    {(ev.criteria as [string, number][]).map(([label, val]) => (
+                                      <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                                        <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, width: 120, flexShrink: 0 }}>{label}</span>
+                                        <div style={{ width: 80, height: 3, borderRadius: 2, background: "rgba(255,255,255,0.06)", overflow: "hidden", flexShrink: 0 }}>
+                                          <div style={{ height: "100%", width: `${val / 5 * 100}%`, background: "rgba(37,99,235,0.6)", borderRadius: 2 }} />
+                                        </div>
+                                        <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>{val.toFixed(1)}</span>
+                                      </div>
+                                    ))}
+                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, fontStyle: "italic" as const, marginTop: 8 }}>{ev.comment}</div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* CAPACITACIONES TAB */}
+                            {rrhhDetailTab === "Capacitaciones" && (
+                              <div>
+                                {[
+                                  { name: "Capacitación CRM Pupi AI",          duration: "4 horas",  date: "Completada hace 1 semana", pct: 100, status: "done"       },
+                                  { name: "Técnicas de cierre de ventas",       duration: "8 horas",  date: "Completada hace 1 mes",    pct: 100, status: "done"       },
+                                  { name: "Negociación avanzada",               duration: "12 horas", date: "En progreso",              pct: 65,  status: "inprogress" },
+                                  { name: "Liderazgo y comunicación",           duration: "6 horas",  date: "Pendiente",                pct: 0,   status: "pending"    },
+                                ].map((tr, i) => (
+                                  <div key={i} style={{ display: "flex", gap: 12, alignItems: "center", padding: "12px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: tr.status === "done" ? "#22c55e" : tr.status === "inprogress" ? "#2563EB" : "rgba(255,255,255,0.2)", flexShrink: 0 }} />
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{tr.name}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{tr.duration} · {tr.date}</div>
+                                    </div>
+                                    <span style={{ background: tr.status === "done" ? "rgba(34,197,94,0.1)" : tr.status === "inprogress" ? "rgba(37,99,235,0.1)" : "rgba(255,255,255,0.05)", color: tr.status === "done" ? "#22c55e" : tr.status === "inprogress" ? "#2563EB" : "rgba(255,255,255,0.3)", borderRadius: 6, padding: "2px 8px", fontSize: 11, flexShrink: 0 }}>{tr.pct}%</span>
+                                  </div>
+                                ))}
+                                <button style={{ marginTop: 16, padding: "7px 14px", fontSize: 13, background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.25)", borderRadius: 8, color: "#2563EB", cursor: "pointer" }}>+ Asignar capacitación</button>
+                              </div>
+                            )}
+
+                            {/* DOCUMENTOS TAB */}
+                            {rrhhDetailTab === "Documentos" && (
+                              <div>
+                                {[
+                                  { name: "contrato-laboral.pdf",               size: "340 KB" },
+                                  { name: "acuerdo-confidencialidad.pdf",        size: "128 KB" },
+                                  { name: "evaluacion-q1-2026.pdf",              size: "89 KB"  },
+                                ].map((doc, i) => (
+                                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    <div style={{ flex: 1 }}>
+                                      <div style={{ color: "white", fontSize: 13 }}>{doc.name}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{doc.size}</div>
+                                    </div>
+                                    <button style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, padding: "4px 10px", color: "rgba(255,255,255,0.5)", fontSize: 11, cursor: "pointer" }}>↓</button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* FEEDBACK TAB */}
+                            {rrhhDetailTab === "Feedback" && (
+                              <div>
+                                {[
+                                  { from: "Dueño", fromInit: "D", to: emp.initials, text: "Excelente trabajo este mes. Seguí así con los cierres.", when: "Hace 3 días" },
+                                  { from: emp.initials, fromInit: emp.initials, to: "Dueño", text: "Necesitaría apoyo con la propuesta de Tech Solutions.", when: "Hace 5 días" },
+                                  { from: "Dueño", fromInit: "D", to: emp.initials, text: "Bien manejado el cliente Distribuidora Norte.", when: "Hace 2 semanas" },
+                                ].map((fb, i) => (
+                                  <div key={i} style={{ paddingBottom: 16, marginBottom: 16, borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                                      <div style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 9, fontWeight: 500 }}>{fb.fromInit.slice(0,2)}</div>
+                                      <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{fb.from}</span>
+                                      <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>→</span>
+                                      <div style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 9, fontWeight: 500 }}>{fb.to.slice(0,2)}</div>
+                                      <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{fb.to}</span>
+                                      <span style={{ marginLeft: "auto", color: "rgba(255,255,255,0.25)", fontSize: 11 }}>{fb.when}</span>
+                                    </div>
+                                    <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, paddingLeft: 26 }}>{fb.text}</div>
+                                  </div>
+                                ))}
+                                <button style={{ padding: "7px 14px", fontSize: 13, background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.25)", borderRadius: 8, color: "#2563EB", cursor: "pointer" }}>+ Dar feedback</button>
+                              </div>
+                            )}
+
+                            {/* AUSENCIAS TAB */}
+                            {rrhhDetailTab === "Ausencias" && (
+                              <div>
+                                <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+                                  {[["Ausencias","2 este mes"],["Tardanzas","0 este mes"],["Licencias","0 activas"]].map(([label, val]) => (
+                                    <div key={label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, padding: "10px 12px" }}>
+                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 4 }}>{label}</div>
+                                      <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{val}</div>
+                                    </div>
+                                  ))}
+                                </div>
+                                {[
+                                  { type: "Ausencia justificada", date: "15 Abril", duration: "1 día", status: "Aprobada" },
+                                  { type: "Ausencia justificada", date: "3 Marzo",  duration: "1 día", status: "Aprobada" },
+                                ].map((ab, i) => (
+                                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    <div style={{ flex: 1 }}>
+                                      <div style={{ color: "white", fontSize: 13 }}>{ab.type}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{ab.date} · {ab.duration}</div>
+                                    </div>
+                                    <span style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>{ab.status}</span>
+                                  </div>
+                                ))}
+                                <button style={{ marginTop: 16, padding: "7px 14px", fontSize: 13, background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.25)", borderRadius: 8, color: "#2563EB", cursor: "pointer" }}>+ Registrar ausencia</button>
+                              </div>
+                            )}
+
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  }
+
                   return (
                     <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
                       {/* Secondary nav */}
@@ -4720,13 +5242,825 @@ export default function DashboardPage() {
                         ))}
                       </div>
 
-                      {/* Placeholder for non-Equipo tabs */}
-                      {rrhhNavTab !== "Equipo" && (
-                        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
-                          <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 13 }}>{rrhhNavTab}</span>
-                          <span style={{ color: "rgba(255,255,255,0.1)", fontSize: 11 }}>Próximamente</span>
-                        </div>
-                      )}
+                      {/* Organigrama tab */}
+                      {rrhhNavTab === "Organigrama" && (() => {
+                        type OrgMember = { id: number; initials: string; name: string; role: string; alert: string; status: string }
+                        type OrgArea = { id: string; label: string; leader: { id: number; initials: string; name: string; role: string }; members: (OrgMember | { id: -1; vacant: true })[] }
+                        const orgAreas: OrgArea[] = [
+                          {
+                            id: "ventas", label: "Ventas",
+                            leader: { id: 1, initials: "JP", name: "Juan Pérez",     role: "Líder" },
+                            members: [
+                              { id: 2, initials: "CA", name: "Carlos Acosta",  role: "Vendedor",      alert: "Sobrecargado",   status: "Activo"   },
+                              { id: 3, initials: "MR", name: "María Ruiz",     role: "Vendedora",     alert: "",               status: "Activo"   },
+                              { id: -1, vacant: true },
+                            ],
+                          },
+                          {
+                            id: "marketing", label: "Marketing",
+                            leader: { id: 4, initials: "AG", name: "Ana González",   role: "Líder" },
+                            members: [],
+                          },
+                          {
+                            id: "operaciones", label: "Operaciones",
+                            leader: { id: 6, initials: "LS", name: "Laura Sánchez",  role: "Líder" },
+                            members: [
+                              { id: 7, initials: "DT", name: "Diego Torres",   role: "Asistente",     alert: "Bajo desempeño", status: "Activo"   },
+                              { id: 8, initials: "SR", name: "Sofía Reyes",    role: "Analista",      alert: "",               status: "Activo"   },
+                              { id: 5, initials: "PM", name: "Pedro Martínez", role: "Administrativo",alert: "",               status: "Licencia" },
+                            ],
+                          },
+                        ]
+                        const alertDotColor = (alert: string) => alert === "Riesgo renuncia" ? "#ef4444" : alert === "Bajo desempeño" ? "#ef4444" : alert === "Sobrecargado" ? "#eab308" : null
+                        const connV = (h = 24) => <div style={{ width: 1, height: h, background: "rgba(255,255,255,0.08)", flexShrink: 0 }} />
+                        const connLine = "1px solid rgba(255,255,255,0.08)"
+                        const nodeBase: React.CSSProperties = { position: "relative", textAlign: "center" as const, borderRadius: 12, userSelect: "none" as const }
+                        const OwnerNode = () => (
+                          <div style={{ ...nodeBase, background: "rgba(37,99,235,0.15)", border: "1px solid rgba(37,99,235,0.4)", padding: "14px 20px", minWidth: 160 }}>
+                            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(37,99,235,0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 14, fontWeight: 500, margin: "0 auto" }}>D</div>
+                            <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginTop: 8 }}>Propietario</div>
+                            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>Dueño del negocio</div>
+                            <span style={{ display: "inline-block", background: "rgba(37,99,235,0.2)", color: "#2563EB", fontSize: 10, borderRadius: 20, padding: "2px 8px", marginTop: 6 }}>Dueño</span>
+                          </div>
+                        )
+                        const AreaNode = ({ area }: { area: OrgArea }) => {
+                          const emp = EMPLOYEES.find(e => e.id === area.leader.id)
+                          const dot = alertDotColor(emp?.alert ?? "")
+                          return (
+                            <div
+                              style={{ ...nodeBase, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", padding: "12px 16px", minWidth: 160, cursor: "pointer" }}
+                              onClick={() => { if (emp) { setRrhhSelectedEmp(emp); setRrhhView("detail"); setRrhhDetailTab("Actividad") } }}
+                              onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.07)"; e.currentTarget.style.borderColor = "rgba(37,99,235,0.4)" }}
+                              onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)" }}>
+                              {dot && <div title={emp?.alert} style={{ position: "absolute", top: -4, right: -4, width: 8, height: 8, borderRadius: "50%", background: dot, border: "2px solid #0D0D14" }} />}
+                              <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 14, fontWeight: 500, margin: "0 auto" }}>{area.leader.initials}</div>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginTop: 8 }}>{area.leader.name}</div>
+                              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>{area.label}</div>
+                              <span style={{ display: "inline-block", background: "rgba(37,99,235,0.15)", color: "#2563EB", fontSize: 10, borderRadius: 20, padding: "2px 8px", marginTop: 6 }}>Líder</span>
+                            </div>
+                          )
+                        }
+                        const MemberNode = ({ m }: { m: OrgMember }) => {
+                          const emp = EMPLOYEES.find(e => e.id === m.id)
+                          const dot = alertDotColor(m.alert)
+                          const isLicencia = m.status === "Licencia"
+                          return (
+                            <div
+                              style={{ ...nodeBase, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "10px 14px", minWidth: 130, cursor: "pointer" }}
+                              onClick={() => { if (emp) { setRrhhSelectedEmp(emp); setRrhhView("detail"); setRrhhDetailTab("Actividad") } }}
+                              onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(37,99,235,0.3)" }}
+                              onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)" }}>
+                              {dot && <div title={m.alert} style={{ position: "absolute", top: -4, right: -4, width: 8, height: 8, borderRadius: "50%", background: dot, border: "2px solid #0D0D14" }} />}
+                              <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 11, fontWeight: 500, margin: "0 auto" }}>{m.initials}</div>
+                              <div style={{ color: "white", fontSize: 12, fontWeight: 500, marginTop: 6 }}>{m.name}</div>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginTop: 2 }}>{m.role}</div>
+                              {isLicencia && <span style={{ display: "inline-block", background: "rgba(234,179,8,0.1)", color: "#eab308", fontSize: 9, borderRadius: 20, padding: "1px 6px", marginTop: 4 }}>Licencia</span>}
+                            </div>
+                          )
+                        }
+                        const VacantNode = () => (
+                          <div style={{ ...nodeBase, background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 14px", minWidth: 130, cursor: "pointer" }}>
+                            <div style={{ color: "rgba(255,255,255,0.15)", fontSize: 20, lineHeight: 1 }}>+</div>
+                            <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 11, marginTop: 6 }}>Posición vacante</div>
+                            <div style={{ color: "#2563EB", fontSize: 10, marginTop: 4 }}>Buscar candidato →</div>
+                          </div>
+                        )
+                        // H-connector for N branches: left arm, N-2 middle arms, right arm
+                        const HConn = ({ count, h = 20 }: { count: number; h?: number }) => (
+                          <div style={{ display: "flex", width: "100%", flexShrink: 0 }}>
+                            {Array.from({ length: count }).map((_, i) => (
+                              <div key={i} style={{ flex: 1, height: h, borderTop: connLine, borderRight: i < count - 1 ? connLine : "none", borderLeft: i > 0 ? connLine : "none" }} />
+                            ))}
+                          </div>
+                        )
+                        return (
+                          <div style={{ flex: 1, overflow: "auto", padding: 24, position: "relative" }}>
+                            {/* Top bar */}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                              <div>
+                                <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Organigrama</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Estructura actual del equipo</div>
+                              </div>
+                              <button style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(255,255,255,0.5)", fontSize: 12, borderRadius: 6, padding: "6px 14px", cursor: "pointer" }}>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                Editar estructura
+                              </button>
+                            </div>
+
+                            {/* Tree container */}
+                            <div style={{ transform: `scale(${rrhhOrgZoom / 100})`, transformOrigin: "top center", display: "inline-flex", flexDirection: "column", alignItems: "center", minWidth: "100%" }}>
+
+                              {/* LEVEL 1: Owner */}
+                              <OwnerNode />
+                              {connV(32)}
+
+                              {/* L1→L2 H connector */}
+                              <div style={{ display: "flex", width: "100%", flexShrink: 0 }}>
+                                <div style={{ flex: 1, height: 20, borderTop: connLine, borderRight: connLine }} />
+                                <div style={{ flex: 1, height: 20, borderTop: connLine }} />
+                                <div style={{ flex: 1, height: 20, borderTop: connLine, borderLeft: connLine }} />
+                              </div>
+
+                              {/* LEVEL 2: Area leaders row */}
+                              <div style={{ display: "flex", width: "100%", alignItems: "flex-start" }}>
+                                {orgAreas.map((area, ai) => (
+                                  <div key={area.id} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", padding: "0 32px" }}>
+                                    <AreaNode area={area} />
+
+                                    {area.members.length > 0 ? (
+                                      <>
+                                        {connV(24)}
+                                        {/* L2→L3 H connector */}
+                                        <HConn count={area.members.length} h={16} />
+                                        {/* LEVEL 3: members row */}
+                                        <div style={{ display: "flex", width: "100%", alignItems: "flex-start" }}>
+                                          {area.members.map((m, mi) => (
+                                            <div key={mi} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", padding: "0 8px" }}>
+                                              {connV(16)}
+                                              {"vacant" in m ? <VacantNode /> : <MemberNode m={m} />}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </>
+                                    ) : (
+                                      <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 11, fontStyle: "italic" as const, marginTop: 20, paddingTop: 4 }}>Sin equipo a cargo</div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Zoom controls */}
+                            <div style={{ position: "absolute", bottom: 24, right: 24, display: "flex", flexDirection: "column", gap: 4 }}>
+                              {(["+", "−"] as const).map(sym => (
+                                <button key={sym} onClick={() => setRrhhOrgZoom(z => sym === "+" ? Math.min(z + 10, 150) : Math.max(z - 10, 50))} style={{ width: 32, height: 32, background: "rgba(10,10,20,0.8)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, color: "white", fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>{sym}</button>
+                              ))}
+                            </div>
+
+                            {/* Legend */}
+                            <div style={{ position: "absolute", bottom: 24, left: 24, background: "rgba(10,10,20,0.8)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, padding: "10px 14px" }}>
+                              {[
+                                { sample: <div style={{ width: 24, height: 16, borderRadius: 4, border: "1px solid rgba(37,99,235,0.4)", background: "rgba(37,99,235,0.15)" }} />, label: "Dueño" },
+                                { sample: <div style={{ width: 24, height: 16, borderRadius: 4, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)" }} />, label: "Líder de área" },
+                                { sample: <div style={{ width: 20, height: 14, borderRadius: 4, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }} />, label: "Empleado" },
+                                { sample: <div style={{ width: 20, height: 14, borderRadius: 4, border: "1px dashed rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.02)" }} />, label: "Vacante" },
+                              ].map(({ sample, label }) => (
+                                <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                                  {sample}
+                                  <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{label}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      })()}
+
+                      {/* Clima laboral tab */}
+                      {rrhhNavTab === "Clima laboral" && (() => {
+                        const DIMS = [
+                          { name: "Satisfacción general",    score: 8.4 },
+                          { name: "Comunicación interna",    score: 7.2 },
+                          { name: "Carga de trabajo",        score: 6.1 },
+                          { name: "Reconocimiento",          score: 7.8 },
+                          { name: "Desarrollo profesional",  score: 8.1 },
+                          { name: "Relación con líderes",    score: 7.5 },
+                        ]
+                        const EMP_SAT = [
+                          { initials: "JP", name: "Juan Pérez",      score: 8.4, trend: "↑" },
+                          { initials: "CA", name: "Carlos Acosta",   score: 6.2, trend: "↓" },
+                          { initials: "MR", name: "María Ruiz",      score: 7.9, trend: "↑" },
+                          { initials: "AG", name: "Ana González",    score: 8.8, trend: "↑" },
+                          { initials: "LS", name: "Laura Sánchez",   score: 5.4, trend: "↓" },
+                          { initials: "DT", name: "Diego Torres",    score: 6.8, trend: "↓" },
+                          { initials: "SR", name: "Sofía Reyes",     score: 8.6, trend: "↑" },
+                        ]
+                        const dimColor = (s: number) => s >= 8 ? "#22c55e" : s >= 6 ? "#2563EB" : "#ef4444"
+                        const trendColor = (t: string) => t === "↑" ? "#22c55e" : t === "↓" ? "#ef4444" : "rgba(255,255,255,0.3)"
+                        // SVG chart points — 6 weeks: 6.8 7.1 7.4 7.2 7.6 7.8 scaled to viewBox 500x60
+                        const weeks = [6.8, 7.1, 7.4, 7.2, 7.6, 7.8]
+                        const minV = 6.5, maxV = 8.0
+                        const ptX = (i: number) => 30 + i * 88
+                        const ptY = (v: number) => 54 - ((v - minV) / (maxV - minV)) * 48
+                        const pts = weeks.map((v, i) => ({ x: ptX(i), y: ptY(v) }))
+                        const cubicPath = pts.reduce((acc, pt, i) => {
+                          if (i === 0) return `M ${pt.x} ${pt.y}`
+                          const prev = pts[i - 1]
+                          const cx1 = prev.x + (pt.x - prev.x) / 3
+                          const cx2 = pt.x - (pt.x - prev.x) / 3
+                          return `${acc} C ${cx1} ${prev.y} ${cx2} ${pt.y} ${pt.x} ${pt.y}`
+                        }, "")
+                        return (
+                          <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+                            {/* Top bar */}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                              <div>
+                                <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Clima laboral</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Última actualización: hoy</div>
+                              </div>
+                              <button style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Enviar encuesta</button>
+                            </div>
+
+                            {/* Overall score card */}
+                            <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 14, padding: 24, marginBottom: 24, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                              <div>
+                                <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 8 }}>✦ Índice de clima laboral</div>
+                                <div style={{ lineHeight: 1 }}>
+                                  <span style={{ color: "white", fontSize: 48, fontWeight: 600 }}>7.8</span>
+                                  <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 24, marginLeft: 4 }}>/10</span>
+                                </div>
+                                <div style={{ color: "#22c55e", fontSize: 12, marginTop: 6 }}>↑ 0.4 vs semana anterior</div>
+                                <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, marginTop: 4 }}>Clima positivo</div>
+                              </div>
+                              <div style={{ position: "relative", width: 80, height: 80, borderRadius: "50%", background: "conic-gradient(#2563EB 0deg 281deg, rgba(255,255,255,0.06) 281deg 360deg)", flexShrink: 0 }}>
+                                <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 60, height: 60, borderRadius: "50%", background: "#0D0D14", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 14, fontWeight: 500 }}>78%</div>
+                              </div>
+                            </div>
+
+                            {/* Dimension scores */}
+                            <div style={{ marginBottom: 24 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }}>Por dimensión</div>
+                              {DIMS.map(d => {
+                                const c = dimColor(d.score)
+                                return (
+                                  <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                                    <span style={{ color: "white", fontSize: 13, width: 160, flexShrink: 0 }}>{d.name}</span>
+                                    <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+                                      <div style={{ height: "100%", width: `${d.score / 10 * 100}%`, background: c, borderRadius: 3 }} />
+                                    </div>
+                                    <span style={{ color: c, fontSize: 12, fontWeight: 500, width: 28, textAlign: "right" as const }}>{d.score.toFixed(1)}</span>
+                                  </div>
+                                )
+                              })}
+                            </div>
+
+                            {/* AI Alerts */}
+                            <div style={{ marginBottom: 24 }}>
+                              <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 12 }}>✦ Alertas de Pupi AI</div>
+                              {[
+                                { color: "#ef4444", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>, title: "Laura Sánchez — Riesgo de renuncia", body: "Satisfacción cayó 1.8 puntos en las últimas 3 semanas. Historial muestra patrón previo a renuncias anteriores.", cta: "Hablar con Laura esta semana →" },
+                                { color: "#eab308", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>, title: "Carlos Acosta — Sobrecargado", body: "Tiene 12 tareas pendientes, 40% más que el promedio del equipo. Productividad bajó un 15% esta semana.", cta: "Redistribuir tareas →" },
+                                { color: "#f97316", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, title: "Posible tensión en área de Ventas", body: "Comunicación entre JP y CA disminuyó un 60% en los últimos 10 días según registro de interacciones.", cta: "Ver detalles →" },
+                              ].map((alert, i) => (
+                                <div key={i} style={{ display: "flex", gap: 12, background: "rgba(255,255,255,0.02)", borderLeft: `3px solid ${alert.color}`, borderTop: "1px solid rgba(255,255,255,0.06)", borderRight: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", borderRadius: "0 10px 10px 0", padding: "14px 16px", marginBottom: 8 }}>
+                                  <div style={{ flexShrink: 0, marginTop: 1 }}>{alert.icon}</div>
+                                  <div>
+                                    <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{alert.title}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{alert.body}</div>
+                                    <div style={{ color: alert.color, fontSize: 11, marginTop: 8, cursor: "pointer" }}>{alert.cta}</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Team satisfaction table */}
+                            <div style={{ marginBottom: 24 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Satisfacción por empleado</div>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Basado en últimas encuestas</div>
+                              {EMP_SAT.map(e => {
+                                const c = dimColor(e.score)
+                                return (
+                                  <div key={e.name} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 11, fontWeight: 500, flexShrink: 0 }}>{e.initials}</div>
+                                    <span style={{ color: "white", fontSize: 13, flex: 1 }}>{e.name}</span>
+                                    <div style={{ width: 120, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.06)", overflow: "hidden", flexShrink: 0 }}>
+                                      <div style={{ height: "100%", width: `${e.score / 10 * 100}%`, background: c, borderRadius: 2 }} />
+                                    </div>
+                                    <span style={{ color: c, fontSize: 12, fontWeight: 500, width: 40, textAlign: "right" as const, flexShrink: 0 }}>{e.score.toFixed(1)}/10</span>
+                                    <span style={{ color: trendColor(e.trend), fontSize: 12, flexShrink: 0, width: 16, textAlign: "center" as const }}>{e.trend}</span>
+                                  </div>
+                                )
+                              })}
+                            </div>
+
+                            {/* Productivity correlation */}
+                            <div style={{ marginBottom: 24 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>✦ Correlación satisfacción vs productividad</div>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Detectada por Pupi AI</div>
+                              <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 10, padding: 16 }}>
+                                <div style={{ display: "flex", gap: 24, marginBottom: 16 }}>
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Empleados satisfechos (+7/10)</div>
+                                    <div style={{ color: "#22c55e", fontSize: 24, fontWeight: 600 }}>94%</div>
+                                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>cumplimiento de metas</div>
+                                  </div>
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Empleados insatisfechos (-6/10)</div>
+                                    <div style={{ color: "#ef4444", fontSize: 24, fontWeight: 600 }}>61%</div>
+                                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>cumplimiento de metas</div>
+                                  </div>
+                                </div>
+                                <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 12, color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.6 }}>
+                                  Los empleados con mayor satisfacción tienen un 54% más de cumplimiento de metas. Mejorar el clima laboral impacta directamente en resultados.
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Weekly pulse chart */}
+                            <div style={{ marginBottom: 24 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 12 }}>Evolución semanal del clima</div>
+                              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "16px 16px 8px" }}>
+                                <svg viewBox="0 0 500 60" width="100%" height="60" style={{ display: "block" }}>
+                                  <path d={cubicPath} fill="none" stroke="#2563EB" strokeWidth="2" />
+                                  {pts.map((pt, i) => <circle key={i} cx={pt.x} cy={pt.y} r="4" fill="#2563EB" />)}
+                                </svg>
+                                <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 4 }}>
+                                  {["Sem 1","Sem 2","Sem 3","Sem 4","Sem 5","Sem 6"].map(l => (
+                                    <span key={l} style={{ color: "rgba(255,255,255,0.2)", fontSize: 10, flex: 1, textAlign: "center" as const }}>{l}</span>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Pulse survey section */}
+                            <div style={{ marginBottom: 24 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Última encuesta enviada</div>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Hace 3 días · 7 de 8 respondieron</div>
+                              {[
+                                { q: "¿Cómo te sentiste esta semana en el trabajo?", score: 7.6 },
+                                { q: "¿Sentís que tu trabajo es valorado?",           score: 7.1 },
+                                { q: "¿Tenés todo lo que necesitás para hacer bien tu trabajo?", score: 8.1 },
+                              ].map((item, i) => {
+                                const c = dimColor(item.score)
+                                return (
+                                  <div key={i} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 14, marginBottom: 8 }}>
+                                    <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, marginBottom: 10 }}>{item.q}</div>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                      <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+                                        <div style={{ height: "100%", width: `${item.score / 10 * 100}%`, background: c, borderRadius: 3 }} />
+                                      </div>
+                                      <span style={{ color: c, fontSize: 12, fontWeight: 500, flexShrink: 0 }}>{item.score.toFixed(1)}</span>
+                                    </div>
+                                  </div>
+                                )
+                              })}
+                              <div style={{ color: "#2563EB", fontSize: 12, marginTop: 8, cursor: "pointer" }}>Ver respuestas completas →</div>
+                            </div>
+                          </div>
+                        )
+                      })()}
+
+                      {/* Sueldos tab */}
+                      {rrhhNavTab === "Sueldos" && (() => {
+                        type PayRow = { id: number; name: string; initials: string; role: string; bruto: number; comision: number }
+                        const PAYROLL: PayRow[] = [
+                          { id: 1, name: "Juan Pérez",      initials: "JP", role: "Vendedor Senior",    bruto: 280000, comision: 3890 },
+                          { id: 2, name: "Carlos Acosta",   initials: "CA", role: "Vendedor",           bruto: 220000, comision: 2496 },
+                          { id: 3, name: "María Ruiz",      initials: "MR", role: "Vendedora",          bruto: 220000, comision: 2034 },
+                          { id: 4, name: "Ana González",    initials: "AG", role: "Analista Marketing", bruto: 240000, comision: 0    },
+                          { id: 5, name: "Pedro Martínez",  initials: "PM", role: "Administrativo",     bruto: 200000, comision: 0    },
+                          { id: 6, name: "Laura Sánchez",   initials: "LS", role: "Coordinadora",       bruto: 260000, comision: 0    },
+                          { id: 7, name: "Diego Torres",    initials: "DT", role: "Asistente",          bruto: 160000, comision: 0    },
+                          { id: 8, name: "Sofía Reyes",     initials: "SR", role: "Analista Ops",       bruto: 230000, comision: 0    },
+                        ]
+                        const fmt = (n: number) => "$" + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                        const ded30 = (b: number) => Math.round(b * 0.30)
+                        const netOf = (b: number) => b - ded30(b)
+                        const calc = (r: PayRow) => {
+                          const ant = Math.round(r.bruto * 0.05)
+                          const pres = 8000
+                          const totalH = r.bruto + ant + pres
+                          const jub   = Math.round(totalH * 0.11)
+                          const obra  = Math.round(totalH * 0.03)
+                          const pami  = Math.round(totalH * 0.03)
+                          const sind  = Math.round(totalH * 0.02)
+                          const totalD = jub + obra + pami + sind
+                          return { ant, pres, totalH, jub, obra, pami, sind, totalD, netoF: totalH - totalD + r.comision }
+                        }
+                        const stSty = (s: string) => s === "Liquidado" ? { bg: "rgba(34,197,94,0.1)",  color: "#22c55e", border: "rgba(34,197,94,0.2)"  }
+                                                    : s === "En proceso" ? { bg: "rgba(37,99,235,0.1)", color: "#2563EB", border: "rgba(37,99,235,0.2)"  }
+                                                    :                      { bg: "rgba(234,179,8,0.1)", color: "#eab308", border: "rgba(234,179,8,0.2)"  }
+                        const totalBruto = PAYROLL.reduce((s, r) => s + r.bruto, 0)
+                        const totalCargas = Math.round(totalBruto * 0.30)
+                        const totalCosto  = totalBruto + totalCargas
+                        const totalNeto   = PAYROLL.reduce((s, r) => s + netOf(r.bruto), 0)
+                        const gridCols = "2fr 1fr 1fr 1fr 1fr 1fr 1fr"
+                        const selRow  = PAYROLL.find(r => r.id === payrollSelectedId) ?? null
+                        const selCalc = selRow ? calc(selRow) : null
+                        const Toggle = ({ on, onToggle }: { on: boolean; onToggle: () => void }) => (
+                          <div onClick={onToggle} style={{ width: 36, height: 20, borderRadius: 10, background: on ? "#2563EB" : "rgba(255,255,255,0.1)", position: "relative" as const, cursor: "pointer", flexShrink: 0, transition: "background 0.15s" }}>
+                            <div style={{ position: "absolute" as const, top: 2, left: on ? 18 : 2, width: 16, height: 16, borderRadius: "50%", background: "white", transition: "left 0.15s" }} />
+                          </div>
+                        )
+                        const summaryCards = [
+                          { label: "Total sueldos brutos",  value: fmt(totalBruto),  sub: "8 empleados activos" },
+                          { label: "Cargas sociales",       value: fmt(totalCargas),  sub: "30% sobre bruto"    },
+                          { label: "Costo total empresa",   value: fmt(totalCosto),   sub: "Bruto + cargas"     },
+                          { label: "Neto a pagar",          value: fmt(totalNeto),    sub: "Estimado este mes"  },
+                        ]
+                        return (
+                          <div style={{ flex: 1, overflowY: "auto", padding: 24, position: "relative" as const }}>
+                            {/* Top bar */}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                              <div>
+                                <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Sueldos y liquidación</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Mayo 2026</div>
+                              </div>
+                              <div style={{ display: "flex", gap: 8 }}>
+                                <button onClick={() => setShowPayrollConfigModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(255,255,255,0.5)", fontSize: 12, borderRadius: 6, padding: "6px 14px", cursor: "pointer" }}>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+                                  Configurar sueldos
+                                </button>
+                                <button onClick={() => setShowLiquidateModal(true)} style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Liquidar mes</button>
+                              </div>
+                            </div>
+
+                            {/* Summary cards */}
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 24 }}>
+                              {summaryCards.map(c => (
+                                <div key={c.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 6 }}>{c.label}</div>
+                                  <div style={{ color: "white", fontSize: 20, fontWeight: 600 }}>{c.value}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 4 }}>{c.sub}</div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Table */}
+                            <div style={{ marginBottom: 24 }}>
+                              {/* Header */}
+                              <div style={{ display: "grid", gridTemplateColumns: gridCols, background: "rgba(255,255,255,0.03)", borderRadius: "8px 8px 0 0", padding: "10px 16px" }}>
+                                {["EMPLEADO","CARGO","SUELDO BRUTO","DEDUCCIONES","NETO","COMISIONES","ESTADO"].map(h => (
+                                  <span key={h} style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{h}</span>
+                                ))}
+                              </div>
+                              {/* Rows */}
+                              {PAYROLL.map(row => {
+                                const d = ded30(row.bruto)
+                                const n = netOf(row.bruto)
+                                const c = calc(row)
+                                const st = stSty(payrollStatuses[row.id] ?? "Pendiente")
+                                return (
+                                  <div key={row.id}
+                                    onClick={() => { setPayrollSelectedId(row.id); setShowPayrollDetailModal(true) }}
+                                    style={{ display: "grid", gridTemplateColumns: gridCols, padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.04)", cursor: "pointer", transition: "background 0.15s" }}
+                                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
+                                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                                    {/* Empleado */}
+                                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 11, fontWeight: 500, flexShrink: 0 }}>{row.initials}</div>
+                                      <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{row.name}</span>
+                                    </div>
+                                    {/* Cargo */}
+                                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, alignSelf: "center" }}>{row.role}</span>
+                                    {/* Bruto */}
+                                    <span style={{ color: "white", fontSize: 13, fontWeight: 500, alignSelf: "center" }}>{fmt(row.bruto)}</span>
+                                    {/* Deducciones */}
+                                    <span title={`Jubilación: ${fmt(c.jub)}\nObra social: ${fmt(c.obra)}\nPAMI: ${fmt(c.pami)}`} style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, alignSelf: "center", cursor: "help" }}>{fmt(d)}</span>
+                                    {/* Neto */}
+                                    <span style={{ color: "#22c55e", fontSize: 13, fontWeight: 500, alignSelf: "center" }}>{fmt(n)}</span>
+                                    {/* Comisiones */}
+                                    <span style={{ color: row.comision > 0 ? "#2563EB" : "rgba(255,255,255,0.3)", fontSize: 12, alignSelf: "center" }}>{row.comision > 0 ? fmt(row.comision) : "—"}</span>
+                                    {/* Estado */}
+                                    <div style={{ alignSelf: "center" }}>
+                                      <span style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}`, borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>{payrollStatuses[row.id] ?? "Pendiente"}</span>
+                                    </div>
+                                  </div>
+                                )
+                              })}
+                            </div>
+
+                            {/* SALARY DETAIL MODAL */}
+                            {showPayrollDetailModal && selRow && selCalc && (
+                              <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setShowPayrollDetailModal(false)}>
+                                <div style={{ background: "#0f1623", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: 24, width: 420, maxHeight: "80vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+                                  <div style={{ marginBottom: 16 }}>
+                                    <div style={{ color: "white", fontSize: 16, fontWeight: 500 }}>{selRow.name}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Liquidación Mayo 2026</div>
+                                  </div>
+                                  {/* HABERES */}
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Haberes</div>
+                                  {[["Sueldo básico", fmt(selRow.bruto)],["Antigüedad", fmt(selCalc.ant)],["Presentismo", fmt(selCalc.pres)]].map(([k,v]) => (
+                                    <div key={k} style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                                      <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>{k}</span>
+                                      <span style={{ color: "white", fontSize: 13 }}>{v}</span>
+                                    </div>
+                                  ))}
+                                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "10px 0" }} />
+                                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
+                                    <span style={{ color: "white", fontSize: 13 }}>Total haberes</span>
+                                    <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{fmt(selCalc.totalH)}</span>
+                                  </div>
+                                  {/* DEDUCCIONES */}
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Deducciones</div>
+                                  {[["Jubilación (11%)", fmt(selCalc.jub)],["Obra social (3%)", fmt(selCalc.obra)],["PAMI (3%)", fmt(selCalc.pami)],["Sindicato (2%)", fmt(selCalc.sind)]].map(([k,v]) => (
+                                    <div key={k} style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                                      <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{k}</span>
+                                      <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{v}</span>
+                                    </div>
+                                  ))}
+                                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "10px 0" }} />
+                                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
+                                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>Total deducciones</span>
+                                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, fontWeight: 500 }}>{fmt(selCalc.totalD)}</span>
+                                  </div>
+                                  {/* ADICIONALES */}
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Adicionales</div>
+                                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                                    <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>Comisiones Mayo</span>
+                                    <span style={{ color: selRow.comision > 0 ? "#2563EB" : "rgba(255,255,255,0.3)", fontSize: 13 }}>{selRow.comision > 0 ? fmt(selRow.comision) : "$0"}</span>
+                                  </div>
+                                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
+                                    <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>Horas extra</span>
+                                    <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>$0</span>
+                                  </div>
+                                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "16px 0" }} />
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Neto a cobrar</div>
+                                  <div style={{ color: "#22c55e", fontSize: 24, fontWeight: 600 }}>{fmt(selCalc.netoF)}</div>
+                                  {/* Footer */}
+                                  <div style={{ display: "flex", gap: 8, marginTop: 24, justifyContent: "flex-end" }}>
+                                    <button onClick={() => setShowPayrollDetailModal(false)} style={{ padding: "8px 16px", fontSize: 13, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>Cancelar</button>
+                                    <button style={{ padding: "8px 16px", fontSize: 13, background: "transparent", border: "1px solid rgba(37,99,235,0.4)", borderRadius: 8, color: "#2563EB", cursor: "pointer" }}>Descargar recibo</button>
+                                    <button onClick={() => { setPayrollStatuses(prev => ({ ...prev, [selRow.id]: "Liquidado" })); setShowPayrollDetailModal(false) }} style={{ padding: "8px 16px", fontSize: 13, background: "#2563EB", border: "none", borderRadius: 8, color: "white", cursor: "pointer" }}>Marcar como liquidado</button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* CONFIG MODAL */}
+                            {showPayrollConfigModal && (
+                              <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setShowPayrollConfigModal(false)}>
+                                <div style={{ background: "#0f1623", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: 24, width: 480, maxHeight: "80vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+                                  <div style={{ color: "white", fontSize: 16, fontWeight: 500, marginBottom: 20 }}>Configuración de sueldos</div>
+                                  {/* Employee salary rows */}
+                                  {PAYROLL.map(row => (
+                                    <div key={row.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 11, fontWeight: 500, flexShrink: 0 }}>{row.initials}</div>
+                                      <span style={{ color: "white", fontSize: 13, flex: 1 }}>{row.name}</span>
+                                      <input type="text" defaultValue={fmt(row.bruto)} style={{ width: 100, padding: "5px 8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "white", fontSize: 12, outline: "none", textAlign: "right" as const }} />
+                                    </div>
+                                  ))}
+                                  {/* Toggles */}
+                                  <div style={{ marginTop: 20 }}>
+                                    {[
+                                      { label: "Incluir antigüedad automática", on: payrollAntiguedadOn, toggle: () => setPayrollAntiguedadOn(v => !v), extra: <><span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginLeft: 8 }}>%/año:</span><input type="number" value={payrollAntiguedadPct} onChange={e => setPayrollAntiguedadPct(e.target.value)} style={{ width: 56, marginLeft: 4, padding: "3px 6px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "white", fontSize: 12, outline: "none" }} /></> },
+                                      { label: "Incluir presentismo", on: payrollPresentismoOn, toggle: () => setPayrollPresentismoOn(v => !v), extra: <><span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginLeft: 8 }}>$:</span><input type="number" value={payrollPresentismoAmt} onChange={e => setPayrollPresentismoAmt(e.target.value)} style={{ width: 80, marginLeft: 4, padding: "3px 6px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "white", fontSize: 12, outline: "none" }} /></> },
+                                      { label: "Cargas sociales automáticas (30%)", on: payrollCargasOn, toggle: () => setPayrollCargasOn(v => !v), extra: null },
+                                    ].map(item => (
+                                      <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                                        <Toggle on={item.on} onToggle={item.toggle} />
+                                        <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>{item.label}</span>
+                                        {item.extra}
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <div style={{ display: "flex", gap: 8, marginTop: 20, justifyContent: "flex-end" }}>
+                                    <button onClick={() => setShowPayrollConfigModal(false)} style={{ padding: "8px 16px", fontSize: 13, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>Cancelar</button>
+                                    <button onClick={() => setShowPayrollConfigModal(false)} style={{ padding: "8px 16px", fontSize: 13, background: "#2563EB", border: "none", borderRadius: 8, color: "white", cursor: "pointer" }}>Guardar configuración</button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* LIQUIDATE MODAL */}
+                            {showLiquidateModal && (
+                              <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setShowLiquidateModal(false)}>
+                                <div style={{ background: "#0f1623", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: 24, width: 400 }} onClick={e => e.stopPropagation()}>
+                                  <div style={{ color: "white", fontSize: 16, fontWeight: 500, marginBottom: 8 }}>Liquidar Mayo 2026</div>
+                                  <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 13, lineHeight: 1.5 }}>¿Confirmar liquidación de 8 empleados por {fmt(totalNeto)} neto?</div>
+                                  <div style={{ background: "rgba(234,179,8,0.06)", border: "1px solid rgba(234,179,8,0.2)", borderRadius: 8, padding: 12, marginTop: 16, display: "flex", gap: 10, alignItems: "flex-start" }}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                    <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, lineHeight: 1.5 }}>Esta acción marcará todos los sueldos como liquidados y no podrá deshacerse.</span>
+                                  </div>
+                                  <div style={{ display: "flex", gap: 8, marginTop: 20, justifyContent: "flex-end" }}>
+                                    <button onClick={() => setShowLiquidateModal(false)} style={{ padding: "8px 16px", fontSize: 13, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>Cancelar</button>
+                                    <button onClick={() => { setPayrollStatuses(Object.fromEntries(PAYROLL.map(r => [r.id, "Liquidado"]))); setShowLiquidateModal(false) }} style={{ padding: "8px 16px", fontSize: 13, background: "#2563EB", border: "none", borderRadius: 8, color: "white", cursor: "pointer" }}>Confirmar liquidación</button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })()}
+
+                      {/* Resumen semanal tab */}
+                      {rrhhNavTab === "Resumen semanal" && (() => {
+                        const EMP_WEEK = [
+                          { id:1, initials:"JP", name:"Juan Pérez",      role:"Vendedor Senior",    score:4.9, trend:"↑ +0.1", alert:""                },
+                          { id:2, initials:"CA", name:"Carlos Acosta",   role:"Vendedor",           score:3.7, trend:"↓ -0.3", alert:"Sobrecargado"    },
+                          { id:3, initials:"MR", name:"María Ruiz",      role:"Vendedora",          score:4.3, trend:"↑ +0.2", alert:""                },
+                          { id:4, initials:"AG", name:"Ana González",    role:"Analista Marketing", score:4.6, trend:"↑ +0.1", alert:""                },
+                          { id:5, initials:"PM", name:"Pedro Martínez",  role:"Administrativo",     score:-1,  trend:"Licencia", alert:""              },
+                          { id:6, initials:"LS", name:"Laura Sánchez",   role:"Coordinadora Ops",   score:3.9, trend:"↓ -0.4", alert:"Riesgo renuncia" },
+                          { id:7, initials:"DT", name:"Diego Torres",    role:"Asistente Admin",    score:3.1, trend:"↓ -0.2", alert:"Bajo desempeño"  },
+                          { id:8, initials:"SR", name:"Sofía Reyes",     role:"Analista Ops",       score:4.7, trend:"↑ +0.3", alert:""                },
+                        ]
+                        const alertColor = (a: string) => a === "Riesgo renuncia" ? { bg:"rgba(239,68,68,0.1)",  color:"#ef4444", border:"rgba(239,68,68,0.2)"  }
+                                                         : a === "Sobrecargado"   ? { bg:"rgba(234,179,8,0.1)",  color:"#eab308", border:"rgba(234,179,8,0.2)"  }
+                                                         : a === "Bajo desempeño" ? { bg:"rgba(239,68,68,0.1)",  color:"#ef4444", border:"rgba(239,68,68,0.2)"  }
+                                                         :                          { bg:"rgba(34,197,94,0.1)",   color:"#22c55e", border:"rgba(34,197,94,0.2)"  }
+                        const trendColor = (t: string) => t.startsWith("↑") ? "#22c55e" : t.startsWith("↓") ? "#ef4444" : "rgba(255,255,255,0.3)"
+                        const TASK_ROWS = [
+                          { initials:"JP", name:"Juan Pérez",    done:12, inprog:2, pend:1 },
+                          { initials:"CA", name:"Carlos Acosta", done:6,  inprog:2, pend:12 },
+                          { initials:"MR", name:"María Ruiz",    done:10, inprog:1, pend:2  },
+                          { initials:"AG", name:"Ana González",  done:11, inprog:1, pend:1  },
+                          { initials:"SR", name:"Sofía Reyes",   done:8,  inprog:0, pend:0  },
+                        ]
+                        const ABSENCES = [
+                          { initials:"PM", name:"Pedro Martínez", reason:"Licencia médica",         dates:"20–24 Mayo", dur:"5 días",  status:"Aprobada",       sc:{ bg:"rgba(34,197,94,0.1)",  color:"#22c55e", border:"rgba(34,197,94,0.2)"  } },
+                          { initials:"DT", name:"Diego Torres",   reason:"Ausencia injustificada",  dates:"22 Mayo",    dur:"1 día",   status:"Sin justificar",  sc:{ bg:"rgba(239,68,68,0.1)",  color:"#ef4444", border:"rgba(239,68,68,0.2)"  } },
+                          { initials:"CA", name:"Carlos Acosta",  reason:"Llegada tarde",           dates:"23 Mayo",    dur:"45 min",  status:"Registrada",      sc:{ bg:"rgba(234,179,8,0.1)",  color:"#eab308", border:"rgba(234,179,8,0.2)"  } },
+                        ]
+                        const RECS = [
+                          { priority:"Urgente", pColor:"#ef4444", title:"Hablar con Laura Sánchez",       body:"Riesgo de renuncia en aumento. Agendar reunión privada para entender situación y retenerla."           },
+                          { priority:"Alta",    pColor:"#eab308", title:"Redistribuir tareas de Carlos",  body:"Reasignar al menos 4 tareas a María Ruiz que tiene capacidad disponible esta semana."                   },
+                          { priority:"Media",   pColor:"#2563EB", title:"Iniciar plan de mejora con Diego",body:"Tercer mes consecutivo bajo. Definir objetivos claros y seguimiento semanal."                          },
+                          { priority:"Baja",    pColor:"#22c55e", title:"Reconocer logros de JP y Sofía", body:"El reconocimiento aumenta satisfacción y retención. Un mensaje o reunión esta semana."                  },
+                        ]
+                        return (
+                          <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+                            {/* Top bar */}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                              <div>
+                                <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Resumen semanal del equipo</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Semana del 19 al 25 de Mayo 2026</div>
+                              </div>
+                              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 0, border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, overflow: "hidden" }}>
+                                  <button style={{ padding: "6px 10px", background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 14 }}>←</button>
+                                  <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, padding: "0 4px" }}>Sem 20</span>
+                                  <button style={{ padding: "6px 10px", background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 14 }}>→</button>
+                                </div>
+                                <button style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(255,255,255,0.5)", fontSize: 12, borderRadius: 6, padding: "6px 14px", cursor: "pointer" }}>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                  Exportar resumen
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* AI executive summary */}
+                            <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 14, padding: 20, marginBottom: 24 }}>
+                              <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 12 }}>✦ Resumen ejecutivo de Pupi</div>
+                              <div style={{ color: "white", fontSize: 14, lineHeight: 1.8 }}>
+                                Esta semana el equipo tuvo un rendimiento general positivo. JP lideró en ventas con 3 cierres. Carlos está sobrecargado y requiere atención. Laura muestra señales de insatisfacción por tercer semana consecutiva. El clima laboral subió 0.4 puntos llegando a 7.8/10.
+                              </div>
+                              <div style={{ display: "flex", gap: 8, marginTop: 14, flexWrap: "wrap" as const }}>
+                                {[
+                                  { text: "✓ 3 logros destacados",    bg: "rgba(34,197,94,0.1)",  color: "#22c55e", border: "rgba(34,197,94,0.2)"  },
+                                  { text: "⚠ 2 situaciones a atender",bg: "rgba(234,179,8,0.1)",  color: "#eab308", border: "rgba(234,179,8,0.2)"  },
+                                  { text: "! 1 alerta crítica",        bg: "rgba(239,68,68,0.1)",  color: "#ef4444", border: "rgba(239,68,68,0.2)"  },
+                                ].map(p => (
+                                  <span key={p.text} style={{ background: p.bg, color: p.color, border: `1px solid ${p.border}`, borderRadius: 20, padding: "4px 12px", fontSize: 12 }}>{p.text}</span>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Team performance grid */}
+                            <div style={{ marginBottom: 24 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }}>Desempeño individual</div>
+                              <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10 }}>
+                                {EMP_WEEK.map(e => (
+                                  <div key={e.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 14, textAlign: "center" as const }}>
+                                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 12, fontWeight: 500, margin: "0 auto" }}>{e.initials}</div>
+                                    <div style={{ color: "white", fontSize: 12, fontWeight: 500, marginTop: 8 }}>{e.name}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginTop: 2 }}>{e.role}</div>
+                                    {e.score >= 0 ? (
+                                      <>
+                                        <div style={{ marginTop: 8, lineHeight: 1 }}>
+                                          <span style={{ color: "white", fontSize: 20, fontWeight: 600 }}>{e.score.toFixed(1)}</span>
+                                          <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>/5</span>
+                                        </div>
+                                        <div style={{ color: trendColor(e.trend), fontSize: 11, marginTop: 4 }}>{e.trend}</div>
+                                      </>
+                                    ) : (
+                                      <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, marginTop: 8 }}>Licencia</div>
+                                    )}
+                                    {e.alert && (() => {
+                                      const ac = alertColor(e.alert)
+                                      return <span style={{ display: "inline-block", background: ac.bg, color: ac.color, border: `1px solid ${ac.border}`, borderRadius: 20, padding: "2px 6px", fontSize: 9, marginTop: 6 }}>{e.alert}</span>
+                                    })()}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Key metrics row */}
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 24 }}>
+                              {[
+                                { label: "Tareas completadas", value: "47",     sub: "de 58 asignadas · 81%",          valueColor: "white"    },
+                                { label: "Ausencias esta semana", value: "3",   sub: "1 justificada · 2 sin justificar",valueColor: "white"    },
+                                { label: "Clima laboral",       value: "7.8/10",sub: "↑ +0.4 vs semana anterior",      valueColor: "white", subColor: "#22c55e" },
+                                { label: "Metas en riesgo",     value: "2",     sub: "CA y Diego por debajo del 50%",  valueColor: "#eab308"  },
+                              ].map(c => (
+                                <div key={c.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 6 }}>{c.label}</div>
+                                  <div style={{ color: c.valueColor, fontSize: 20, fontWeight: 600 }}>{c.value}</div>
+                                  <div style={{ color: c.subColor ?? "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 4 }}>{c.sub}</div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Highlights + Alerts side by side */}
+                            <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+                              {/* Logros */}
+                              <div style={{ flex: 1 }}>
+                                <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 12 }}>🏆 Logros de la semana</div>
+                                {[
+                                  { title: "JP cerró 3 ventas esta semana",            detail: "$56.350 en total · mejor semana del mes"               },
+                                  { title: "Sofía entregó proyecto antes del plazo",   detail: "2 días de adelanto · calidad 5/5"                      },
+                                  { title: "Clima laboral en máximo histórico",         detail: "7.8/10 · cuarta semana consecutiva subiendo"           },
+                                ].map((a, i) => (
+                                  <div key={i} style={{ display: "flex", gap: 10, alignItems: "center", background: "rgba(34,197,94,0.04)", border: "1px solid rgba(34,197,94,0.12)", borderRadius: 8, padding: "12px 14px", marginBottom: 6 }}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+                                    <div>
+                                      <div style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{a.title}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>{a.detail}</div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                              {/* Alerts */}
+                              <div style={{ flex: 1 }}>
+                                <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 12 }}>⚠ Requieren atención</div>
+                                {[
+                                  { color:"#ef4444", title:"Laura — Riesgo de renuncia",  body:"Tercer semana con satisfacción en caída. Requiere conversación urgente con el dueño.", cta:"Agendar reunión →"  },
+                                  { color:"#eab308", title:"Carlos — Sobrecargado",        body:"12 tareas pendientes. Productividad cayó 15%. Redistribuir carga urgente.",           cta:"Ver tareas →"       },
+                                  { color:"#eab308", title:"Diego — Bajo desempeño",       body:"Tercer mes consecutivo por debajo del promedio. Evaluar plan de mejora.",            cta:"Ver evaluación →"   },
+                                ].map((al, i) => (
+                                  <div key={i} style={{ display: "flex", gap: 12, background: "rgba(255,255,255,0.02)", borderLeft: `3px solid ${al.color}`, borderTop: "1px solid rgba(255,255,255,0.06)", borderRight: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", borderRadius: "0 8px 8px 0", padding: "12px 14px", marginBottom: 6 }}>
+                                    <div>
+                                      <div style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{al.title}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, lineHeight: 1.5, marginTop: 3 }}>{al.body}</div>
+                                      <div style={{ color: al.color, fontSize: 11, marginTop: 6, cursor: "pointer" }}>{al.cta}</div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Tasks summary */}
+                            <div style={{ marginBottom: 24 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }}>Resumen de tareas</div>
+                              {/* Stacked bar */}
+                              <div style={{ width: "100%", height: 8, borderRadius: 4, display: "flex", overflow: "hidden", marginBottom: 10 }}>
+                                <div style={{ width: "81%", background: "#22c55e" }} />
+                                <div style={{ width: "10%", background: "#2563EB" }} />
+                                <div style={{ flex: 1, background: "rgba(255,255,255,0.1)" }} />
+                              </div>
+                              <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
+                                {[["#22c55e","Completadas 47"],["#2563EB","En proceso 6"],["rgba(255,255,255,0.3)","Pendientes 5"]].map(([c,l]) => (
+                                  <div key={l} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                                    <div style={{ width: 8, height: 8, borderRadius: 2, background: c, flexShrink: 0 }} />
+                                    <span style={{ color: c, fontSize: 11 }}>{l}</span>
+                                  </div>
+                                ))}
+                              </div>
+                              {/* Per-employee rows */}
+                              {TASK_ROWS.map(r => {
+                                const total = r.done + r.inprog + r.pend
+                                const donePct  = total ? r.done  / total * 100 : 0
+                                const inpPct   = total ? r.inprog / total * 100 : 0
+                                return (
+                                  <div key={r.name} style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 10, fontWeight: 500, flexShrink: 0 }}>{r.initials}</div>
+                                    <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, flex: 1 }}>{r.name}</span>
+                                    <div style={{ width: 120, height: 4, borderRadius: 2, display: "flex", overflow: "hidden", background: "rgba(255,255,255,0.06)", flexShrink: 0 }}>
+                                      <div style={{ width: `${donePct}%`, background: "#22c55e" }} />
+                                      <div style={{ width: `${inpPct}%`, background: "#2563EB" }} />
+                                    </div>
+                                    <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, width: 36, textAlign: "right" as const, flexShrink: 0 }}>{r.done}/{total}</span>
+                                  </div>
+                                )
+                              })}
+                            </div>
+
+                            {/* Absences */}
+                            <div style={{ marginBottom: 24 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }}>Ausencias de la semana</div>
+                              {ABSENCES.map((ab, i) => (
+                                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 11, fontWeight: 500, flexShrink: 0 }}>{ab.initials}</div>
+                                    <div>
+                                      <div style={{ color: "white", fontSize: 13 }}>{ab.name}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 1 }}>{ab.reason}</div>
+                                    </div>
+                                  </div>
+                                  <div style={{ textAlign: "center" as const }}>
+                                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{ab.dates}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginTop: 1 }}>{ab.dur}</div>
+                                  </div>
+                                  <span style={{ background: ab.sc.bg, color: ab.sc.color, border: `1px solid ${ab.sc.border}`, borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>{ab.status}</span>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* AI next week recommendations */}
+                            <div>
+                              <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 12 }}>✦ Recomendaciones para la próxima semana</div>
+                              {RECS.map((r, i) => (
+                                <div key={i} style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "12px 14px", marginBottom: 6, display: "flex", gap: 10, alignItems: "flex-start" }}>
+                                  <span style={{ background: `${r.pColor}20`, color: r.pColor, borderRadius: 20, padding: "1px 7px", fontSize: 9, flexShrink: 0, marginTop: 1 }}>{r.priority}</span>
+                                  <div>
+                                    <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>{r.title}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5 }}>{r.body}</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      })()}
 
                       {/* Equipo tab */}
                       {rrhhNavTab === "Equipo" && (
@@ -4816,6 +6150,1068 @@ export default function DashboardPage() {
                           </div>
                         </div>
                       )}
+                    </div>
+                  )
+                })()
+              ) : activeNode.id === 5 ? (
+                // ── CONTABILIDAD MODULE ──
+                (() => {
+                  const MONTHS = [
+                    { m:"Dic", ing:68000, gas:52000 },
+                    { m:"Ene", ing:72000, gas:55000 },
+                    { m:"Feb", ing:81000, gas:58000 },
+                    { m:"Mar", ing:94000, gas:62000 },
+                    { m:"Abr", ing:88000, gas:63000 },
+                    { m:"May", ing:105000,gas:68000 },
+                  ]
+                  const maxVal = Math.max(...MONTHS.flatMap(m => [m.ing, m.gas]))
+                  const barH = 110
+                  const CATS = [
+                    { color:"#2563EB", name:"Sueldos",     amt:"$45.200", pct:66 },
+                    { color:"#a855f7", name:"Marketing",   amt:"$8.400",  pct:12 },
+                    { color:"#22c55e", name:"Operaciones", amt:"$6.800",  pct:10 },
+                    { color:"#eab308", name:"Servicios",   amt:"$4.200",  pct:6  },
+                    { color:"#f97316", name:"Impuestos",   amt:"$2.840",  pct:4  },
+                    { color:"#ef4444", name:"Otros",       amt:"$1.400",  pct:2  },
+                  ]
+                  const COBRAR = [
+                    { name:"Tech Solutions",   amt:"$18.500", days:"Vence en 3 días",  urgColor:"#eab308" },
+                    { name:"Grupo Herrera",    amt:"$28.500", days:"Vence en 12 días", urgColor:"rgba(255,255,255,0.3)" },
+                    { name:"Retail Express",   amt:"$8.900",  days:"Vence en 7 días",  urgColor:"rgba(255,255,255,0.3)" },
+                  ]
+                  const PAGAR = [
+                    { name:"Proveedor A", amt:"$12.400", days:"Vence hoy",          urgColor:"#ef4444" },
+                    { name:"Proveedor B", amt:"$8.200",  days:"Vence en 5 días",    urgColor:"#eab308" },
+                    { name:"Alquiler",    amt:"$45.000", days:"Vence en 15 días",   urgColor:"rgba(255,255,255,0.3)" },
+                  ]
+                  const MOVEMENTS = [
+                    { type:"in",  desc:"Venta — Tech Solutions",        cat:"Ventas",    when:"Hoy",          amt:"+$18.500", auto:true  },
+                    { type:"out", desc:"Campaña Google Ads",             cat:"Marketing", when:"Ayer",         amt:"-$3.200",  auto:false },
+                    { type:"in",  desc:"Venta — Distribuidora Norte",    cat:"Ventas",    when:"Hace 2 días",  amt:"+$4.200",  auto:true  },
+                    { type:"out", desc:"Sueldos Mayo — parcial",         cat:"Sueldos",   when:"Hace 3 días",  amt:"-$45.200", auto:false },
+                    { type:"in",  desc:"Venta — Grupo Herrera SA",       cat:"Ventas",    when:"Hace 3 días",  amt:"+$28.500", auto:true  },
+                  ]
+                  const aiCard: React.CSSProperties = { background:"rgba(37,99,235,0.06)", border:"1px solid rgba(37,99,235,0.15)", borderRadius:8, padding:"10px 12px", marginBottom:6 }
+                  const aiLabel: React.CSSProperties = { color:"rgba(255,255,255,0.5)", fontSize:10, textTransform:"uppercase" as const, letterSpacing:"0.05em" }
+                  return (
+                    <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
+                      {/* Secondary nav */}
+                      <div style={{ display:"flex", gap:0, borderBottom:"1px solid rgba(255,255,255,0.06)", padding:"0 24px", flexShrink:0 }}>
+                        {(["Dashboard","Movimientos","Análisis","Proyecciones","Exportar"] as const).map(nav => (
+                          <button key={nav} onClick={() => setContabNavTab(nav)} style={{ padding:"12px 16px", fontSize:13, background:"none", border:"none", cursor:"pointer", color:contabNavTab===nav?"white":"rgba(255,255,255,0.35)", borderBottom:`2px solid ${contabNavTab===nav?"#2563EB":"transparent"}`, transition:"color 0.15s, border-color 0.15s", marginBottom:-1 }}>{nav}</button>
+                        ))}
+                      </div>
+
+                      {/* Dashboard view */}
+                      {contabNavTab === "Dashboard" && (
+                        <div style={{ flex:1, overflowY:"auto", padding:24 }}>
+
+                          {/* Alert banner */}
+                          {showContabAlertBanner && (
+                            <div style={{ background:"rgba(239,68,68,0.06)", border:"1px solid rgba(239,68,68,0.2)", borderRadius:8, padding:"10px 16px", marginBottom:20, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                <span style={{ color:"#ef4444", fontSize:13 }}>Gasto inusual detectado esta semana</span>
+                              </div>
+                              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                                <button style={{ padding:"4px 10px", background:"rgba(239,68,68,0.1)", border:"none", borderRadius:6, color:"#ef4444", fontSize:12, cursor:"pointer" }}>Ver detalle</button>
+                                <button onClick={() => setShowContabAlertBanner(false)} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.3)", fontSize:16, cursor:"pointer", padding:"0 2px" }}>×</button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Metrics row */}
+                          <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:24 }}>
+                            {[
+                              { label:"Ingresos este mes",  value:"$105.370", valueColor:"#22c55e", sub:"↑ 28% vs mes anterior",  subColor:"#22c55e"              },
+                              { label:"Gastos este mes",    value:"$67.840",  valueColor:"white",   sub:"↑ 8% vs mes anterior",   subColor:"rgba(255,255,255,0.35)" },
+                              { label:"Resultado neto",     value:"$37.530",  valueColor:"#22c55e", sub:"Margen 35.6%",            subColor:"rgba(255,255,255,0.35)" },
+                              { label:"Flujo de caja",      value:"$52.180",  valueColor:"white",   sub:"Disponible actual",       subColor:"rgba(255,255,255,0.35)" },
+                            ].map(c => (
+                              <div key={c.label} style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:"14px 16px" }}>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginBottom:6 }}>{c.label}</div>
+                                <div style={{ color:c.valueColor, fontSize:20, fontWeight:600 }}>{c.value}</div>
+                                <div style={{ color:c.subColor, fontSize:11, marginTop:4 }}>{c.sub}</div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Bar chart */}
+                          <div style={{ marginBottom:24 }}>
+                            <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Ingresos vs Gastos</div>
+                            <div style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:16 }}>
+                              <div style={{ display:"flex", alignItems:"flex-end", gap:12, height:barH }}>
+                                {MONTHS.map(mo => (
+                                  <div key={mo.m} style={{ flex:1, display:"flex", alignItems:"flex-end", gap:3 }}>
+                                    <div style={{ flex:1, background:"rgba(34,197,94,0.5)", borderRadius:"4px 4px 0 0", height:`${(mo.ing/maxVal)*barH}px` }} />
+                                    <div style={{ flex:1, background:"rgba(239,68,68,0.3)", borderRadius:"4px 4px 0 0", height:`${(mo.gas/maxVal)*barH}px` }} />
+                                  </div>
+                                ))}
+                              </div>
+                              <div style={{ display:"flex", gap:12, marginTop:8 }}>
+                                {MONTHS.map(mo => (
+                                  <div key={mo.m} style={{ flex:1, textAlign:"center" as const, color:"rgba(255,255,255,0.25)", fontSize:10 }}>{mo.m}</div>
+                                ))}
+                              </div>
+                              <div style={{ display:"flex", gap:16, marginTop:10 }}>
+                                {[["rgba(34,197,94,0.5)","#22c55e","Ingresos"],["rgba(239,68,68,0.3)","#ef4444","Gastos"]].map(([bg,tc,lbl]) => (
+                                  <div key={lbl} style={{ display:"flex", alignItems:"center", gap:5 }}>
+                                    <div style={{ width:10, height:10, borderRadius:2, background:bg, flexShrink:0 }} />
+                                    <span style={{ color:tc, fontSize:11 }}>{lbl}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Expense breakdown + Pending */}
+                          <div style={{ display:"flex", gap:16, marginBottom:24 }}>
+                            {/* Categories */}
+                            <div style={{ flex:1 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:12 }}>Gastos por categoría</div>
+                              {CATS.map(cat => (
+                                <div key={cat.name} style={{ marginBottom:10 }}>
+                                  <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:4 }}>
+                                    <div style={{ width:8, height:8, borderRadius:"50%", background:cat.color, flexShrink:0 }} />
+                                    <span style={{ color:"white", fontSize:13, flex:1 }}>{cat.name}</span>
+                                    <span style={{ color:"rgba(255,255,255,0.5)", fontSize:12 }}>{cat.amt}</span>
+                                    <span style={{ color:"rgba(255,255,255,0.3)", fontSize:11, width:28, textAlign:"right" as const }}>{cat.pct}%</span>
+                                  </div>
+                                  <div style={{ height:2, background:"rgba(255,255,255,0.04)", borderRadius:1, overflow:"hidden" }}>
+                                    <div style={{ height:"100%", width:`${cat.pct}%`, background:cat.color, borderRadius:1 }} />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            {/* Pending */}
+                            <div style={{ flex:1 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:12 }}>Pendientes</div>
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase" as const, letterSpacing:"0.05em", marginBottom:8 }}>Por cobrar</div>
+                              {COBRAR.map(r => (
+                                <div key={r.name} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
+                                  <span style={{ color:"white", fontSize:12 }}>{r.name}</span>
+                                  <span style={{ color:"rgba(255,255,255,0.5)", fontSize:12 }}>{r.amt}</span>
+                                  <span style={{ color:r.urgColor, fontSize:10 }}>{r.days}</span>
+                                </div>
+                              ))}
+                              <div style={{ color:"white", fontSize:12, fontWeight:500, marginTop:8, marginBottom:12 }}>$55.900 por cobrar</div>
+                              <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", marginBottom:12 }} />
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase" as const, letterSpacing:"0.05em", marginBottom:8 }}>Por pagar</div>
+                              {PAGAR.map(r => (
+                                <div key={r.name} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
+                                  <span style={{ color:"white", fontSize:12 }}>{r.name}</span>
+                                  <span style={{ color:"rgba(255,255,255,0.5)", fontSize:12 }}>{r.amt}</span>
+                                  <span style={{ color:r.urgColor, fontSize:10 }}>{r.days}</span>
+                                </div>
+                              ))}
+                              <div style={{ color:"white", fontSize:12, fontWeight:500, marginTop:8 }}>$65.600 por pagar</div>
+                            </div>
+                          </div>
+
+                          {/* AI insights */}
+                          <div style={{ marginBottom:24 }}>
+                            <div style={{ color:"#2563EB", fontSize:11, textTransform:"uppercase" as const, letterSpacing:"0.06em", marginBottom:12 }}>✦ Inteligencia Pupi</div>
+                            <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:8 }}>
+                              <div style={aiCard}>
+                                <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                                  <span style={aiLabel}>Tendencia financiera</span>
+                                </div>
+                                <div style={{ color:"#22c55e", fontSize:13, fontWeight:500 }}>Positiva</div>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:3 }}>Ingresos crecen 28% vs mes anterior</div>
+                              </div>
+                              <div style={aiCard}>
+                                <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                  <span style={aiLabel}>Anomalía detectada</span>
+                                </div>
+                                <div style={{ color:"#ef4444", fontSize:13, fontWeight:500 }}>Gasto inusual</div>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:3 }}>Marketing +180% vs promedio histórico</div>
+                              </div>
+                              <div style={aiCard}>
+                                <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                  <span style={aiLabel}>Mes de baja recurrente</span>
+                                </div>
+                                <div style={{ color:"white", fontSize:13 }}>Julio — Agosto</div>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:3 }}>Historial muestra caída del 35% en esos meses</div>
+                              </div>
+                              <div style={aiCard}>
+                                <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                  <span style={aiLabel}>Recomendación</span>
+                                </div>
+                                <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:3 }}>Cobrar Tech Solutions</div>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11 }}>Vence en 3 días y es el mayor monto pendiente</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Recent movements */}
+                          <div>
+                            <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Últimos movimientos</div>
+                            {MOVEMENTS.map((mv, i) => {
+                              const isIn = mv.type === "in"
+                              const iconColor = isIn ? "#22c55e" : "#ef4444"
+                              const iconBg = isIn ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)"
+                              return (
+                                <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+                                  <div style={{ width:32, height:32, borderRadius:"50%", background:iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                                    {isIn
+                                      ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                                      : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+                                    }
+                                  </div>
+                                  <div style={{ flex:1, minWidth:0 }}>
+                                    <div style={{ color:"white", fontSize:13 }}>{mv.desc}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>{mv.cat} · {mv.when}</div>
+                                  </div>
+                                  <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                                    {mv.auto && <span style={{ background:"rgba(37,99,235,0.1)", color:"#2563EB", borderRadius:20, padding:"1px 6px", fontSize:10 }}>Auto</span>}
+                                    <span style={{ color:isIn?"#22c55e":"#ef4444", fontSize:13, fontWeight:500 }}>{mv.amt}</span>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                            <div onClick={() => setContabNavTab("Movimientos")} style={{ color:"#2563EB", fontSize:12, marginTop:12, cursor:"pointer" }}>Ver todos los movimientos →</div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Movimientos view */}
+                      {contabNavTab === "Movimientos" && (() => {
+                        type MovRow = { id:number; type:"in"|"out"; desc:string; cat:string; dateGroup:string; auto:boolean; amt:number; anomaly?:boolean }
+                        const ALL_MOVS: MovRow[] = [
+                          { id:1,  type:"in",  desc:"Venta — Tech Solutions",          cat:"Ventas",      dateGroup:"HOY — 25 Mayo",        auto:true,  amt:18500 },
+                          { id:2,  type:"out", desc:"Google Ads — Campaña mayo",        cat:"Marketing",   dateGroup:"HOY — 25 Mayo",        auto:false, amt:3200, anomaly:true },
+                          { id:3,  type:"in",  desc:"Venta — Distribuidora Norte",      cat:"Ventas",      dateGroup:"AYER — 24 Mayo",       auto:true,  amt:4200 },
+                          { id:4,  type:"out", desc:"Servicios de internet y telefonía", cat:"Servicios",  dateGroup:"AYER — 24 Mayo",       auto:false, amt:4200 },
+                          { id:5,  type:"out", desc:"Sueldos Mayo — anticipo",           cat:"Sueldos",    dateGroup:"HACE 3 DÍAS — 22 Mayo",auto:false, amt:45200 },
+                          { id:6,  type:"in",  desc:"Venta — Grupo Herrera SA",          cat:"Ventas",     dateGroup:"HACE 3 DÍAS — 22 Mayo",auto:true,  amt:28500 },
+                          { id:7,  type:"in",  desc:"Venta — Importadora DL",            cat:"Ventas",     dateGroup:"HACE 3 DÍAS — 22 Mayo",auto:true,  amt:9750 },
+                          { id:8,  type:"out", desc:"Impuesto IVA — Abril",              cat:"Impuestos",  dateGroup:"HACE 5 DÍAS — 20 Mayo",auto:false, amt:12400 },
+                          { id:9,  type:"out", desc:"Proveedor materiales",               cat:"Operaciones",dateGroup:"HACE 5 DÍAS — 20 Mayo",auto:false, amt:8200 },
+                          { id:10, type:"in",  desc:"Venta — Retail Express",             cat:"Ventas",     dateGroup:"HACE 5 DÍAS — 20 Mayo",auto:true,  amt:8900 },
+                        ]
+                        const catMeta: Record<string,{color:string;icon:string}> = {
+                          "Ventas":      { color:"#22c55e", icon:"↑" },
+                          "Sueldos":     { color:"#2563EB", icon:"👤" },
+                          "Marketing":   { color:"#a855f7", icon:"📢" },
+                          "Operaciones": { color:"#f97316", icon:"⚙" },
+                          "Servicios":   { color:"#eab308", icon:"📶" },
+                          "Impuestos":   { color:"#ef4444", icon:"📄" },
+                          "Otros":       { color:"rgba(255,255,255,0.3)", icon:"•••" },
+                        }
+                        const fmtM = (n:number) => "$" + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                        let filtered = ALL_MOVS
+                        if (movSearch.trim()) filtered = filtered.filter(m => m.desc.toLowerCase().includes(movSearch.toLowerCase()))
+                        if (movTipoFilter === "Ingresos 🟢") filtered = filtered.filter(m => m.type === "in")
+                        if (movTipoFilter === "Gastos 🔴")   filtered = filtered.filter(m => m.type === "out")
+                        if (movCatFilter !== "Todas")        filtered = filtered.filter(m => m.cat === movCatFilter)
+                        if (movOrigenFilter === "Automático") filtered = filtered.filter(m => m.auto)
+                        if (movOrigenFilter === "Manual")     filtered = filtered.filter(m => !m.auto)
+                        const groups = Array.from(new Set(filtered.map(m => m.dateGroup)))
+                        const totalIn  = filtered.filter(m=>m.type==="in").reduce((s,m)=>s+m.amt,0)
+                        const totalOut = filtered.filter(m=>m.type==="out").reduce((s,m)=>s+m.amt,0)
+                        const neto = totalIn - totalOut
+                        const sideBtn = (label:string, active:boolean, onClick:()=>void) => (
+                          <button key={label} onClick={onClick} style={{ display:"block", width:"100%", textAlign:"left", padding:"6px 10px", borderRadius:6, border:"none", cursor:"pointer", fontSize:12, background:active?"rgba(37,99,235,0.15)":"none", color:active?"white":"rgba(255,255,255,0.4)", marginBottom:2 }}>{label}</button>
+                        )
+                        const inputStyle: React.CSSProperties = { background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, padding:"7px 10px", color:"white", fontSize:12, width:"100%", outline:"none", boxSizing:"border-box" as const }
+                        const selectStyle: React.CSSProperties = { ...inputStyle, appearance:"none" as const }
+                        return (
+                          <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
+                            {/* LEFT SIDEBAR */}
+                            <div style={{ width:"25%", minWidth:160, borderRight:"1px solid rgba(255,255,255,0.06)", padding:"20px 16px", display:"flex", flexDirection:"column", gap:0, overflowY:"auto" }}>
+                              <input
+                                placeholder="Buscar movimiento..."
+                                value={movSearch}
+                                onChange={e => setMovSearch(e.target.value)}
+                                style={{ ...inputStyle, marginBottom:0 }}
+                              />
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:20, marginBottom:8 }}>Tipo</div>
+                              {["Todos","Ingresos 🟢","Gastos 🔴"].map(v => sideBtn(v, movTipoFilter===v, ()=>setMovTipoFilter(v)))}
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Categoría</div>
+                              {["Todas","Ventas","Sueldos","Marketing","Operaciones","Servicios","Impuestos","Otros"].map(v => sideBtn(v, movCatFilter===v, ()=>setMovCatFilter(v)))}
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Período</div>
+                              {["Este mes","Mes anterior","Último trimestre","Este año"].map(v => sideBtn(v, movPeriodoFilter===v, ()=>setMovPeriodoFilter(v)))}
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Origen</div>
+                              {["Todos","Automático","Manual"].map(v => sideBtn(v, movOrigenFilter===v, ()=>setMovOrigenFilter(v)))}
+                            </div>
+
+                            {/* RIGHT SECTION */}
+                            <div style={{ flex:1, padding:"20px 24px", display:"flex", flexDirection:"column", overflowY:"auto" }} onClick={()=>setMovMenuOpenId(null)}>
+                              {/* Top bar */}
+                              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexShrink:0 }}>
+                                <div>
+                                  <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Movimientos</div>
+                                  <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2 }}>Mayo 2026</div>
+                                </div>
+                                <div style={{ display:"flex", gap:8 }}>
+                                  <button onClick={e=>{e.stopPropagation();setShowRegGasto(v=>!v);setShowRegIngreso(false)}} style={{ padding:"6px 14px", fontSize:12, background:"none", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, color:"rgba(255,255,255,0.5)", cursor:"pointer" }}>+ Registrar gasto</button>
+                                  <button onClick={e=>{e.stopPropagation();setShowRegIngreso(v=>!v);setShowRegGasto(false)}} style={{ padding:"6px 14px", fontSize:12, background:"#2563EB", border:"none", borderRadius:6, color:"white", cursor:"pointer", fontWeight:500 }}>+ Registrar ingreso</button>
+                                </div>
+                              </div>
+
+                              {/* Register expense form */}
+                              {showRegGasto && (
+                                <div onClick={e=>e.stopPropagation()} style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:10, padding:16, marginBottom:16, flexShrink:0 }}>
+                                  <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:14 }}>Nuevo gasto</div>
+                                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:10 }}>
+                                    <div>
+                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Descripción</div>
+                                      <input placeholder="Ej: Alquiler oficina" value={regDesc} onChange={e=>setRegDesc(e.target.value)} style={inputStyle} />
+                                    </div>
+                                    <div>
+                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Monto</div>
+                                      <div style={{ position:"relative" }}>
+                                        <span style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", color:"rgba(255,255,255,0.4)", fontSize:12 }}>$</span>
+                                        <input placeholder="0" type="number" value={regMonto} onChange={e=>setRegMonto(e.target.value)} style={{ ...inputStyle, paddingLeft:22 }} />
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Categoría</div>
+                                      <select value={regCat} onChange={e=>setRegCat(e.target.value)} style={selectStyle}>
+                                        {["Operaciones","Sueldos","Marketing","Servicios","Impuestos","Otros"].map(c=><option key={c} value={c}>{c}</option>)}
+                                      </select>
+                                      <div style={{ color:"#2563EB", fontSize:10, marginTop:4 }}>✦ IA sugiere: Operaciones</div>
+                                    </div>
+                                    <div>
+                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Fecha</div>
+                                      <input type="date" value={regFecha} onChange={e=>setRegFecha(e.target.value)} style={inputStyle} />
+                                    </div>
+                                  </div>
+                                  <div style={{ border:"1px dashed rgba(255,255,255,0.1)", borderRadius:6, padding:8, textAlign:"center", color:"rgba(255,255,255,0.3)", fontSize:11, marginBottom:12, cursor:"pointer" }}>+ Adjuntar comprobante</div>
+                                  <div style={{ display:"flex", justifyContent:"flex-end", gap:8 }}>
+                                    <button onClick={()=>setShowRegGasto(false)} style={{ padding:"6px 14px", fontSize:12, background:"none", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, color:"rgba(255,255,255,0.4)", cursor:"pointer" }}>Cancelar</button>
+                                    <button onClick={()=>setShowRegGasto(false)} style={{ padding:"6px 14px", fontSize:12, background:"#2563EB", border:"none", borderRadius:6, color:"white", cursor:"pointer" }}>Guardar</button>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Register income form */}
+                              {showRegIngreso && (
+                                <div onClick={e=>e.stopPropagation()} style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:10, padding:16, marginBottom:16, flexShrink:0 }}>
+                                  <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:14 }}>Nuevo ingreso</div>
+                                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:10 }}>
+                                    <div>
+                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Descripción</div>
+                                      <input placeholder="Ej: Venta a cliente" value={regDescIn} onChange={e=>setRegDescIn(e.target.value)} style={inputStyle} />
+                                    </div>
+                                    <div>
+                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Monto</div>
+                                      <div style={{ position:"relative" }}>
+                                        <span style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", color:"rgba(255,255,255,0.4)", fontSize:12 }}>$</span>
+                                        <input placeholder="0" type="number" value={regMontoIn} onChange={e=>setRegMontoIn(e.target.value)} style={{ ...inputStyle, paddingLeft:22 }} />
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Categoría</div>
+                                      <select value={regCatIn} onChange={e=>setRegCatIn(e.target.value)} style={selectStyle}>
+                                        {["Ventas","Otros"].map(c=><option key={c} value={c}>{c}</option>)}
+                                      </select>
+                                      <div style={{ display:"flex", alignItems:"center", gap:8, marginTop:8 }}>
+                                        <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11 }}>Vincular a cliente</div>
+                                        <div onClick={()=>setRegVincularCliente(v=>!v)} style={{ width:32, height:18, borderRadius:9, background:regVincularCliente?"#2563EB":"rgba(255,255,255,0.1)", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
+                                          <div style={{ position:"absolute", top:2, left:regVincularCliente?14:2, width:14, height:14, borderRadius:"50%", background:"white", transition:"left 0.2s" }} />
+                                        </div>
+                                      </div>
+                                      {regVincularCliente && (
+                                        <select value={regClienteIn} onChange={e=>setRegClienteIn(e.target.value)} style={{ ...selectStyle, marginTop:6 }}>
+                                          {["Tech Solutions","Grupo Herrera SA","Retail Express","Importadora DL","Distribuidora Norte"].map(c=><option key={c} value={c}>{c}</option>)}
+                                        </select>
+                                      )}
+                                    </div>
+                                    <div>
+                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Fecha</div>
+                                      <input type="date" value={regFechaIn} onChange={e=>setRegFechaIn(e.target.value)} style={inputStyle} />
+                                    </div>
+                                  </div>
+                                  <div style={{ display:"flex", justifyContent:"flex-end", gap:8, marginTop:4 }}>
+                                    <button onClick={()=>setShowRegIngreso(false)} style={{ padding:"6px 14px", fontSize:12, background:"none", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, color:"rgba(255,255,255,0.4)", cursor:"pointer" }}>Cancelar</button>
+                                    <button onClick={()=>setShowRegIngreso(false)} style={{ padding:"6px 14px", fontSize:12, background:"#2563EB", border:"none", borderRadius:6, color:"white", cursor:"pointer" }}>Guardar</button>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Summary bar */}
+                              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, padding:"12px 16px", marginBottom:16, flexShrink:0 }}>
+                                <span style={{ color:"#22c55e", fontSize:13, fontWeight:500 }}>Ingresos: +{fmtM(totalIn)}</span>
+                                <div style={{ width:1, height:16, background:"rgba(255,255,255,0.08)" }} />
+                                <span style={{ color:"#ef4444", fontSize:13, fontWeight:500 }}>Gastos: -{fmtM(totalOut)}</span>
+                                <div style={{ width:1, height:16, background:"rgba(255,255,255,0.08)" }} />
+                                <span style={{ color:"white", fontSize:13, fontWeight:500 }}>{neto>=0?"Neto: +":"Neto: -"}{fmtM(Math.abs(neto))}</span>
+                              </div>
+
+                              {/* Movement groups */}
+                              {groups.length === 0 && (
+                                <div style={{ color:"rgba(255,255,255,0.2)", fontSize:13, textAlign:"center", marginTop:40 }}>Sin movimientos</div>
+                              )}
+                              {groups.map((grp, gi) => (
+                                <div key={grp}>
+                                  <div style={{ color:"rgba(255,255,255,0.3)", fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", padding:"8px 0", marginTop: gi===0 ? 0 : 20 }}>{grp}</div>
+                                  {filtered.filter(m=>m.dateGroup===grp).map(mov => {
+                                    const meta = catMeta[mov.cat] ?? catMeta["Otros"]
+                                    const isMenuOpen = movMenuOpenId === mov.id
+                                    return (
+                                      <div key={mov.id} style={{ display:"flex", alignItems:"center", gap:12, padding:12, borderRadius:8, cursor:"pointer", marginBottom:2, position:"relative", borderLeft: mov.anomaly ? "2px solid #ef4444" : "2px solid transparent", background: mov.anomaly ? "rgba(239,68,68,0.02)" : "transparent" }}
+                                        onMouseEnter={e=>(e.currentTarget.style.background = mov.anomaly ? "rgba(239,68,68,0.04)" : "rgba(255,255,255,0.02)")}
+                                        onMouseLeave={e=>(e.currentTarget.style.background = mov.anomaly ? "rgba(239,68,68,0.02)" : "transparent")}>
+                                        {/* Category icon */}
+                                        <div style={{ width:36, height:36, borderRadius:"50%", background: meta.color + "22", display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, color:meta.color, flexShrink:0 }}>{meta.icon}</div>
+                                        {/* Center */}
+                                        <div style={{ flex:1, minWidth:0 }}>
+                                          <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>{mov.desc}</div>
+                                          <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap" }}>
+                                            <span style={{ background:meta.color+"1a", color:meta.color, borderRadius:20, padding:"2px 8px", fontSize:10 }}>{mov.cat}</span>
+                                            {mov.auto && <span style={{ background:"rgba(37,99,235,0.1)", color:"#2563EB", borderRadius:20, padding:"2px 8px", fontSize:10 }}>✦ Automático</span>}
+                                            {mov.anomaly && <span style={{ background:"rgba(239,68,68,0.1)", color:"#ef4444", borderRadius:20, padding:"1px 6px", fontSize:10 }}>⚠ Inusual</span>}
+                                          </div>
+                                        </div>
+                                        {/* Amount */}
+                                        <div style={{ color: mov.type==="in" ? "#22c55e" : "#ef4444", fontSize:14, fontWeight:500, flexShrink:0, marginRight:8 }}>
+                                          {mov.type==="in" ? "+" : "-"}{fmtM(mov.amt)}
+                                        </div>
+                                        {/* Three-dot menu */}
+                                        <div style={{ position:"relative", flexShrink:0 }}>
+                                          <button onClick={e=>{e.stopPropagation();setMovMenuOpenId(isMenuOpen?null:mov.id)}} style={{ background:"none", border:"none", cursor:"pointer", color: isMenuOpen ? "white" : "rgba(255,255,255,0.2)", fontSize:16, padding:"2px 6px", borderRadius:4 }}>⋯</button>
+                                          {isMenuOpen && (
+                                            <div onClick={e=>e.stopPropagation()} style={{ position:"absolute", right:0, top:"100%", background:"#1a2640", border:"1px solid rgba(255,255,255,0.1)", borderRadius:8, padding:"4px 0", zIndex:50, minWidth:148, boxShadow:"0 8px 24px rgba(0,0,0,0.4)" }}>
+                                              {["Editar categoría","Ver detalle","Eliminar"].map(opt => (
+                                                <button key={opt} onClick={()=>setMovMenuOpenId(null)} style={{ display:"block", width:"100%", textAlign:"left", padding:"8px 14px", background:"none", border:"none", color: opt==="Eliminar" ? "#ef4444" : "rgba(255,255,255,0.7)", fontSize:12, cursor:"pointer" }}>{opt}</button>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      })()}
+
+                      {/* Análisis view */}
+                      {contabNavTab === "Análisis" && (() => {
+                        const fmtA = (n: number) => "$" + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                        const varRow = (concepto: string, actual: string, anterior: string, varPct: string, dir: "up"|"down"|"flat", anomaly?: boolean) => {
+                          const varColor = dir==="up" ? "#22c55e" : dir==="down" ? "#ef4444" : "rgba(255,255,255,0.3)"
+                          const varArrow = dir==="up" ? "↑" : dir==="down" ? "↓" : "→"
+                          return (
+                            <div key={concepto} style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", padding:"12px 16px", borderBottom:"1px solid rgba(255,255,255,0.04)", borderLeft: anomaly ? "2px solid #ef4444" : "2px solid transparent", background: anomaly ? "rgba(239,68,68,0.02)" : "transparent" }}>
+                              <div>
+                                <div style={{ color:"white", fontSize:13 }}>{concepto}</div>
+                                {anomaly && <div style={{ color:"#ef4444", fontSize:10, marginTop:3 }}>⚠ Variación significativa</div>}
+                              </div>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{actual}</div>
+                              <div style={{ color:"rgba(255,255,255,0.5)", fontSize:13 }}>{anterior}</div>
+                              <div style={{ color:varColor, fontSize:13 }}>{varArrow} {varPct}</div>
+                            </div>
+                          )
+                        }
+                        const marginColor = (pct: number) => pct >= 60 ? "#22c55e" : pct >= 40 ? "#2563EB" : pct >= 20 ? "#eab308" : "#ef4444"
+                        const PRODUCTS = [
+                          { name:"Producto A", color:"#2563EB",  ing:28800,  cost:10944, margin:62 },
+                          { name:"Producto B", color:"#a855f7",  ing:48750,  cost:26813, margin:45 },
+                          { name:"Producto C", color:"#22c55e",  ing:14400,  cost:4608,  margin:68 },
+                          { name:"Producto D", color:"#eab308",  ing:9900,   cost:6138,  margin:38 },
+                          { name:"Producto E", color:"#f97316",  ing:6400,   cost:3072,  margin:52 },
+                          { name:"Producto F", color:"#ef4444",  ing:3750,   cost:2700,  margin:28 },
+                        ]
+                        const AREAS = [
+                          { name:"Ventas",         ing:105370, cost:48750, pct:68, label:"Rentable",       labelColor:"#22c55e", conic:`conic-gradient(#22c55e 0deg 245deg, rgba(255,255,255,0.06) 245deg 360deg)` },
+                          { name:"Marketing",      ing:28500,  cost:11400, pct:60, label:"Rentable",       labelColor:"#22c55e", conic:`conic-gradient(#2563EB 0deg 216deg, rgba(255,255,255,0.06) 216deg 360deg)` },
+                          { name:"Operaciones",    ing:0,      cost:15000, pct:0,  label:"Break even",     labelColor:"#eab308", conic:`conic-gradient(#eab308 0deg 0deg, rgba(255,255,255,0.06) 0deg 360deg)` },
+                          { name:"Administración", ing:0,      cost:48200, pct:0,  label:"Break even",     labelColor:"#eab308", conic:`conic-gradient(#eab308 0deg 0deg, rgba(255,255,255,0.06) 0deg 360deg)` },
+                        ]
+                        const CALENDAR = [
+                          { m:"Ene", v:72,  level:"low",      peak:false, low:false },
+                          { m:"Feb", v:81,  level:"medium",   peak:false, low:false },
+                          { m:"Mar", v:94,  level:"medium",   peak:false, low:false },
+                          { m:"Abr", v:88,  level:"medium",   peak:false, low:false },
+                          { m:"May", v:105, level:"high",     peak:true,  low:false },
+                          { m:"Jun", v:58,  level:"low",      peak:false, low:false },
+                          { m:"Jul", v:45,  level:"verylow",  peak:false, low:true  },
+                          { m:"Ago", v:48,  level:"verylow",  peak:false, low:true  },
+                          { m:"Sep", v:78,  level:"medium",   peak:false, low:false },
+                          { m:"Oct", v:92,  level:"medium",   peak:false, low:false },
+                          { m:"Nov", v:112, level:"high",     peak:true,  low:false },
+                          { m:"Dic", v:68,  level:"low",      peak:false, low:false },
+                        ]
+                        const calBg = (l: string) => l==="verylow" ? "rgba(239,68,68,0.12)" : l==="low" ? "rgba(255,255,255,0.03)" : l==="medium" ? "rgba(37,99,235,0.1)" : "rgba(34,197,94,0.12)"
+                        const calText = (l: string) => l==="verylow" ? "#ef4444" : l==="low" ? "rgba(255,255,255,0.35)" : l==="medium" ? "#2563EB" : "#22c55e"
+                        const aiCard: React.CSSProperties = { background:"rgba(37,99,235,0.06)", border:"1px solid rgba(37,99,235,0.15)", borderRadius:8, padding:"12px 14px", marginBottom:8 }
+                        const RECS = [
+                          { prio:"Alta",  title:"Revisar gasto en Marketing",   body:"Subió 180% vs mes anterior sin aumento proporcional en ingresos. Evaluar ROI real de cada campaña activa." },
+                          { prio:"Alta",  title:"Preparar reserva para julio",  body:"Históricamente julio cae 57% vs mayo. Con el ritmo actual, se proyecta un déficit de $18.000." },
+                          { prio:"Media", title:"Aumentar precio de Producto F", body:"Margen del 28% es el más bajo del portfolio. Revisar precio o reducir costos de producción." },
+                        ]
+                        const prioColor = (p: string) => p==="Alta" ? "#ef4444" : "#eab308"
+                        return (
+                          <div style={{ flex:1, overflowY:"auto", padding:24 }}>
+                            {/* Top bar */}
+                            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24 }}>
+                              <div>
+                                <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Análisis financiero</div>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2 }}>Comparativos y rentabilidad</div>
+                              </div>
+                              <div style={{ display:"flex", gap:4 }}>
+                                {["Este mes","Trimestre","Este año"].map(p => (
+                                  <button key={p} onClick={()=>setAnalisisPeriod(p)} style={{ padding:"5px 12px", fontSize:12, borderRadius:20, border:"none", cursor:"pointer", background:analisisPeriod===p?"#2563EB":"rgba(255,255,255,0.06)", color:analisisPeriod===p?"white":"rgba(255,255,255,0.4)" }}>{p}</button>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Period comparison table */}
+                            <div style={{ marginBottom:24 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Comparativo de períodos</div>
+                              <div style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, overflow:"hidden" }}>
+                                <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", padding:"10px 16px", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.3)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>
+                                  <div>Concepto</div><div>Este mes</div><div>Mes anterior</div><div>Variación</div>
+                                </div>
+                                {varRow("Ingresos totales",    "$105.370","$88.200","19.5%", "up")}
+                                {varRow("Gastos totales",      "$67.840", "$62.800","8.0%",  "up")}
+                                {varRow("Resultado neto",      "$37.530", "$25.400","47.8%", "up")}
+                                {varRow("Margen neto",         "35.6%",   "28.8%",  "6.8pp","up")}
+                                {varRow("Gastos en sueldos",   "$45.200", "$45.200","0%",    "flat")}
+                                {varRow("Gastos en marketing", "$8.400",  "$3.000", "180%",  "up", true)}
+                              </div>
+                            </div>
+
+                            {/* Product margins */}
+                            <div style={{ marginBottom:24 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Margen por producto</div>
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Rentabilidad real por línea</div>
+                              {PRODUCTS.map(p => {
+                                const mc = marginColor(p.margin)
+                                return (
+                                  <div key={p.name} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, marginBottom:6 }}>
+                                    <div style={{ width:10, height:10, borderRadius:"50%", background:p.color, flexShrink:0 }} />
+                                    <div style={{ flex:1, minWidth:0 }}>
+                                      <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{p.name}</div>
+                                      <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>{fmtA(p.ing)} ingresos · {fmtA(p.cost)} costo</div>
+                                    </div>
+                                    <div style={{ width:80, height:4, background:"rgba(255,255,255,0.06)", borderRadius:2, flexShrink:0 }}>
+                                      <div style={{ width:`${p.margin}%`, height:"100%", background:mc, borderRadius:2 }} />
+                                    </div>
+                                    <div style={{ color:mc, fontSize:13, fontWeight:500, width:40, textAlign:"right", flexShrink:0 }}>{p.margin}%</div>
+                                  </div>
+                                )
+                              })}
+                              <div style={{ display:"flex", gap:10, background:"rgba(37,99,235,0.06)", border:"1px solid rgba(37,99,235,0.15)", borderRadius:8, padding:"12px 16px", marginTop:8 }}>
+                                <span style={{ fontSize:14 }}>💡</span>
+                                <span style={{ color:"rgba(255,255,255,0.6)", fontSize:12, lineHeight:1.5 }}>Producto C tiene el mejor margen (68%) pero representa solo el 10% de los ingresos. Priorizarlo en campañas podría aumentar la rentabilidad global.</span>
+                              </div>
+                            </div>
+
+                            {/* Area profitability */}
+                            <div style={{ marginBottom:24 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Rentabilidad por área</div>
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Ingresos generados vs costos del área</div>
+                              <div style={{ display:"flex", gap:12 }}>
+                                {AREAS.map(a => (
+                                  <div key={a.name} style={{ flex:1, background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:16, textAlign:"center" }}>
+                                    <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:12 }}>{a.name}</div>
+                                    <div style={{ position:"relative", width:56, height:56, margin:"0 auto 8px", borderRadius:"50%", background:a.conic, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                                      <div style={{ width:40, height:40, borderRadius:"50%", background:"#0D0D14", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                                        <span style={{ color:"white", fontSize:12, fontWeight:500 }}>{a.pct}%</span>
+                                      </div>
+                                    </div>
+                                    <div style={{ color:"rgba(255,255,255,0.5)", fontSize:10 }}>Ingresos: {fmtA(a.ing)}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.4)", fontSize:10, marginTop:2 }}>Costos: {fmtA(a.cost)}</div>
+                                    <div style={{ color:a.labelColor, fontSize:11, marginTop:8 }}>{a.label}</div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Low billing calendar */}
+                            <div style={{ marginBottom:24 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>✦ Meses de baja facturación</div>
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Detectados por Pupi en historial de 12 meses</div>
+                              <div style={{ display:"grid", gridTemplateColumns:"repeat(6, 1fr)", gap:8 }}>
+                                {CALENDAR.map(c => (
+                                  <div key={c.m} style={{ background:calBg(c.level), border: c.peak ? "1px solid rgba(34,197,94,0.3)" : c.low ? "1px solid rgba(239,68,68,0.3)" : "1px solid rgba(255,255,255,0.04)", borderRadius:8, padding:"10px 8px", textAlign:"center" }}>
+                                    <div style={{ color:"rgba(255,255,255,0.4)", fontSize:10, marginBottom:4 }}>{c.m}</div>
+                                    <div style={{ color:calText(c.level), fontSize:12, fontWeight:500 }}>${c.v}k</div>
+                                    {c.low  && <div style={{ color:"#ef4444", fontSize:9, marginTop:4 }}>Baja recurrente</div>}
+                                    {c.peak && <div style={{ color:"#22c55e", fontSize:9, marginTop:4 }}>Pico</div>}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* AI Recommendations */}
+                            <div>
+                              <div style={{ color:"#2563EB", fontSize:11, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:12 }}>✦ Recomendaciones Pupi</div>
+                              {RECS.map(r => (
+                                <div key={r.title} style={aiCard}>
+                                  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
+                                    <span style={{ background:prioColor(r.prio)+"22", color:prioColor(r.prio), fontSize:10, borderRadius:20, padding:"1px 8px" }}>{r.prio}</span>
+                                    <span style={{ color:"white", fontSize:13, fontWeight:500 }}>{r.title}</span>
+                                  </div>
+                                  <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.5 }}>{r.body}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      })()}
+
+                      {/* Placeholder for remaining contab tabs */}
+                      {/* Proyecciones view */}
+                      {contabNavTab === "Proyecciones" && (() => {
+                        const fmtP = (n: number) => "$" + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                        // Chart data
+                        const REAL_PTS  = [{ m:"Mar", v:94 }, { m:"Abr", v:88 }, { m:"May", v:105 }]
+                        const PROJ_PTS  = [{ m:"Jun", v:68 }, { m:"Jul", v:45 }, { m:"Ago", v:48 }, { m:"Sep", v:78 }, { m:"Oct", v:92 }, { m:"Nov", v:112 }]
+                        const ALL_PTS   = [...REAL_PTS, ...PROJ_PTS]
+                        const svgW = 600, svgH = 120, padL = 44, padR = 16, padT = 18, padB = 24
+                        const chartW = svgW - padL - padR
+                        const chartH = svgH - padT - padB
+                        const minV = 0, maxV = 130
+                        const xStep = chartW / (ALL_PTS.length - 1)
+                        const px = (i: number) => padL + i * xStep
+                        const py = (v: number) => padT + chartH - ((v - minV) / (maxV - minV)) * chartH
+                        const cubicPath = (pts: {m:string;v:number}[], startIdx: number) =>
+                          pts.reduce((acc, pt, i) => {
+                            const gi = startIdx + i
+                            const x = px(gi), y = py(pt.v)
+                            if (i === 0) return `M ${x} ${y}`
+                            const prev = pts[i - 1], gp = startIdx + i - 1
+                            const cx1 = px(gp) + xStep / 3
+                            const cx2 = x - xStep / 3
+                            return `${acc} C ${cx1} ${py(prev.v)} ${cx2} ${y} ${x} ${y}`
+                          }, "")
+                        const realPath = cubicPath(REAL_PTS, 0)
+                        const dividerX = px(REAL_PTS.length - 1)
+                        // Projection continues from last real point
+                        const projAllPts = [REAL_PTS[REAL_PTS.length - 1], ...PROJ_PTS]
+                        const projPath = cubicPath(projAllPts, REAL_PTS.length - 1)
+                        // Danger zone: Jul(idx4) to Ago(idx5)
+                        const dzX1 = px(4), dzX2 = px(5)
+                        // Monthly table
+                        const MONTHS_PROJ = [
+                          { m:"Jun", ing:68000, gas:65000, result:3000,   alert:"low"  },
+                          { m:"Jul", ing:45000, gas:62000, result:-17000, alert:"def"  },
+                          { m:"Ago", ing:48000, gas:62000, result:-14000, alert:"def"  },
+                          { m:"Sep", ing:78000, gas:64000, result:14000,  alert:"ok"   },
+                          { m:"Oct", ing:92000, gas:65000, result:27000,  alert:"ok"   },
+                          { m:"Nov", ing:112000,gas:66000, result:46000,  alert:"ok"   },
+                        ]
+                        const alertLabel = (a: string) => a==="def" ? "⚠ Déficit proyectado" : a==="low" ? "⚡ Mes bajo" : "✓ Proyección positiva"
+                        const alertColor = (a: string) => a==="def" ? "#ef4444" : a==="low" ? "#eab308" : "#22c55e"
+                        const SCENARIOS = [
+                          { icon:"↑", iconColor:"#22c55e", name:"Escenario optimista",    desc:"Si ventas crecen 20% y gastos se mantienen", result:"+$341.400", rc:"#22c55e" },
+                          { icon:"—", iconColor:"#2563EB", name:"Escenario base",         desc:"Proyección actual sin cambios",               result:"+$284.500", rc:"#2563EB" },
+                          { icon:"↓", iconColor:"#ef4444", name:"Escenario conservador",  desc:"Si ventas caen 15% en meses bajos",           result:"+$198.200", rc:"#eab308" },
+                        ]
+                        const RECS = [
+                          { prio:"Urgente", title:"Cobrar $55.900 pendiente antes de junio",       body:"Tech Solutions vence en 3 días y Grupo Herrera en 12. Cobrar ambos garantiza cubrir el déficit de julio sin tocar reservas." },
+                          { prio:"Alta",    title:"Reducir gasto en marketing en junio",           body:"Bajar de $8.400 a $4.000 en junio libera $4.400 para el mes bajo siguiente." },
+                          { prio:"Media",   title:"Crear reserva de $30.000",                     body:"Con el flujo actual es posible apartar $30.000 en mayo para cubrir julio y agosto sin estrés financiero." },
+                          { prio:"Baja",    title:"Aumentar precios en noviembre",                body:"El pico de noviembre es ideal para probar aumentos del 8-10% sin afectar la demanda." },
+                        ]
+                        const prioColor = (p: string) => p==="Urgente" ? "#ef4444" : p==="Alta" ? "#f97316" : p==="Media" ? "#eab308" : "rgba(255,255,255,0.3)"
+                        const aiCard: React.CSSProperties = { background:"rgba(37,99,235,0.06)", border:"1px solid rgba(37,99,235,0.15)", borderRadius:8, padding:"12px 14px", marginBottom:8 }
+                        const metricCard: React.CSSProperties = { flex:1, background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:"16px 20px" }
+                        return (
+                          <div style={{ flex:1, overflowY:"auto", padding:24 }}>
+                            {/* Top bar */}
+                            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24 }}>
+                              <div>
+                                <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Proyecciones financieras</div>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2 }}>Próximos 6 meses</div>
+                              </div>
+                              <div style={{ display:"flex", gap:4 }}>
+                                {["6 meses","12 meses"].map(p => (
+                                  <button key={p} onClick={()=>setProyPeriod(p)} style={{ padding:"5px 12px", fontSize:12, borderRadius:20, border:"none", cursor:"pointer", background:proyPeriod===p?"#2563EB":"rgba(255,255,255,0.06)", color:proyPeriod===p?"white":"rgba(255,255,255,0.4)" }}>{p}</button>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Cash flow summary cards */}
+                            <div style={{ display:"flex", gap:12, marginBottom:24 }}>
+                              <div style={metricCard}>
+                                <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:6 }}>Flujo de caja actual</div>
+                                <div style={{ color:"white", fontSize:20, fontWeight:600 }}>$52.180</div>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:4 }}>Disponible hoy</div>
+                              </div>
+                              <div style={metricCard}>
+                                <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:6 }}>Proyección próximo mes</div>
+                                <div style={{ color:"#eab308", fontSize:20, fontWeight:600 }}>$38.420</div>
+                                <div style={{ color:"#eab308", fontSize:11, marginTop:4 }}>↓ Julio es mes bajo</div>
+                              </div>
+                              <div style={metricCard}>
+                                <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:6 }}>Proyección 6 meses</div>
+                                <div style={{ color:"#22c55e", fontSize:20, fontWeight:600 }}>$284.500</div>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:4 }}>Acumulado estimado</div>
+                              </div>
+                            </div>
+
+                            {/* Cash flow chart */}
+                            <div style={{ marginBottom:24 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Flujo de caja proyectado</div>
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:12 }}>Línea real + proyección IA</div>
+                              <div style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:"16px 16px 8px" }}>
+                                <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width:"100%", display:"block" }}>
+                                  {/* Danger zone Jul-Ago */}
+                                  <rect x={dzX1} y={padT} width={dzX2-dzX1} height={chartH} fill="rgba(239,68,68,0.06)" />
+                                  {/* Y axis labels */}
+                                  {[0,50,100].map(v => (
+                                    <text key={v} x={padL-6} y={py(v)+4} textAnchor="end" fontSize={10} fill="rgba(255,255,255,0.15)">${v}k</text>
+                                  ))}
+                                  {/* X axis labels */}
+                                  {ALL_PTS.map((pt, i) => (
+                                    <text key={pt.m} x={px(i)} y={svgH-4} textAnchor="middle" fontSize={10} fill="rgba(255,255,255,0.2)">{pt.m}</text>
+                                  ))}
+                                  {/* Divider */}
+                                  <line x1={dividerX} y1={padT-10} x2={dividerX} y2={padT+chartH} stroke="rgba(255,255,255,0.1)" strokeWidth={1} strokeDasharray="4 4" />
+                                  <text x={dividerX} y={padT-2} textAnchor="middle" fontSize={10} fill="rgba(255,255,255,0.3)">Hoy</text>
+                                  {/* Real line */}
+                                  <path d={realPath} fill="none" stroke="#22c55e" strokeWidth={2} />
+                                  {/* Projection line */}
+                                  <path d={projPath} fill="none" stroke="rgba(37,99,235,0.7)" strokeWidth={2} strokeDasharray="6 3" />
+                                  {/* Real dots */}
+                                  {REAL_PTS.map((pt, i) => (
+                                    <circle key={pt.m} cx={px(i)} cy={py(pt.v)} r={4} fill="#22c55e"><title>{pt.m}: ${pt.v}k</title></circle>
+                                  ))}
+                                  {/* Proj dots */}
+                                  {PROJ_PTS.map((pt, i) => (
+                                    <circle key={pt.m} cx={px(REAL_PTS.length+i)} cy={py(pt.v)} r={4} fill="#2563EB"><title>{pt.m}: ${pt.v}k</title></circle>
+                                  ))}
+                                </svg>
+                                {/* Legend */}
+                                <div style={{ display:"flex", gap:16, marginTop:4, paddingLeft:padL }}>
+                                  <span style={{ color:"rgba(255,255,255,0.35)", fontSize:11, display:"flex", alignItems:"center", gap:6 }}><span style={{ display:"inline-block", width:20, height:2, background:"#22c55e", borderRadius:1 }} />Real</span>
+                                  <span style={{ color:"rgba(255,255,255,0.35)", fontSize:11, display:"flex", alignItems:"center", gap:6 }}><span style={{ display:"inline-block", width:20, height:0, borderTop:"2px dashed rgba(37,99,235,0.7)" }} />Proyectado</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Monthly projection table */}
+                            <div style={{ marginBottom:24 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Detalle mensual proyectado</div>
+                              <div style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, overflow:"hidden" }}>
+                                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr", padding:"10px 16px", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.3)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>
+                                  <div>Mes</div><div>Ingresos est.</div><div>Gastos est.</div><div>Resultado</div><div>Alerta</div>
+                                </div>
+                                {MONTHS_PROJ.map(row => (
+                                  <div key={row.m} style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr", padding:"12px 16px", borderBottom:"1px solid rgba(255,255,255,0.04)", borderLeft: row.alert==="def" ? "2px solid #ef4444" : "2px solid transparent", background: row.alert==="def" ? "rgba(239,68,68,0.02)" : "transparent" }}>
+                                    <div style={{ color:"white", fontSize:13 }}>{row.m}</div>
+                                    <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{fmtP(row.ing)}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.5)", fontSize:13 }}>{fmtP(row.gas)}</div>
+                                    <div style={{ color: row.result >= 0 ? "#22c55e" : "#ef4444", fontSize:13, fontWeight:500 }}>{row.result >= 0 ? "+" : ""}{fmtP(Math.abs(row.result))}</div>
+                                    <div style={{ color:alertColor(row.alert), fontSize:11 }}>{alertLabel(row.alert)}</div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Deficit alert card */}
+                            <div style={{ background:"rgba(239,68,68,0.06)", border:"1px solid rgba(239,68,68,0.2)", borderRadius:10, padding:16, marginBottom:24, display:"flex", gap:14 }}>
+                              <span style={{ fontSize:20, flexShrink:0, marginTop:2 }}>⚠</span>
+                              <div>
+                                <div style={{ color:"white", fontSize:14, fontWeight:500, marginBottom:6 }}>Déficit proyectado en julio y agosto</div>
+                                <div style={{ color:"rgba(255,255,255,0.6)", fontSize:12, lineHeight:1.6, marginBottom:12 }}>Pupi proyecta un déficit combinado de $31.000 en los meses de julio y agosto basado en el historial de los últimos 3 años. Con el flujo actual de $52.180 disponible, podés cubrirlo, pero quedará poco margen.</div>
+                                <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+                                  {["Adelantar cobros pendientes →","Reducir gastos en junio →","Crear reserva ahora →"].map(a => (
+                                    <button key={a} style={{ padding:"5px 10px", fontSize:11, background:"none", border:"1px solid rgba(239,68,68,0.3)", borderRadius:6, color:"#ef4444", cursor:"pointer" }}>{a}</button>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Scenario analysis */}
+                            <div style={{ marginBottom:24 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Análisis de escenarios</div>
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Qué pasa si las condiciones cambian</div>
+                              {SCENARIOS.map(s => (
+                                <div key={s.name} style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:16, marginBottom:8, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                                  <div>
+                                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
+                                      <span style={{ color:s.iconColor, fontSize:16, fontWeight:700 }}>{s.icon}</span>
+                                      <span style={{ color:"white", fontSize:13, fontWeight:500 }}>{s.name}</span>
+                                    </div>
+                                    <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12 }}>{s.desc}</div>
+                                  </div>
+                                  <div style={{ color:s.rc, fontSize:16, fontWeight:600, flexShrink:0, marginLeft:16 }}>{s.result}</div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* AI action plan */}
+                            <div>
+                              <div style={{ color:"#2563EB", fontSize:11, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:12 }}>✦ Plan de acción Pupi</div>
+                              {RECS.map(r => (
+                                <div key={r.title} style={aiCard}>
+                                  <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
+                                    <span style={{ background:prioColor(r.prio)+"22", color:prioColor(r.prio), fontSize:10, borderRadius:20, padding:"1px 8px" }}>{r.prio}</span>
+                                    <span style={{ color:"white", fontSize:13, fontWeight:500 }}>{r.title}</span>
+                                  </div>
+                                  <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.5 }}>{r.body}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      })()}
+
+                      {/* Exportar view */}
+                      {contabNavTab === "Exportar" && (() => {
+                        const fmtE = (n: number) => "$" + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                        const HIST_ALL = [
+                          { id:1,  type:"in",  desc:"Venta — Tech Solutions",           cat:"Ventas",      month:"Mayo 2026",   auto:true,  amt:18500 },
+                          { id:2,  type:"out", desc:"Google Ads — Campaña mayo",         cat:"Marketing",   month:"Mayo 2026",   auto:false, amt:3200,  anomaly:true },
+                          { id:3,  type:"in",  desc:"Venta — Distribuidora Norte",       cat:"Ventas",      month:"Mayo 2026",   auto:true,  amt:4200  },
+                          { id:4,  type:"out", desc:"Servicios de internet y telefonía", cat:"Servicios",   month:"Mayo 2026",   auto:false, amt:4200  },
+                          { id:5,  type:"out", desc:"Sueldos Mayo — anticipo",           cat:"Sueldos",     month:"Mayo 2026",   auto:false, amt:45200 },
+                          { id:6,  type:"in",  desc:"Venta — Grupo Herrera SA",          cat:"Ventas",      month:"Mayo 2026",   auto:true,  amt:28500 },
+                          { id:7,  type:"out", desc:"Impuesto IVA — Abril",              cat:"Impuestos",   month:"Abril 2026",  auto:false, amt:12400 },
+                          { id:8,  type:"in",  desc:"Venta — Retail Express",            cat:"Ventas",      month:"Abril 2026",  auto:true,  amt:8900  },
+                          { id:9,  type:"out", desc:"Sueldos Abril",                     cat:"Sueldos",     month:"Abril 2026",  auto:false, amt:45200 },
+                          { id:10, type:"in",  desc:"Venta — Importadora DL",            cat:"Ventas",      month:"Marzo 2026",  auto:true,  amt:9750  },
+                          { id:11, type:"out", desc:"Proveedor materiales",               cat:"Operaciones", month:"Marzo 2026",  auto:false, amt:8200  },
+                          { id:12, type:"in",  desc:"Venta — Tech Solutions",            cat:"Ventas",      month:"Febrero 2026",auto:true,  amt:22000 },
+                          { id:13, type:"out", desc:"Sueldos Febrero",                   cat:"Sueldos",     month:"Febrero 2026",auto:false, amt:44000 },
+                          { id:14, type:"in",  desc:"Venta — Distribuidora Norte",       cat:"Ventas",      month:"Enero 2026",  auto:true,  amt:18000 },
+                          { id:15, type:"out", desc:"Sueldos Enero",                     cat:"Sueldos",     month:"Enero 2026",  auto:false, amt:43000 },
+                        ]
+                        const PERIODS_OPTS = ["Todos los períodos","Mayo 2026","Abril 2026","Marzo 2026","Febrero 2026","Enero 2026"]
+                        let filtHist = HIST_ALL
+                        if (exportHistSearch.trim()) filtHist = filtHist.filter(m => m.desc.toLowerCase().includes(exportHistSearch.toLowerCase()))
+                        if (exportHistPeriod !== "Todos los períodos") filtHist = filtHist.filter(m => m.month === exportHistPeriod)
+                        if (exportHistType === "Ingresos") filtHist = filtHist.filter(m => m.type === "in")
+                        if (exportHistType === "Gastos")   filtHist = filtHist.filter(m => m.type === "out")
+                        const visibleHist = exportHistExpanded ? filtHist : filtHist.slice(0, 10)
+                        const catMetaE: Record<string,{color:string;icon:string}> = {
+                          "Ventas":      { color:"#22c55e", icon:"↑" },
+                          "Sueldos":     { color:"#2563EB", icon:"👤" },
+                          "Marketing":   { color:"#a855f7", icon:"📢" },
+                          "Operaciones": { color:"#f97316", icon:"⚙" },
+                          "Servicios":   { color:"#eab308", icon:"📶" },
+                          "Impuestos":   { color:"#ef4444", icon:"📄" },
+                          "Otros":       { color:"rgba(255,255,255,0.3)", icon:"•••" },
+                        }
+                        const inputStyle: React.CSSProperties = { background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, padding:"7px 10px", color:"white", fontSize:12, outline:"none", boxSizing:"border-box" as const }
+                        const PERIOD_TABLE = [
+                          { m:"Enero 2026",    ing:72000,  gas:55000, res:17000, cnt:18 },
+                          { m:"Febrero 2026",  ing:81000,  gas:58000, res:23000, cnt:21 },
+                          { m:"Marzo 2026",    ing:94000,  gas:62000, res:32000, cnt:24 },
+                          { m:"Abril 2026",    ing:88000,  gas:63000, res:25000, cnt:22 },
+                          { m:"Mayo 2026",     ing:105000, gas:68000, res:37000, cnt:24, actual:true },
+                        ]
+                        const EXPORT_CARDS = [
+                          { icon:"📄", color:"#2563EB", title:"Libro de IVA",         desc:"Ingresos y gastos con IVA discriminado por período",                     btn:"Exportar .xlsx" },
+                          { icon:"📊", color:"#22c55e", title:"Balance mensual",      desc:"Resumen de ingresos, gastos y resultado por mes",                        btn:"Exportar .pdf"  },
+                          { icon:"📋", color:"#a855f7", title:"Detalle completo",     desc:"Todos los movimientos con categoría, fecha y comprobante",               btn:"Exportar .xlsx" },
+                        ]
+                        const CHECK_LABELS = ["Ingresos","Gastos","Comisiones","Sueldos","IVA","Comprobantes"]
+                        const CHECK_KEYS:   Record<string,string> = { Ingresos:"Ingresos", Gastos:"Gastos", Comisiones:"Comisiones", Sueldos:"Sueldos", "IVA":"IVA", "Comprobantes":"Comprobantes" }
+                        return (
+                          <div style={{ flex:1, overflowY:"auto", padding:24 }}>
+                            {/* Top bar */}
+                            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24 }}>
+                              <div>
+                                <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Historial y exportación</div>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2 }}>Registro completo desde el inicio de la empresa en Pupi</div>
+                              </div>
+                              <button style={{ padding:"8px 16px", fontSize:13, background:"#2563EB", border:"none", borderRadius:6, color:"white", cursor:"pointer", fontWeight:500 }}>Exportar para contador →</button>
+                            </div>
+
+                            {/* Section 1 — Historial */}
+                            <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Historial financiero completo</div>
+                            <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:20 }}>Desde el onboarding — todos los movimientos registrados</div>
+
+                            {/* Timeline milestone cards */}
+                            <div style={{ display:"flex", gap:12, marginBottom:24 }}>
+                              {[
+                                { icon:"📅", iconColor:"#2563EB", label:"Inicio en Pupi",             value:"1 Enero 2026",  sub:"Hace 4 meses" },
+                                { icon:"↑",  iconColor:"#22c55e", label:"Total ingresos históricos",  value:"$458.920",      sub:"en 5 meses",  valueColor:"#22c55e" },
+                                { icon:"↓",  iconColor:"#ef4444", label:"Total gastos históricos",    value:"$312.640",      sub:"en 5 meses",  valueColor:"#ef4444" },
+                              ].map(c => (
+                                <div key={c.label} style={{ flex:1, background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:16, textAlign:"center" }}>
+                                  <div style={{ fontSize:20, color:c.iconColor }}>{c.icon}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginTop:8 }}>{c.label}</div>
+                                  <div style={{ color:c.valueColor ?? "white", fontSize: c.valueColor ? 18 : 14, fontWeight: c.valueColor ? 600 : 500, marginTop:4 }}>{c.value}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.3)", fontSize:11, marginTop:4 }}>{c.sub}</div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Period breakdown table */}
+                            <div style={{ marginBottom:24 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Resumen por período</div>
+                              <div style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, overflow:"hidden" }}>
+                                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr", padding:"10px 16px", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.3)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>
+                                  <div>Período</div><div>Ingresos</div><div>Gastos</div><div>Resultado</div><div>Movimientos</div>
+                                </div>
+                                {PERIOD_TABLE.map(r => (
+                                  <div key={r.m} style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr", padding:"12px 16px", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+                                    <div style={{ color:"white", fontSize:13, fontWeight: r.actual ? 600 : 400, display:"flex", alignItems:"center", gap:6 }}>
+                                      {r.m}
+                                      {r.actual && <span style={{ background:"rgba(37,99,235,0.15)", color:"#2563EB", fontSize:9, borderRadius:20, padding:"1px 6px" }}>actual</span>}
+                                    </div>
+                                    <div style={{ color:"#22c55e", fontSize:13, fontWeight:500 }}>{fmtE(r.ing)}</div>
+                                    <div style={{ color:"#ef4444", fontSize:13 }}>{fmtE(r.gas)}</div>
+                                    <div style={{ color:"#22c55e", fontSize:13, fontWeight:500 }}>+{fmtE(r.res)}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12 }}>{r.cnt}</div>
+                                  </div>
+                                ))}
+                                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr", padding:"12px 16px", background:"rgba(255,255,255,0.04)" }}>
+                                  <div style={{ color:"white", fontSize:13, fontWeight:500 }}>Total</div>
+                                  <div style={{ color:"#22c55e", fontSize:13, fontWeight:500 }}>$440.000</div>
+                                  <div style={{ color:"#ef4444", fontSize:13, fontWeight:500 }}>$306.000</div>
+                                  <div style={{ color:"#22c55e", fontSize:13, fontWeight:500 }}>+$134.000</div>
+                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12, fontWeight:500 }}>109</div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Full movement history */}
+                            <div style={{ marginBottom:24 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Todos los movimientos</div>
+                              <div style={{ display:"flex", gap:10, marginBottom:16, alignItems:"center" }}>
+                                <input placeholder="Buscar en historial..." value={exportHistSearch} onChange={e=>setExportHistSearch(e.target.value)} style={{ ...inputStyle, flex:1 }} />
+                                <select value={exportHistPeriod} onChange={e=>setExportHistPeriod(e.target.value)} style={{ ...inputStyle, width:160, appearance:"none" as const }}>
+                                  {PERIODS_OPTS.map(p=><option key={p} value={p}>{p}</option>)}
+                                </select>
+                                <div style={{ display:"flex", gap:4 }}>
+                                  {["Todos","Ingresos","Gastos"].map(t => (
+                                    <button key={t} onClick={()=>setExportHistType(t)} style={{ padding:"5px 10px", fontSize:11, borderRadius:20, border:"none", cursor:"pointer", background:exportHistType===t?"#2563EB":"rgba(255,255,255,0.06)", color:exportHistType===t?"white":"rgba(255,255,255,0.4)" }}>{t}</button>
+                                  ))}
+                                </div>
+                              </div>
+                              {visibleHist.map(mov => {
+                                const meta = catMetaE[mov.cat] ?? catMetaE["Otros"]
+                                return (
+                                  <div key={mov.id} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 12px", borderRadius:8, marginBottom:2, borderLeft: mov.anomaly ? "2px solid #ef4444" : "2px solid transparent", background: mov.anomaly ? "rgba(239,68,68,0.02)" : "transparent" }}>
+                                    <div style={{ width:30, height:30, borderRadius:"50%", background:meta.color+"22", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, color:meta.color, flexShrink:0 }}>{meta.icon}</div>
+                                    <div style={{ flex:1, minWidth:0 }}>
+                                      <div style={{ color:"white", fontSize:12, fontWeight:500 }}>{mov.desc}</div>
+                                      <div style={{ display:"flex", gap:6, marginTop:3, alignItems:"center" }}>
+                                        <span style={{ color:"rgba(255,255,255,0.3)", fontSize:10 }}>{mov.month}</span>
+                                        <span style={{ background:meta.color+"1a", color:meta.color, borderRadius:20, padding:"1px 6px", fontSize:9 }}>{mov.cat}</span>
+                                        {mov.auto && <span style={{ background:"rgba(37,99,235,0.1)", color:"#2563EB", borderRadius:20, padding:"1px 6px", fontSize:9 }}>✦ Auto</span>}
+                                        {mov.anomaly && <span style={{ background:"rgba(239,68,68,0.1)", color:"#ef4444", borderRadius:20, padding:"1px 6px", fontSize:9 }}>⚠ Inusual</span>}
+                                      </div>
+                                    </div>
+                                    <div style={{ color:mov.type==="in"?"#22c55e":"#ef4444", fontSize:13, fontWeight:500, flexShrink:0 }}>{mov.type==="in"?"+":"-"}{fmtE(mov.amt)}</div>
+                                  </div>
+                                )
+                              })}
+                              {!exportHistExpanded && filtHist.length > 10 && (
+                                <div onClick={()=>setExportHistExpanded(true)} style={{ color:"#2563EB", fontSize:12, textAlign:"center", marginTop:12, cursor:"pointer" }}>Ver los {filtHist.length} movimientos completos</div>
+                              )}
+                            </div>
+
+                            {/* AI financial summary */}
+                            <div style={{ background:"rgba(37,99,235,0.06)", border:"1px solid rgba(37,99,235,0.15)", borderRadius:12, padding:20, marginBottom:24 }}>
+                              <div style={{ color:"#2563EB", fontSize:11, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:12 }}>✦ Resumen financiero Pupi</div>
+                              <div style={{ color:"rgba(255,255,255,0.7)", fontSize:13, lineHeight:1.8 }}>En los últimos 5 meses la empresa generó $458.920 en ingresos con un resultado neto positivo de $146.280. El margen promedio fue del 31.9%. Mayo es el mejor mes registrado. Los gastos crecen a menor ritmo que los ingresos — señal de eficiencia operativa.</div>
+                              <div style={{ display:"flex", gap:0, marginTop:16 }}>
+                                {[
+                                  { label:"Margen promedio", value:"31.9%" },
+                                  { label:"Mejor mes",       value:"Mayo 2026" },
+                                  { label:"Crecimiento",     value:"+28% mensual" },
+                                ].map((s, i, arr) => (
+                                  <div key={s.label} style={{ flex:1, borderRight: i < arr.length-1 ? "1px solid rgba(255,255,255,0.08)" : "none", paddingRight:16, paddingLeft: i>0 ? 16 : 0 }}>
+                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>{s.label}</div>
+                                    <div style={{ color:"white", fontSize:18, fontWeight:600, marginTop:4 }}>{s.value}</div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Divider */}
+                            <div style={{ display:"flex", alignItems:"center", gap:12, margin:"32px 0" }}>
+                              <div style={{ flex:1, height:1, background:"rgba(255,255,255,0.06)" }} />
+                              <span style={{ color:"rgba(255,255,255,0.2)", fontSize:12 }}>Exportación</span>
+                              <div style={{ flex:1, height:1, background:"rgba(255,255,255,0.06)" }} />
+                            </div>
+
+                            {/* Section 2 — Export for accountant */}
+                            <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Exportar para contador</div>
+                            <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:20 }}>Generá reportes listos para tu contador externo</div>
+
+                            {/* Export option cards */}
+                            {EXPORT_CARDS.map(c => (
+                              <div key={c.title} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:18, marginBottom:10 }}>
+                                <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+                                  <div style={{ width:40, height:40, borderRadius:"50%", background:c.color+"1a", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>{c.icon}</div>
+                                  <div>
+                                    <div style={{ color:"white", fontSize:14, fontWeight:500 }}>{c.title}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12, marginTop:4 }}>{c.desc}</div>
+                                  </div>
+                                </div>
+                                <button style={{ padding:"6px 16px", fontSize:12, background:"none", border:`1px solid ${c.color}4d`, borderRadius:6, color:c.color, cursor:"pointer", flexShrink:0 }}>{c.btn}</button>
+                              </div>
+                            ))}
+
+                            {/* Custom export */}
+                            <div style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:18, marginTop:20 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Exportación personalizada</div>
+                              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:16 }}>
+                                <div>
+                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Desde</div>
+                                  <input type="date" value={exportCustomFrom2} onChange={e=>setExportCustomFrom2(e.target.value)} style={{ ...inputStyle, width:"100%" }} />
+                                </div>
+                                <div>
+                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Hasta</div>
+                                  <input type="date" value={exportCustomTo2} onChange={e=>setExportCustomTo2(e.target.value)} style={{ ...inputStyle, width:"100%" }} />
+                                </div>
+                              </div>
+                              <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:8 }}>Incluir</div>
+                              <div style={{ display:"flex", flexWrap:"wrap", gap:12, marginBottom:16 }}>
+                                {CHECK_LABELS.map(lbl => {
+                                  const key = CHECK_KEYS[lbl]
+                                  const checked = exportCustomChecks[key]
+                                  return (
+                                    <div key={lbl} onClick={()=>setExportCustomChecks(prev=>({...prev,[key]:!prev[key]}))} style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer" }}>
+                                      <div style={{ width:18, height:18, borderRadius:4, background:checked?"#2563EB":"none", border:checked?"none":"1px solid rgba(255,255,255,0.2)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                                        {checked && <span style={{ color:"white", fontSize:11 }}>✓</span>}
+                                      </div>
+                                      <span style={{ color:checked?"white":"rgba(255,255,255,0.4)", fontSize:12 }}>{lbl}</span>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                              <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:8 }}>Formato</div>
+                              <div style={{ display:"flex", gap:4, marginBottom:16 }}>
+                                {["Excel","PDF","CSV"].map(f => (
+                                  <button key={f} onClick={()=>setExportCustomFmt(f)} style={{ padding:"5px 14px", fontSize:12, borderRadius:20, border:"none", cursor:"pointer", background:exportCustomFmt===f?"#2563EB":"rgba(255,255,255,0.06)", color:exportCustomFmt===f?"white":"rgba(255,255,255,0.4)" }}>{f}</button>
+                                ))}
+                              </div>
+                              <button
+                                onClick={()=>{
+                                  if(exportGenState==="idle"){
+                                    setExportGenState("loading")
+                                    setTimeout(()=>setExportGenState("done"),2000)
+                                  }
+                                }}
+                                style={{ width:"100%", padding:10, background:exportGenState==="done"?"rgba(34,197,94,0.15)":"#2563EB", border:exportGenState==="done"?"1px solid rgba(34,197,94,0.3)":"none", borderRadius:8, color:exportGenState==="done"?"#22c55e":"white", fontSize:13, fontWeight:500, cursor:"pointer" }}
+                              >
+                                {exportGenState==="idle" && "Generar exportación"}
+                                {exportGenState==="loading" && "Generando reporte..."}
+                                {exportGenState==="done" && "✓ ¡Reporte listo!"}
+                              </button>
+                              {exportGenState==="done" && (
+                                <div style={{ textAlign:"center", marginTop:10 }}>
+                                  <span style={{ color:"#2563EB", fontSize:12, cursor:"pointer" }}>Descargar ahora</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Accountant note */}
+                            <div style={{ display:"flex", gap:10, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, padding:14, marginTop:20 }}>
+                              <span style={{ color:"rgba(255,255,255,0.3)", fontSize:16, flexShrink:0 }}>ℹ</span>
+                              <span style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.6 }}>Los reportes exportados son compatibles con los principales software contables. Si tu contador necesita un formato específico, podés exportar el detalle completo en Excel y él lo adapta.</span>
+                            </div>
+                          </div>
+                        )
+                      })()}
                     </div>
                   )
                 })()
