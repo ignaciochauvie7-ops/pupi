@@ -147,6 +147,64 @@ export default function DashboardPage() {
   const [crmView, setCrmView] = useState<"list" | "detail" | "new" | "import" | "duplicates" | "map">("list")
   const [mapPinHover, setMapPinHover] = useState<number | null>(null)
   const [showDupBanner, setShowDupBanner] = useState(true)
+  const [ventasView, setVentasView] = useState<"pipeline" | "detail" | "new" | "forecast" | "risk" | "sellers" | "products" | "ranking">("pipeline")
+  const [showRiskBanner, setShowRiskBanner] = useState(true)
+  const [mktView, setMktView] = useState<"campaigns" | "detail" | "new" | "insights">("campaigns")
+  const [mktNavTab, setMktNavTab] = useState<"Campañas" | "Insights" | "Investigaciones">("Campañas")
+  const [mktSearch, setMktSearch] = useState("")
+  const [mktStatusFilter, setMktStatusFilter] = useState("Todas")
+  const [mktChannelFilter, setMktChannelFilter] = useState("Todos")
+  const [mktPeriodFilter, setMktPeriodFilter] = useState("Este mes")
+  const [mktSelectedCamp, setMktSelectedCamp] = useState<{ id: number; name: string; channel: string; date: string; status: string; roi: string; roiDir: string; budget: string } | null>(null)
+  const [mktDetailTab, setMktDetailTab] = useState<"Resultados" | "Audiencia" | "Contenido" | "Notas">("Resultados")
+  const [newCampName, setNewCampName] = useState("")
+  const [newCampChannel, setNewCampChannel] = useState<string | null>(null)
+  const [newCampObjective, setNewCampObjective] = useState("Generar nuevas ventas")
+  const [newCampSegments, setNewCampSegments] = useState<string[]>([])
+  const [newCampBudget, setNewCampBudget] = useState("")
+  const [newCampStart, setNewCampStart] = useState("")
+  const [newCampEnd, setNewCampEnd] = useState("")
+  const [newCampOwner, setNewCampOwner] = useState("JP")
+  const [newCampSubject, setNewCampSubject] = useState("")
+  const [newCampMessage, setNewCampMessage] = useState("")
+  const [newCampCTA, setNewCampCTA] = useState("")
+  const [newCampTargetOpen, setNewCampTargetOpen] = useState("")
+  const [newCampTargetClick, setNewCampTargetClick] = useState("")
+  const [newCampTargetConv, setNewCampTargetConv] = useState("")
+  const [prodSearch, setProdSearch] = useState("")
+  const [ventasNavTab, setVentasNavTab] = useState<"Pipeline" | "Pronóstico" | "Comisiones" | "Vendedores" | "Productos">("Pipeline")
+  const [ventasPipeMode, setVentasPipeMode] = useState<"Kanban" | "Embudo" | "Ranking">("Kanban")
+  const [ventasCardHover, setVentasCardHover] = useState<string | null>(null)
+  const [ventasSelectedOpp, setVentasSelectedOpp] = useState<{ id: string; name: string; company: string; amount: string; seller: string; close: string; prob: number; stage: string; won?: boolean } | null>(null)
+  const [ventasTab, setVentasTab] = useState<"Customer Journey" | "Actividad" | "Propuestas" | "Notas">("Customer Journey")
+  const [ventasActFilter, setVentasActFilter] = useState<"Todas" | "Llamada" | "Email" | "Reunión">("Todas")
+  const [ventasStageHover, setVentasStageHover] = useState<string | null>(null)
+  const [ventasCommExpanded, setVentasCommExpanded] = useState<string | null>(null)
+  const [newOppClient, setNewOppClient] = useState("")
+  const [newOppClientSearch, setNewOppClientSearch] = useState("")
+  const [newOppClientOpen, setNewOppClientOpen] = useState(false)
+  const [newOppAmount, setNewOppAmount] = useState("")
+  const [newOppStage, setNewOppStage] = useState("Prospecto")
+  const [newOppProb, setNewOppProb] = useState(25)
+  const [newOppDate, setNewOppDate] = useState("")
+  const [newOppSeller, setNewOppSeller] = useState("JP")
+  const [newOppOrigin, setNewOppOrigin] = useState("Campaña digital")
+  const [newOppDesc, setNewOppDesc] = useState("")
+  const [newOppNotes, setNewOppNotes] = useState("")
+  const [newOppContactType, setNewOppContactType] = useState("Llamada")
+  const [newOppContactDate, setNewOppContactDate] = useState("")
+  const [newOppContactDesc, setNewOppContactDesc] = useState("")
+  const [showCommModal, setShowCommModal] = useState(false)
+  const [commType, setCommType] = useState<0 | 1 | 2>(0)
+  const [commPeriod, setCommPeriod] = useState<0 | 1>(0)
+  const [commRates, setCommRates] = useState<Record<string, string>>({ JP: "8", CA: "7", MR: "8" })
+  const [showGoalsModal, setShowGoalsModal] = useState(false)
+  const [goalsType, setGoalsType] = useState<0 | 1>(0)
+  const [goalRates, setGoalRates] = useState<Record<string, string>>({ JP: "50000", CA: "50000", MR: "50000" })
+  const [goalTeam, setGoalTeam] = useState("150000")
+  const [goalsAlertBelow, setGoalsAlertBelow] = useState(true)
+  const [goalsAlertRisk, setGoalsAlertRisk] = useState(true)
+  const [showGoalsBanner, setShowGoalsBanner] = useState(true)
   const [showVisitModal, setShowVisitModal] = useState(false)
   const [visitBtnHover, setVisitBtnHover] = useState(false)
   const [dupResolved, setDupResolved] = useState<boolean[]>([false, false])
@@ -574,6 +632,36 @@ export default function DashboardPage() {
                       <button onClick={() => setCrmView("list")} style={{ color: "rgba(255,255,255,0.4)", fontSize: 16, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")} onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>{activeNode.title}</button>
                       <span style={{ color: "rgba(255,255,235,0.2)", fontSize: 14 }}>/</span>
                       <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>Mapa de clientes</span>
+                    </>
+                  ) : activeNode.id === 2 && ventasView === "detail" && ventasSelectedOpp ? (
+                    <>
+                      <button onClick={() => setVentasView("pipeline")} style={{ color: "rgba(255,255,255,0.4)", fontSize: 16, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")} onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>{activeNode.title}</button>
+                      <span style={{ color: "rgba(255,255,235,0.2)", fontSize: 14 }}>/</span>
+                      <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>{ventasSelectedOpp.name}</span>
+                    </>
+                  ) : activeNode.id === 2 && ventasView === "new" ? (
+                    <>
+                      <button onClick={() => setVentasView("pipeline")} style={{ color: "rgba(255,255,255,0.4)", fontSize: 16, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")} onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>{activeNode.title}</button>
+                      <span style={{ color: "rgba(255,255,235,0.2)", fontSize: 14 }}>/</span>
+                      <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>Nueva oportunidad</span>
+                    </>
+                  ) : activeNode.id === 2 && ventasView === "risk" ? (
+                    <>
+                      <button onClick={() => setVentasView("pipeline")} style={{ color: "rgba(255,255,255,0.4)", fontSize: 16, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")} onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>{activeNode.title}</button>
+                      <span style={{ color: "rgba(255,255,235,0.2)", fontSize: 14 }}>/</span>
+                      <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>Oportunidades en riesgo</span>
+                    </>
+                  ) : activeNode.id === 3 && mktView === "new" ? (
+                    <>
+                      <button onClick={() => setMktView("campaigns")} style={{ color: "rgba(255,255,255,0.4)", fontSize: 16, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")} onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>{activeNode.title}</button>
+                      <span style={{ color: "rgba(255,255,235,0.2)", fontSize: 14 }}>/</span>
+                      <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>Nueva campaña</span>
+                    </>
+                  ) : activeNode.id === 3 && mktView === "detail" && mktSelectedCamp ? (
+                    <>
+                      <button onClick={() => setMktView("campaigns")} style={{ color: "rgba(255,255,255,0.4)", fontSize: 16, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")} onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>{activeNode.title}</button>
+                      <span style={{ color: "rgba(255,255,235,0.2)", fontSize: 14 }}>/</span>
+                      <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>{mktSelectedCamp.name}</span>
                     </>
                   ) : (
                     <span style={{ color: "white", fontSize: 16, fontWeight: 500 }}>{activeNode.title}</span>
@@ -1715,6 +1803,2140 @@ export default function DashboardPage() {
                       </div>
                     </>
                   )}                </div>
+              ) : activeNode.id === 2 ? (
+                // ── VENTAS MODULE ──
+                (() => {
+                  type Stage = "Prospecto" | "Propuesta" | "Negociación" | "Cerrado"
+                  const STAGE_COLOR: Record<Stage, string> = {
+                    Prospecto:   "rgba(99,102,241,0.6)",
+                    Propuesta:   "rgba(234,179,8,0.6)",
+                    Negociación: "rgba(249,115,22,0.6)",
+                    Cerrado:     "rgba(34,197,94,0.6)",
+                  }
+                  const STAGE_FILL: Record<Stage, string> = {
+                    Prospecto:   "rgba(99,102,241,0.5)",
+                    Propuesta:   "rgba(234,179,8,0.5)",
+                    Negociación: "rgba(249,115,22,0.5)",
+                    Cerrado:     "rgba(34,197,94,0.5)",
+                  }
+                  const OPPS: { id: string; name: string; company: string; amount: string; seller: string; close: string; prob: number; stage: Stage; won?: boolean }[] = [
+                    { id: "o1", name: "Luis Herrera",    company: "Grupo Herrera SA",    amount: "$28.500", seller: "CA", close: "Cierre en 12 días", prob: 30,  stage: "Prospecto"   },
+                    { id: "o2", name: "Valentina Cruz",  company: "Sin empresa",          amount: "$1.200",  seller: "MR", close: "Cierre en 20 días", prob: 20,  stage: "Prospecto"   },
+                    { id: "o3", name: "Sofía Martínez",  company: "Retail Express",       amount: "$8.900",  seller: "JP", close: "Cierre en 7 días",  prob: 60,  stage: "Propuesta"   },
+                    { id: "o4", name: "Carlos Mendoza",  company: "Tech Solutions",       amount: "$18.500", seller: "JP", close: "Cierre en 3 días",  prob: 80,  stage: "Negociación" },
+                    { id: "o5", name: "Martín Pérez",    company: "Constructora MP",      amount: "$9.350",  seller: "JP", close: "Cierre en 5 días",  prob: 75,  stage: "Negociación" },
+                    { id: "o6", name: "María González",  company: "Distribuidora Norte",  amount: "$4.200",  seller: "MR", close: "Cerrado hoy",        prob: 100, stage: "Cerrado", won: true },
+                  ]
+                  const stages: Stage[] = ["Prospecto", "Propuesta", "Negociación", "Cerrado"]
+                  const byStage = (s: Stage) => OPPS.filter(o => o.stage === s)
+                  const stageTotal = (s: Stage) => {
+                    const sum = byStage(s).reduce((acc, o) => acc + parseFloat(o.amount.replace(/[$.,]/g, "")), 0)
+                    return "$" + sum.toLocaleString("es-AR")
+                  }
+
+                  const STAGE_BADGE_COLOR: Record<string, string> = {
+                    Prospecto:   "rgba(99,102,241,0.6)",
+                    Propuesta:   "rgba(234,179,8,0.6)",
+                    Negociación: "rgba(249,115,22,0.6)",
+                    Cerrado:     "rgba(34,197,94,0.6)",
+                  }
+                  const STAGE_BADGE_BG: Record<string, string> = {
+                    Prospecto:   "rgba(99,102,241,0.15)",
+                    Propuesta:   "rgba(234,179,8,0.15)",
+                    Negociación: "rgba(249,115,22,0.15)",
+                    Cerrado:     "rgba(34,197,94,0.15)",
+                  }
+
+                  if (ventasView === "detail" && ventasSelectedOpp) {
+                    const opp = ventasSelectedOpp
+                    const stageColor = STAGE_BADGE_COLOR[opp.stage] ?? "rgba(255,255,255,0.3)"
+                    const stageBg    = STAGE_BADGE_BG[opp.stage]    ?? "rgba(255,255,255,0.06)"
+                    const SELLER_MAP: Record<string, string> = { CA: "Carlos A.", MR: "María R.", JP: "Juan P." }
+                    const JOURNEY_STEPS = [
+                      { title: "Primer contacto",    desc: "Llamada inicial de prospección",                     date: "Hace 14 días", state: "done"    },
+                      { title: "Calificación",       desc: "Cliente confirmó presupuesto e interés real",        date: "Hace 12 días", state: "done"    },
+                      { title: "Propuesta enviada",  desc: `Propuesta por ${opp.amount} enviada por email`,     date: "Hace 8 días",  state: "done"    },
+                      { title: "Seguimiento",        desc: "Llamada de seguimiento realizada",                   date: "Hace 3 días",  state: "done"    },
+                      { title: "Negociación",        desc: "En proceso de negociación activa",                  date: "Hoy",          state: "current" },
+                      { title: "Cierre",             desc: "Firma del contrato y primer pago",                  date: "Estimado en 3 días", state: "future" },
+                    ]
+                    const ALL_ACTS = [
+                      { type: "Llamada", title: "Llamada de seguimiento — 8 min", date: "Hace 3 días"  },
+                      { type: "Email",   title: "Email con propuesta adjunta",    date: "Hace 8 días"  },
+                      { type: "Reunión", title: "Reunión de presentación",        date: "Hace 12 días" },
+                      { type: "Llamada", title: "Llamada inicial",                date: "Hace 14 días" },
+                    ]
+                    const ACT_META: Record<string, { color: string; icon: React.ReactNode }> = {
+                      Llamada: { color: "#2563EB", icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3-8.63A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> },
+                      Email:   { color: "#eab308", icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> },
+                      Reunión: { color: "#22c55e", icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
+                    }
+                    const filteredActs = ventasActFilter === "Todas" ? ALL_ACTS : ALL_ACTS.filter(a => a.type === ventasActFilter)
+                    const STAGES_ALL: string[] = ["Prospecto", "Propuesta", "Negociación", "Cerrado"]
+                    return (
+                      <div style={{ flex: 1, display: "flex", gap: 24, padding: 24, overflow: "hidden" }}>
+                        {/* Left column */}
+                        <div style={{ width: "35%", flexShrink: 0, overflowY: "auto", display: "flex", flexDirection: "column", gap: 0 }}>
+                          {/* Client card */}
+                          <div style={{ textAlign: "center", marginBottom: 16 }}>
+                            <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
+                              <span style={{ color: "#2563EB", fontSize: 16, fontWeight: 600 }}>{opp.name.split(" ").map((w: string) => w[0]).slice(0,2).join("")}</span>
+                            </div>
+                            <div style={{ color: "white", fontSize: 16, fontWeight: 500 }}>{opp.name}</div>
+                            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginTop: 2 }}>{opp.company}</div>
+                            <div style={{ color: "white", fontSize: 22, fontWeight: 600, marginTop: 12 }}>{opp.amount}</div>
+                            <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
+                              <span style={{ background: stageBg, color: stageColor, border: `1px solid ${stageColor}`, borderRadius: 20, padding: "4px 12px", fontSize: 12 }}>{opp.stage}</span>
+                            </div>
+                          </div>
+
+                          <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "16px 0" }} />
+
+                          {/* Info rows */}
+                          {[
+                            ["PROBABILIDAD DE CIERRE", `${opp.prob}%`],
+                            ["CIERRE ESTIMADO", opp.close],
+                            ["VENDEDOR", `${opp.seller} — ${SELLER_MAP[opp.seller] ?? opp.seller}`],
+                            ["TIEMPO EN PIPELINE", "14 días"],
+                            ["ORIGEN", "Campaña digital"],
+                          ].map(([label, value]) => (
+                            <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                              <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", paddingTop: 1 }}>{label}</span>
+                              <span style={{ color: "white", fontSize: 12, textAlign: "right" as const, maxWidth: "55%" }}>{value}</span>
+                            </div>
+                          ))}
+
+                          <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "16px 0" }} />
+
+                          {/* AI section */}
+                          <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 12 }}>✦ Inteligencia Pupi</div>
+                          {[
+                            {
+                              icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>,
+                              label: "Probabilidad real", value: "Alta — 82%", valueColor: "#22c55e", sub: null,
+                            },
+                            {
+                              icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+                              label: "Riesgo de demora", value: opp.prob >= 70 ? "Bajo" : opp.prob >= 50 ? "Medio" : "Alto", valueColor: opp.prob >= 70 ? "#22c55e" : opp.prob >= 50 ? "#eab308" : "#ef4444", sub: null,
+                            },
+                            {
+                              icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+                              label: "Acción sugerida", value: "Enviar propuesta final", valueColor: "white", sub: "Lleva 14 días en negociación, promedio de cierre es 18 días",
+                            },
+                          ].map(({ icon, label, value, valueColor, sub }) => (
+                            <div key={label} style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                                {icon}
+                                <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{label}</span>
+                              </div>
+                              <div style={{ color: valueColor, fontSize: 13, fontWeight: 500 }}>{value}</div>
+                              {sub && <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 3 }}>{sub}</div>}
+                            </div>
+                          ))}
+
+                          <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "16px 0" }} />
+
+                          {/* Move stage */}
+                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Mover a</div>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" as const }}>
+                            {STAGES_ALL.map(s => {
+                              const sc = STAGE_BADGE_COLOR[s]
+                              const sb = STAGE_BADGE_BG[s]
+                              const isCurrent = s === opp.stage
+                              return (
+                                <button
+                                  key={s}
+                                  onMouseEnter={() => setVentasStageHover(s)}
+                                  onMouseLeave={() => setVentasStageHover(null)}
+                                  style={{ borderRadius: 6, padding: "5px 10px", fontSize: 11, cursor: "pointer", border: `1px solid ${sc}`, background: isCurrent ? sb : "transparent", color: isCurrent ? sc : sc, transition: "background 0.15s", fontWeight: isCurrent ? 600 : 400 }}
+                                >{s}</button>
+                              )
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Right column */}
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                          {/* Tab bar */}
+                          <div style={{ display: "flex", gap: 24, borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: 20, flexShrink: 0 }}>
+                            {(["Customer Journey", "Actividad", "Propuestas", "Notas"] as const).map(tab => (
+                              <button key={tab} onClick={() => setVentasTab(tab)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, paddingBottom: 8, color: ventasTab === tab ? "white" : "rgba(255,255,255,0.35)", borderBottom: ventasTab === tab ? "2px solid #2563EB" : "2px solid transparent", transition: "color 0.15s, border-color 0.15s" }}>{tab}</button>
+                            ))}
+                          </div>
+
+                          <div style={{ flex: 1, overflowY: "auto" }}>
+                            {/* Customer Journey */}
+                            {ventasTab === "Customer Journey" && (
+                              <div style={{ position: "relative", paddingLeft: 24 }}>
+                                <div style={{ position: "absolute", left: 8, top: 0, bottom: 0, width: 1, background: "rgba(37,99,235,0.2)" }} />
+                                {JOURNEY_STEPS.map((step, i) => (
+                                  <div key={i} style={{ display: "flex", gap: 16, marginBottom: 20, position: "relative" }}>
+                                    <div style={{ position: "absolute", left: -20, top: 3, width: 10, height: 10, borderRadius: "50%", background: step.state === "future" ? "transparent" : "#2563EB", border: step.state === "future" ? "1px solid rgba(255,255,255,0.2)" : "none", boxShadow: step.state === "current" ? "0 0 0 3px rgba(37,99,235,0.2)" : "none", animation: step.state === "current" ? "pulse 2s infinite" : "none" }} />
+                                    <div>
+                                      <div style={{ color: step.state === "future" ? "rgba(255,255,255,0.35)" : "white", fontSize: 13, fontWeight: 500 }}>{step.title}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>{step.desc}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 3 }}>{step.date}</div>
+                                    </div>
+                                  </div>
+                                ))}
+                                <style>{`@keyframes pulse { 0%,100%{box-shadow:0 0 0 3px rgba(37,99,235,0.2)} 50%{box-shadow:0 0 0 6px rgba(37,99,235,0.1)} }`}</style>
+                              </div>
+                            )}
+
+                            {/* Actividad */}
+                            {ventasTab === "Actividad" && (
+                              <div style={{ display: "flex", flexDirection: "column" }}>
+                                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
+                                  {(["Todas", "Llamada", "Email", "Reunión"] as const).map(f => (
+                                    <button key={f} onClick={() => setVentasActFilter(f)} style={{ padding: "4px 10px", borderRadius: 20, fontSize: 11, border: "none", cursor: "pointer", background: ventasActFilter === f ? "rgba(37,99,235,0.2)" : "rgba(255,255,255,0.06)", color: ventasActFilter === f ? "#2563EB" : "rgba(255,255,255,0.5)", transition: "background 0.15s, color 0.15s" }}>{f}</button>
+                                  ))}
+                                </div>
+                                {filteredActs.map((act, i) => {
+                                  const meta = ACT_META[act.type] ?? ACT_META["Llamada"]
+                                  return (
+                                    <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: `${meta.color}1a`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{meta.icon}</div>
+                                      <div>
+                                        <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 2 }}>{act.title}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{act.date}</div>
+                                      </div>
+                                    </div>
+                                  )
+                                })}
+                                <button style={{ marginTop: 16, border: "1px solid rgba(37,99,235,0.3)", color: "#2563EB", fontSize: 12, borderRadius: 6, padding: "7px 14px", background: "none", cursor: "pointer", alignSelf: "flex-start" }}>+ Registrar actividad</button>
+                              </div>
+                            )}
+
+                            {/* Propuestas */}
+                            {ventasTab === "Propuestas" && (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: 16 }}>
+                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>Propuesta #001</span>
+                                    <span style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>Enviada</span>
+                                  </div>
+                                  <div style={{ color: "white", fontSize: 18, fontWeight: 500, marginTop: 8 }}>{opp.amount}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 4 }}>Enviada hace 8 días</div>
+                                  <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                                    <button style={{ border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.5)", fontSize: 12, borderRadius: 6, padding: "6px 14px", background: "none", cursor: "pointer" }}>Ver propuesta</button>
+                                    <button style={{ background: "#2563EB", color: "white", border: "none", borderRadius: 6, padding: "6px 14px", fontSize: 12, cursor: "pointer" }}>Enviar recordatorio</button>
+                                  </div>
+                                </div>
+                                <button style={{ border: "1px solid rgba(37,99,235,0.3)", color: "#2563EB", fontSize: 12, borderRadius: 6, padding: "7px 14px", background: "none", cursor: "pointer", alignSelf: "flex-start" }}>+ Nueva propuesta</button>
+                              </div>
+                            )}
+
+                            {/* Notas */}
+                            {ventasTab === "Notas" && (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                                <textarea placeholder="Escribí una nota sobre esta oportunidad..." style={{ width: "100%", minHeight: 120, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "white", fontSize: 13, padding: 12, resize: "vertical" as const, outline: "none", boxSizing: "border-box" as const }} />
+                                <button style={{ alignSelf: "flex-start", background: "#2563EB", color: "white", border: "none", borderRadius: 6, padding: "7px 14px", fontSize: 13, cursor: "pointer" }}>Guardar nota</button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  }
+
+                  if (ventasView === "new") {
+                    const STAGE_PROB: Record<string, number> = { Prospecto: 25, Propuesta: 50, Negociación: 75, Cerrado: 100 }
+                    const inputStyle: React.CSSProperties = { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: "8px 12px", color: "white", fontSize: 13, width: "100%", outline: "none", boxSizing: "border-box" }
+                    const labelStyle: React.CSSProperties = { color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 6, display: "block" }
+                    const field = (label: string, el: React.ReactNode) => (
+                      <div style={{ marginBottom: 12 }}>
+                        <label style={labelStyle}>{label}</label>
+                        {el}
+                      </div>
+                    )
+                    const filteredClients = crmClients.filter(c =>
+                      !newOppClientSearch || c.name.toLowerCase().includes(newOppClientSearch.toLowerCase()) || c.company.toLowerCase().includes(newOppClientSearch.toLowerCase())
+                    )
+                    return (
+                      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
+                        <div style={{ flex: 1, overflowY: "auto", padding: 24, paddingBottom: 80 }}>
+                          <div style={{ display: "flex", gap: 24 }}>
+                            {/* Left column */}
+                            <div style={{ width: "45%", flexShrink: 0 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }}>Datos de la oportunidad</div>
+
+                              {/* Cliente dropdown */}
+                              <div style={{ marginBottom: 12, position: "relative" }}>
+                                <label style={labelStyle}>Cliente</label>
+                                <div
+                                  onClick={() => setNewOppClientOpen(v => !v)}
+                                  style={{ ...inputStyle, cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                                >
+                                  <span style={{ color: newOppClient ? "white" : "rgba(255,255,255,0.25)" }}>{newOppClient || "Seleccionar cliente..."}</span>
+                                  <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>▾</span>
+                                </div>
+                                {newOppClientOpen && (
+                                  <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, background: "#0D0D14", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, zIndex: 50, overflow: "hidden" }}>
+                                    <input
+                                      autoFocus
+                                      placeholder="Buscar cliente..."
+                                      value={newOppClientSearch}
+                                      onChange={e => setNewOppClientSearch(e.target.value)}
+                                      onClick={e => e.stopPropagation()}
+                                      style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: "none", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "8px 12px", color: "white", fontSize: 12, outline: "none", boxSizing: "border-box" }}
+                                    />
+                                    <div style={{ maxHeight: 160, overflowY: "auto" }}>
+                                      {filteredClients.map(c => (
+                                        <div key={c.id} onClick={() => { setNewOppClient(c.name); setNewOppClientOpen(false); setNewOppClientSearch("") }} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", cursor: "pointer" }}
+                                          onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
+                                          onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                                        >
+                                          <div style={{ width: 22, height: 22, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                            <span style={{ color: "#2563EB", fontSize: 8, fontWeight: 600 }}>{c.name.split(" ").map((w: string) => w[0]).slice(0,2).join("")}</span>
+                                          </div>
+                                          <div>
+                                            <div style={{ color: "white", fontSize: 12 }}>{c.name}</div>
+                                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10 }}>{c.company}</div>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                    <div style={{ padding: "8px 12px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                                      <span style={{ color: "#2563EB", fontSize: 12, cursor: "pointer" }}>Crear cliente nuevo →</span>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Monto */}
+                              {field("Monto estimado",
+                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                  <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>$</span>
+                                  <input type="number" placeholder="0" value={newOppAmount} onChange={e => setNewOppAmount(e.target.value)} style={{ ...inputStyle, flex: 1 }} />
+                                </div>
+                              )}
+
+                              {/* Etapa */}
+                              <div style={{ marginBottom: 12 }}>
+                                <label style={labelStyle}>Etapa inicial</label>
+                                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" as const }}>
+                                  {["Prospecto", "Propuesta", "Negociación", "Cerrado"].map(s => {
+                                    const sc = STAGE_BADGE_COLOR[s]
+                                    const sb = STAGE_BADGE_BG[s]
+                                    const active = newOppStage === s
+                                    return (
+                                      <button key={s} onClick={() => { setNewOppStage(s); setNewOppProb(STAGE_PROB[s]) }} style={{ borderRadius: 6, padding: "5px 10px", fontSize: 11, cursor: "pointer", border: `1px solid ${sc}`, background: active ? sb : "transparent", color: sc, fontWeight: active ? 600 : 400 }}>{s}</button>
+                                    )
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* Probabilidad slider */}
+                              <div style={{ marginBottom: 12 }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                                  <label style={{ ...labelStyle, marginBottom: 0 }}>Probabilidad de cierre</label>
+                                  <span style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{newOppProb}%</span>
+                                </div>
+                                <input type="range" min={0} max={100} value={newOppProb} onChange={e => setNewOppProb(Number(e.target.value))}
+                                  style={{ width: "100%", accentColor: "#2563EB", cursor: "pointer" }} />
+                              </div>
+
+                              {field("Fecha de cierre estimada",
+                                <input type="date" value={newOppDate} onChange={e => setNewOppDate(e.target.value)} style={{ ...inputStyle, colorScheme: "dark" as const }} />
+                              )}
+
+                              {field("Vendedor asignado",
+                                <select value={newOppSeller} onChange={e => setNewOppSeller(e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
+                                  {[["JP", "Juan Pérez"], ["CA", "Carlos Acosta"], ["MR", "María Ruiz"]].map(([id, name]) => (
+                                    <option key={id} value={id} style={{ background: "#0D0D14" }}>{id} — {name}</option>
+                                  ))}
+                                </select>
+                              )}
+
+                              {field("Origen del lead",
+                                <select value={newOppOrigin} onChange={e => setNewOppOrigin(e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
+                                  {["Campaña digital", "Referido", "Contacto directo", "Red social", "Evento", "Otro"].map(o => (
+                                    <option key={o} value={o} style={{ background: "#0D0D14" }}>{o}</option>
+                                  ))}
+                                </select>
+                              )}
+                            </div>
+
+                            {/* Right column */}
+                            <div style={{ flex: 1 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }}>Descripción y contexto</div>
+
+                              {field("Descripción de la oportunidad",
+                                <textarea placeholder={"Describí brevemente qué busca este cliente y por qué es una oportunidad..."} value={newOppDesc} onChange={e => setNewOppDesc(e.target.value)} style={{ ...inputStyle, minHeight: 100, resize: "vertical" as const }} />
+                              )}
+
+                              {field("Notas del vendedor",
+                                <textarea placeholder={"Contexto adicional, objeciones detectadas, próximos pasos..."} value={newOppNotes} onChange={e => setNewOppNotes(e.target.value)} style={{ ...inputStyle, minHeight: 80, resize: "vertical" as const }} />
+                              )}
+
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginTop: 20, marginBottom: 16 }}>Primer contacto</div>
+
+                              <div style={{ marginBottom: 12 }}>
+                                <label style={labelStyle}>Tipo de contacto</label>
+                                <div style={{ display: "flex", gap: 6 }}>
+                                  {["Llamada", "Email", "Reunión", "Visita"].map(t => (
+                                    <button key={t} onClick={() => setNewOppContactType(t)} style={{ padding: "4px 10px", borderRadius: 20, fontSize: 11, border: "none", cursor: "pointer", background: newOppContactType === t ? "rgba(37,99,235,0.2)" : "rgba(255,255,255,0.06)", color: newOppContactType === t ? "#2563EB" : "rgba(255,255,255,0.5)", transition: "background 0.15s, color 0.15s" }}>{t}</button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {field("Fecha",
+                                <input type="date" value={newOppContactDate} onChange={e => setNewOppContactDate(e.target.value)} style={{ ...inputStyle, colorScheme: "dark" as const }} />
+                              )}
+
+                              {field("¿Cómo fue el primer contacto?",
+                                <textarea placeholder="Resumí brevemente..." value={newOppContactDesc} onChange={e => setNewOppContactDesc(e.target.value)} style={{ ...inputStyle, minHeight: 60, resize: "vertical" as const }} />
+                              )}
+
+                              {/* AI suggestion */}
+                              <div style={{ marginTop: 20, background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 10, padding: 14 }}>
+                                <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 8 }}>✦ Pupi sugiere</div>
+                                <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, lineHeight: 1.5 }}>
+                                  Basado en el perfil de este cliente, el tiempo promedio de cierre es 18 días y la probabilidad estimada es 65%. Te recomendamos asignarla a JP según su historial con clientes similares.
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Bottom bar */}
+                        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "#0D0D14", borderTop: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <button onClick={() => setVentasView("pipeline")} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 13, cursor: "pointer", transition: "color 0.15s" }} onMouseEnter={e => (e.currentTarget.style.color = "white")} onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>Cancelar</button>
+                          <button onClick={() => setVentasView("pipeline")} style={{ background: "#2563EB", color: "white", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>Crear oportunidad</button>
+                        </div>
+                      </div>
+                    )
+                  }
+
+                  if (ventasView === "risk") {
+                    const RISK_OPPS = [
+                      { name: "Carlos Mendoza", company: "Tech Solutions", amount: "$18.500", stage: "Negociación", reason: "Lleva 14 días en negociación sin actividad registrada. El promedio de cierre es 18 días — está cerca del límite.", action: "Llamar hoy y preguntar por objeciones pendientes", opp: OPPS.find(o => o.name === "Carlos Mendoza") },
+                      { name: "Sofía Martínez",  company: "Retail Express",  amount: "$8.900",  stage: "Propuesta",   reason: "La propuesta fue enviada hace 7 días sin respuesta. Clientes similares responden en promedio en 3 días.",        action: "Enviar email de seguimiento con nueva propuesta o descuento", opp: OPPS.find(o => o.name === "Sofía Martínez") },
+                    ]
+                    return (
+                      <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+                        <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Oportunidades en riesgo</div>
+                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 4, marginBottom: 24 }}>Requieren atención inmediata</div>
+                        {RISK_OPPS.map((r, i) => {
+                          const sc = STAGE_BADGE_COLOR[r.stage] ?? "rgba(255,255,255,0.3)"
+                          const sb = STAGE_BADGE_BG[r.stage] ?? "rgba(255,255,255,0.06)"
+                          return (
+                            <div key={i} style={{ background: "rgba(255,255,255,0.02)", borderLeft: "3px solid #ef4444", borderTop: "1px solid rgba(255,255,255,0.06)", borderRight: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", borderRadius: "0 10px 10px 0", padding: "16px 20px", marginBottom: 12 }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                                <div>
+                                  <div style={{ color: "white", fontSize: 14, fontWeight: 500 }}>{r.name}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>{r.company}</div>
+                                </div>
+                                <div style={{ textAlign: "right" as const }}>
+                                  <div style={{ color: "white", fontSize: 16, fontWeight: 600 }}>{r.amount}</div>
+                                  <span style={{ background: sb, color: sc, border: `1px solid ${sc}`, borderRadius: 20, padding: "2px 8px", fontSize: 11, marginTop: 4, display: "inline-block" }}>{r.stage}</span>
+                                </div>
+                              </div>
+                              <div style={{ marginTop: 12, background: "rgba(239,68,68,0.06)", borderRadius: 6, padding: "10px 12px", display: "flex", gap: 8 }}>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }}>
+                                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>
+                                <div>
+                                  <div style={{ color: "#ef4444", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 4 }}>Por qué está en riesgo</div>
+                                  <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>{r.reason}</div>
+                                </div>
+                              </div>
+                              <div style={{ marginTop: 10, display: "flex", gap: 8, alignItems: "center" }}>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                <span style={{ color: "#2563EB", fontSize: 11 }}>Acción sugerida: </span>
+                                <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>{r.action}</span>
+                              </div>
+                              <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
+                                <button style={{ border: "1px solid rgba(37,99,235,0.3)", color: "#2563EB", fontSize: 12, borderRadius: 6, padding: "6px 14px", background: "none", cursor: "pointer" }}>Registrar contacto</button>
+                                <button onClick={() => { if (r.opp) { setVentasSelectedOpp(r.opp); setVentasView("detail"); setVentasTab("Customer Journey") } }} style={{ background: "rgba(37,99,235,0.1)", color: "#2563EB", fontSize: 12, borderRadius: 6, padding: "6px 14px", border: "none", cursor: "pointer" }}>Ver oportunidad →</button>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                      {/* Secondary nav */}
+                      <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "0 24px", flexShrink: 0 }}>
+                        {(["Pipeline", "Pronóstico", "Comisiones", "Vendedores", "Productos"] as const).map(nav => (
+                          <button key={nav} onClick={() => setVentasNavTab(nav)} style={{ padding: "12px 16px", fontSize: 13, background: "none", border: "none", cursor: "pointer", color: ventasNavTab === nav ? "white" : "rgba(255,255,255,0.35)", borderBottom: `2px solid ${ventasNavTab === nav ? "#2563EB" : "transparent"}`, transition: "color 0.15s, border-color 0.15s", marginBottom: -1 }}>{nav}</button>
+                        ))}
+                      </div>
+
+                      {/* Forecast view */}
+                      {ventasNavTab === "Pronóstico" && (
+                        <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+                          {/* Summary cards */}
+                          <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
+                            <div style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Pronóstico este mes</div>
+                              <div style={{ color: "white", fontSize: 20, fontWeight: 600, marginBottom: 8 }}>$56.350</div>
+                              <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                                <div style={{ height: "100%", width: "68%", background: "rgba(37,99,235,0.6)", borderRadius: 2 }} />
+                              </div>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginTop: 6 }}>68% alcanzado</div>
+                            </div>
+                            <div style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Mejor escenario</div>
+                              <div style={{ color: "#22c55e", fontSize: 20, fontWeight: 600, marginBottom: 6 }}>$72.800</div>
+                              <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Si cierran todas las oportunidades activas</div>
+                            </div>
+                            <div style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Peor escenario</div>
+                              <div style={{ color: "#ef4444", fontSize: 20, fontWeight: 600, marginBottom: 6 }}>$31.200</div>
+                              <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Solo oportunidades en negociación</div>
+                            </div>
+                          </div>
+
+                          {/* Monthly chart */}
+                          <div style={{ marginBottom: 24 }}>
+                            <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }}>Evolución mensual</div>
+                            {(() => {
+                              const months = [
+                                { label: "Ene", real: 28, pron: 30, forecast: false },
+                                { label: "Feb", real: 35, pron: 32, forecast: false },
+                                { label: "Mar", real: 31, pron: 35, forecast: false },
+                                { label: "Abr", real: 42, pron: 38, forecast: false },
+                                { label: "May", real: 38, pron: 40, forecast: false },
+                                { label: "Jun", real: 0,  pron: 56, forecast: true  },
+                              ]
+                              const maxVal = 60
+                              const H = 120
+                              return (
+                                <>
+                                  <div style={{ display: "flex", alignItems: "flex-end", gap: 12, height: H }}>
+                                    {months.map((m) => (
+                                      <div key={m.label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2, height: "100%", justifyContent: "flex-end" }}>
+                                        <div style={{ display: "flex", gap: 3, alignItems: "flex-end", width: "100%" }}>
+                                          {!m.forecast && (
+                                            <div style={{ flex: 1, height: Math.round((m.real / maxVal) * H), background: "rgba(37,99,235,0.5)", borderRadius: "4px 4px 0 0" }} />
+                                          )}
+                                          <div style={{ flex: 1, height: Math.round((m.pron / maxVal) * H), background: m.forecast ? "rgba(37,99,235,0.08)" : "rgba(37,99,235,0.15)", border: m.forecast ? "1px dashed rgba(37,99,235,0.4)" : "1px solid rgba(37,99,235,0.2)", borderRadius: "4px 4px 0 0", boxSizing: "border-box" as const }} />
+                                        </div>
+                                        <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 4 }}>{m.label}</div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <div style={{ display: "flex", gap: 16, marginTop: 12 }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                      <div style={{ width: 10, height: 10, background: "rgba(37,99,235,0.5)", borderRadius: 2 }} />
+                                      <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>Real</span>
+                                    </div>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                      <div style={{ width: 10, height: 10, background: "transparent", border: "1px solid rgba(37,99,235,0.4)", borderRadius: 2 }} />
+                                      <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>Pronóstico</span>
+                                    </div>
+                                  </div>
+                                </>
+                              )
+                            })()}
+                          </div>
+
+                          {/* AI recommendations */}
+                          <div>
+                            <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 12 }}>✦ Recomendaciones Pupi</div>
+                            {[
+                              { priority: "Alta",  color: "#ef4444", title: "Contactar a Carlos Mendoza hoy", reason: "Lleva 14 días en negociación. Su probabilidad de cierre baja un 5% por cada día adicional." },
+                              { priority: "Alta",  color: "#ef4444", title: "Mover propuesta de Sofía Martínez a negociación", reason: "Enviaste la propuesta hace 7 días sin respuesta — ideal para seguimiento." },
+                              { priority: "Media", color: "#eab308", title: "Agregar 3 nuevos prospectos esta semana", reason: "El pipeline tiene pocas oportunidades en etapa inicial para sostener el mes que viene." },
+                            ].map((rec, i) => (
+                              <div key={i} style={{ display: "flex", gap: 12, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px", marginBottom: 8 }}>
+                                <div style={{ width: 8, height: 8, borderRadius: "50%", background: rec.color, flexShrink: 0, marginTop: 4 }} />
+                                <div>
+                                  <div style={{ color: rec.color, fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 4 }}>{rec.priority} prioridad</div>
+                                  <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{rec.title}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{rec.reason}</div>
+                                  <button style={{ background: "none", border: "none", color: "#2563EB", fontSize: 11, cursor: "pointer", padding: 0, marginTop: 8 }}>Aplicar →</button>
+                                </div>
+                              </div>
+                            ))}
+                            {/* Retargeting section */}
+                            <div style={{ marginTop: 24 }}>
+                              <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 6 }}>✦ Retargeting interno</div>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Clientes que compraron antes y están fuera de su ciclo habitual</div>
+                              {[
+                                { name: "Ana Rodríguez",  company: "Sin empresa",      last: "31 días", cycle: "20 días", overdue: "+11 días fuera de ciclo" },
+                                { name: "Valentina Cruz",  company: "Sin empresa",      last: "45 días", cycle: "30 días", overdue: "+15 días fuera de ciclo" },
+                                { name: "Martín Pérez",    company: "Constructora MP",  last: "7 días",  cycle: "6 días",  overdue: "+1 día fuera de ciclo"   },
+                              ].map((r, i) => {
+                                const initials = r.name.split(" ").map((w: string) => w[0]).slice(0,2).join("")
+                                const colors = ["#2563EB", "#7c3aed", "#0891b2"]
+                                return (
+                                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px", marginBottom: 8 }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: `${colors[i]}33`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                        <span style={{ color: colors[i], fontSize: 11, fontWeight: 600 }}>{initials}</span>
+                                      </div>
+                                      <div>
+                                        <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{r.name}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{r.company}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 4 }}>Último pedido hace {r.last} · Ciclo promedio: {r.cycle}</div>
+                                      </div>
+                                    </div>
+                                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+                                      <span style={{ background: "rgba(239,68,68,0.1)", color: "#ef4444", borderRadius: 20, padding: "3px 10px", fontSize: 11 }}>{r.overdue}</span>
+                                      <button style={{ background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.25)", color: "#2563EB", fontSize: 12, borderRadius: 6, padding: "5px 12px", cursor: "pointer" }}>Contactar →</button>
+                                    </div>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Comisiones view */}
+                      {ventasNavTab === "Comisiones" && (
+                        <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+                          {/* Top bar */}
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                            <div>
+                              <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Comisiones</div>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Mayo 2026</div>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <button onClick={() => setShowCommModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid rgba(255,255,255,0.1)", background: "none", color: "rgba(255,255,255,0.4)", fontSize: 12, borderRadius: 6, padding: "6px 12px", cursor: "pointer" }}>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                                </svg>
+                                Configurar comisiones
+                              </button>
+                              <button style={{ background: "rgba(255,255,255,0.08)", border: "none", color: "rgba(255,255,255,0.4)", borderRadius: 6, padding: "4px 8px", fontSize: 13, cursor: "pointer" }}>←</button>
+                              <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>Mayo 2026</span>
+                              <button style={{ background: "rgba(255,255,255,0.08)", border: "none", color: "rgba(255,255,255,0.4)", borderRadius: 6, padding: "4px 8px", fontSize: 13, cursor: "pointer" }}>→</button>
+                            </div>
+                          </div>
+
+                          {/* Commission config modal */}
+                          {showCommModal && (
+                            <div onClick={(e) => { if (e.target === e.currentTarget) setShowCommModal(false) }} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200 }}>
+                              <div style={{ background: "#0D0D14", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 14, width: 480, maxHeight: "80vh", overflowY: "auto", padding: 24 }}>
+                                {/* Modal header */}
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                                  <div style={{ color: "white", fontSize: 16, fontWeight: 500 }}>Configuración de comisiones</div>
+                                  <button onClick={() => setShowCommModal(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 2px" }}>×</button>
+                                </div>
+
+                                {/* Section 1 — Tipo */}
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 8 }}>Tipo de comisión</div>
+                                {[
+                                  { label: "Porcentaje fijo por vendedor",   desc: "Cada vendedor tiene su propio %" },
+                                  { label: "Porcentaje por tramo de venta",  desc: "El % cambia según el monto vendido" },
+                                  { label: "Monto fijo por venta cerrada",   desc: "Monto fijo independiente del valor" },
+                                ].map((opt, idx) => (
+                                  <div key={idx} onClick={() => setCommType(idx as 0|1|2)} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 8, cursor: "pointer", marginBottom: 6, background: commType === idx ? "rgba(37,99,235,0.12)" : "rgba(255,255,255,0.03)", border: `1px solid ${commType === idx ? "rgba(37,99,235,0.3)" : "rgba(255,255,255,0.07)"}`, transition: "background 0.15s, border-color 0.15s" }}>
+                                    <div style={{ width: 16, height: 16, borderRadius: "50%", background: commType === idx ? "#2563EB" : "transparent", border: commType === idx ? "none" : "1px solid rgba(255,255,255,0.2)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                      {commType === idx && <div style={{ width: 6, height: 6, borderRadius: "50%", background: "white" }} />}
+                                    </div>
+                                    <div>
+                                      <div style={{ color: "white", fontSize: 13 }}>{opt.label}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{opt.desc}</div>
+                                    </div>
+                                  </div>
+                                ))}
+
+                                <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "20px 0" }} />
+
+                                {/* Section 2a — Porcentaje por vendedor */}
+                                {commType === 0 && (
+                                  <div>
+                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 12 }}>Comisión por vendedor</div>
+                                    {[{ id: "JP", name: "Juan Pérez" }, { id: "CA", name: "Carlos Acosta" }, { id: "MR", name: "María Ruiz" }].map(s => (
+                                      <div key={s.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                          <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                            <span style={{ color: "#2563EB", fontSize: 10, fontWeight: 600 }}>{s.id}</span>
+                                          </div>
+                                          <span style={{ color: "white", fontSize: 13 }}>{s.name}</span>
+                                        </div>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                                          <input type="number" value={commRates[s.id]} onChange={e => setCommRates(prev => ({ ...prev, [s.id]: e.target.value }))} style={{ width: 60, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "6px 10px", color: "white", fontSize: 13, textAlign: "right" as const, outline: "none" }} />
+                                          <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>%</span>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Section 2b — Tramos */}
+                                {commType === 1 && (
+                                  <div>
+                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 12 }}>Tramos</div>
+                                    {[["Hasta $10.000", "6"], ["Hasta $30.000", "8"], ["Más de $30.000", "10"]].map(([label, pct], i) => (
+                                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                                        <input defaultValue={label} style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "6px 10px", color: "white", fontSize: 12, outline: "none" }} />
+                                        <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>→</span>
+                                        <input defaultValue={pct} type="number" style={{ width: 56, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "6px 10px", color: "white", fontSize: 13, textAlign: "right" as const, outline: "none" }} />
+                                        <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>%</span>
+                                      </div>
+                                    ))}
+                                    <button style={{ background: "none", border: "none", color: "#2563EB", fontSize: 11, cursor: "pointer", padding: 0, marginTop: 4 }}>+ Agregar tramo</button>
+                                  </div>
+                                )}
+
+                                {/* Section 2c — Monto fijo */}
+                                {commType === 2 && (
+                                  <div>
+                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 12 }}>Monto fijo por venta</div>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                      <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>$</span>
+                                      <input type="number" defaultValue="500" style={{ width: 120, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "6px 10px", color: "white", fontSize: 13, outline: "none" }} />
+                                    </div>
+                                  </div>
+                                )}
+
+                                <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "20px 0" }} />
+
+                                {/* Section 3 — Periodicidad */}
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 8 }}>Pago de comisiones</div>
+                                {[
+                                  { label: "Mensual — al cierre del mes" },
+                                  { label: "Por venta — al cerrar cada venta" },
+                                ].map((opt, idx) => (
+                                  <div key={idx} onClick={() => setCommPeriod(idx as 0|1)} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 8, cursor: "pointer", marginBottom: 6, background: commPeriod === idx ? "rgba(37,99,235,0.12)" : "rgba(255,255,255,0.03)", border: `1px solid ${commPeriod === idx ? "rgba(37,99,235,0.3)" : "rgba(255,255,255,0.07)"}`, transition: "background 0.15s, border-color 0.15s" }}>
+                                    <div style={{ width: 16, height: 16, borderRadius: "50%", background: commPeriod === idx ? "#2563EB" : "transparent", border: commPeriod === idx ? "none" : "1px solid rgba(255,255,255,0.2)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                      {commPeriod === idx && <div style={{ width: 6, height: 6, borderRadius: "50%", background: "white" }} />}
+                                    </div>
+                                    <span style={{ color: "white", fontSize: 13 }}>{opt.label}</span>
+                                  </div>
+                                ))}
+
+                                {/* Footer */}
+                                <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 16, marginTop: 20, display: "flex", justifyContent: "flex-end", gap: 10 }}>
+                                  <button onClick={() => setShowCommModal(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 13, cursor: "pointer" }}>Cancelar</button>
+                                  <button onClick={() => setShowCommModal(false)} style={{ background: "#2563EB", color: "white", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>Guardar configuración</button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Summary cards */}
+                          <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
+                            {[
+                              { label: "Total comisiones", value: "$8.420", valueSize: 20, valueColor: "white", sub: "3 vendedores activos" },
+                              { label: "Mayor comisión",   value: "JP — $3.890", valueSize: 16, valueColor: "white", sub: "Juan Pérez · 8 ventas" },
+                              { label: "Tasa promedio",    value: "8%",  valueSize: 20, valueColor: "white", sub: "Sobre ventas cerradas" },
+                            ].map(({ label, value, valueSize, valueColor, sub }) => (
+                              <div key={label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>{label}</div>
+                                <div style={{ color: valueColor, fontSize: valueSize, fontWeight: 500, marginBottom: 6 }}>{value}</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{sub}</div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Sellers table */}
+                          {(() => {
+                            const sellers = [
+                              { id: "JP", name: "Juan Pérez",    ventas: 8, monto: "$48.750", tasa: "8%", comision: "$3.890", estado: "Pendiente" as const,
+                                deals: [["Tech Solutions",  "$18.500", "$1.480"], ["Constructora MP", "$9.350", "$748"], ["Retail Express", "$8.900", "$712"]] },
+                              { id: "CA", name: "Carlos Acosta", ventas: 5, monto: "$31.200", tasa: "8%", comision: "$2.496", estado: "Pagada" as const, deals: [] },
+                              { id: "MR", name: "María Ruiz",    ventas: 4, monto: "$25.420", tasa: "8%", comision: "$2.034", estado: "Pagada" as const, deals: [] },
+                            ]
+                            const ESTADO_STYLE: Record<"Pagada" | "Pendiente", { bg: string; color: string; border: string }> = {
+                              Pagada:    { bg: "rgba(34,197,94,0.1)",  color: "#22c55e", border: "rgba(34,197,94,0.2)"  },
+                              Pendiente: { bg: "rgba(234,179,8,0.1)",  color: "#eab308", border: "rgba(234,179,8,0.2)"  },
+                            }
+                            const gridStyle: React.CSSProperties = { display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr", gap: 0 }
+                            return (
+                              <div style={{ marginBottom: 24, border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, overflow: "hidden" }}>
+                                {/* Header */}
+                                <div style={{ ...gridStyle, background: "rgba(255,255,255,0.03)", padding: "10px 16px" }}>
+                                  {["Vendedor", "Ventas", "Monto total", "Tasa", "Comisión", "Estado"].map(col => (
+                                    <div key={col} style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{col}</div>
+                                  ))}
+                                </div>
+                                {/* Rows */}
+                                {sellers.map(seller => {
+                                  const es = ESTADO_STYLE[seller.estado]
+                                  const expanded = ventasCommExpanded === seller.id
+                                  return (
+                                    <div key={seller.id}>
+                                      <div
+                                        onClick={() => setVentasCommExpanded(expanded ? null : seller.id)}
+                                        style={{ ...gridStyle, padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.04)", cursor: "pointer", background: expanded ? "rgba(255,255,255,0.02)" : "transparent", transition: "background 0.15s", alignItems: "center" }}
+                                      >
+                                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                          <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                            <span style={{ color: "#2563EB", fontSize: 10, fontWeight: 600 }}>{seller.id}</span>
+                                          </div>
+                                          <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{seller.name}</span>
+                                        </div>
+                                        <div style={{ color: "white", fontSize: 13 }}>{seller.ventas}</div>
+                                        <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{seller.monto}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{seller.tasa}</div>
+                                        <div style={{ color: "#22c55e", fontSize: 13, fontWeight: 500 }}>{seller.comision}</div>
+                                        <div>
+                                          <span style={{ background: es.bg, color: es.color, border: `1px solid ${es.border}`, borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>{seller.estado}</span>
+                                        </div>
+                                      </div>
+                                      {expanded && seller.deals.length > 0 && (
+                                        <div style={{ background: "rgba(255,255,255,0.02)", padding: "12px 16px 12px 48px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                          {seller.deals.map(([client, amount, comm], i) => (
+                                            <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0" }}>
+                                              <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>{client}</span>
+                                              <div style={{ display: "flex", gap: 12 }}>
+                                                <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{amount}</span>
+                                                <span style={{ color: "#22c55e", fontSize: 11 }}>→ {comm}</span>
+                                              </div>
+                                            </div>
+                                          ))}
+                                          <div style={{ color: "rgba(37,99,235,0.6)", fontSize: 11, marginTop: 6, cursor: "pointer" }}>+ 5 ventas más...</div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )
+                          })()}
+
+                          {/* AI insights */}
+                          <div>
+                            <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 12 }}>✦ Análisis Pupi</div>
+                            <div style={{ display: "flex", gap: 12 }}>
+                              {[
+                                {
+                                  iconPath: <><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></>,
+                                  title: "JP cierra mejor los martes",
+                                  text: "El 62% de sus cierres ocurren entre martes y miércoles. Agendá visitas clave esos días.",
+                                },
+                                {
+                                  iconPath: <><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></>,
+                                  title: "MR tiene mejor tasa con clientes nuevos",
+                                  text: "Convierte el 78% de los primeros contactos. Ideal para asignarle prospectos nuevos.",
+                                },
+                              ].map(({ iconPath, title, text }, i) => (
+                                <div key={i} style={{ flex: 1, background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.12)", borderRadius: 10, padding: 14 }}>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{iconPath}</svg>
+                                  <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginTop: 6 }}>{title}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{text}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Vendedores view */}
+                      {ventasNavTab === "Vendedores" && (() => {
+                        const SELLERS = [
+                          { key: "JP", name: "Juan Pérez",    ventas: 8, montoNum: 48750, monto: "$48.750", cierre: "80%", ticket: "$6.094", tiempo: "16 días", vsAnt: "↑ 18%", vsColor: "#22c55e" },
+                          { key: "CA", name: "Carlos Acosta", ventas: 5, montoNum: 31200, monto: "$31.200", cierre: "63%", ticket: "$6.240", tiempo: "21 días", vsAnt: "↓ 5%",  vsColor: "#ef4444" },
+                          { key: "MR", name: "María Ruiz",    ventas: 4, montoNum: 25420, monto: "$25.420", cierre: "57%", ticket: "$6.355", tiempo: "19 días", vsAnt: "↑ 3%",  vsColor: "#22c55e" },
+                        ]
+                        const metaColor = (pct: number) => pct >= 80 ? "#22c55e" : pct >= 50 ? "#eab308" : "#ef4444"
+                        const PATTERNS = [
+                          { key: "JP", title: "JP cierra mejor los martes",              body: "62% de sus cierres son entre martes y miércoles. Agendá sus visitas clave esos días." },
+                          { key: "MR", title: "MR convierte mejor clientes nuevos",      body: "Tasa de conversión de 78% en primeros contactos. Ideal para asignarle nuevos prospectos." },
+                          { key: "CA", title: "CA necesita más seguimiento post-propuesta", body: "Sus propuestas tardan 8 días más en cerrarse que el promedio. Revisar proceso de seguimiento." },
+                        ]
+                        const fmtNum = (n: number) => "$" + n.toLocaleString("es-AR")
+                        const totalActual = SELLERS.reduce((a, s) => a + s.montoNum, 0)
+                        const teamGoalNum = parseInt(goalTeam.replace(/\D/g, "")) || 150000
+                        const teamPct = Math.round((totalActual / teamGoalNum) * 100)
+                        const sumIndividual = SELLERS.reduce((a, s) => a + (parseInt(goalRates[s.key]?.replace(/\D/g,"") || "50000")), 0)
+                        const Toggle = ({ on, onToggle }: { on: boolean; onToggle: () => void }) => (
+                          <div onClick={onToggle} style={{ width: 36, height: 20, borderRadius: 10, background: on ? "#2563EB" : "rgba(255,255,255,0.1)", cursor: "pointer", position: "relative" as const, flexShrink: 0, transition: "background 0.2s" }}>
+                            <div style={{ width: 16, height: 16, borderRadius: "50%", background: "white", position: "absolute" as const, top: 2, left: on ? 18 : 2, transition: "left 0.2s" }} />
+                          </div>
+                        )
+                        return (
+                          <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+                            {/* Goals modal */}
+                            {showGoalsModal && (
+                              <div style={{ position: "fixed" as const, inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setShowGoalsModal(false)}>
+                                <div style={{ background: "#0f1e35", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, padding: 24, width: 420, maxHeight: "85vh", overflowY: "auto" as const }} onClick={e => e.stopPropagation()}>
+                                  <div style={{ color: "white", fontSize: 16, fontWeight: 500 }}>Metas de ventas</div>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 20, marginTop: 2 }}>Mayo 2026</div>
+
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Tipo de meta</div>
+                                  {[["Por monto vendido — $", 0], ["Por cantidad de ventas — unidades", 1]].map(([label, val]) => (
+                                    <div key={val} onClick={() => setGoalsType(val as 0 | 1)} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 8, border: `1px solid ${goalsType === val ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`, background: goalsType === val ? "rgba(37,99,235,0.1)" : "rgba(255,255,255,0.02)", cursor: "pointer", marginBottom: 8, transition: "all 0.15s" }}>
+                                      <div style={{ width: 14, height: 14, borderRadius: "50%", border: `2px solid ${goalsType === val ? "#2563EB" : "rgba(255,255,255,0.2)"}`, background: goalsType === val ? "#2563EB" : "transparent", transition: "all 0.15s" }} />
+                                      <span style={{ color: goalsType === val ? "white" : "rgba(255,255,255,0.5)", fontSize: 13 }}>{label}</span>
+                                    </div>
+                                  ))}
+
+                                  <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "16px 0" }} />
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Meta por vendedor</div>
+                                  {SELLERS.map(s => {
+                                    const goalVal = parseInt(goalRates[s.key]?.replace(/\D/g,"") || "50000")
+                                    const pct = Math.round((s.montoNum / goalVal) * 100)
+                                    return (
+                                      <div key={s.key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                          <div style={{ width: 30, height: 30, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", fontSize: 11, fontWeight: 700 }}>{s.key}</div>
+                                          <div>
+                                            <div style={{ color: "white", fontSize: 13 }}>{s.name}</div>
+                                            <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Progreso actual: {s.monto} ({pct}%)</div>
+                                          </div>
+                                        </div>
+                                        <div style={{ position: "relative" as const, width: 110 }}>
+                                          {goalsType === 0 && <span style={{ position: "absolute" as const, left: 10, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.4)", fontSize: 13, pointerEvents: "none" }}>$</span>}
+                                          <input type="text" value={goalRates[s.key] || ""} onChange={e => setGoalRates(p => ({ ...p, [s.key]: e.target.value }))}
+                                            style={{ width: "100%", padding: goalsType === 0 ? "7px 8px 7px 22px" : "7px 50px 7px 8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white", fontSize: 13, outline: "none", boxSizing: "border-box" as const }} />
+                                          {goalsType === 1 && <span style={{ position: "absolute" as const, right: 8, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.3)", fontSize: 11, pointerEvents: "none" }}>ventas</span>}
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
+
+                                  <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "16px 0" }} />
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Meta global del equipo</div>
+                                  <div style={{ marginBottom: 4 }}>
+                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 5 }}>Meta total del equipo</div>
+                                    <div style={{ position: "relative" as const }}>
+                                      <span style={{ position: "absolute" as const, left: 10, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.4)", fontSize: 13, pointerEvents: "none" }}>$</span>
+                                      <input type="text" value={goalTeam} onChange={e => setGoalTeam(e.target.value)}
+                                        style={{ width: "100%", padding: "8px 8px 8px 22px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white", fontSize: 13, outline: "none", boxSizing: "border-box" as const }} />
+                                    </div>
+                                  </div>
+                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginTop: 4 }}>Suma de metas individuales: ${sumIndividual.toLocaleString("es-AR")}</div>
+
+                                  <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "16px 0" }} />
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Alertas</div>
+                                  {[
+                                    { label: "Alertar cuando un vendedor está por debajo del 50% a mitad de mes", on: goalsAlertBelow, toggle: () => setGoalsAlertBelow(p => !p) },
+                                    { label: "Alertar cuando la meta global está en riesgo", on: goalsAlertRisk, toggle: () => setGoalsAlertRisk(p => !p) },
+                                  ].map(row => (
+                                    <div key={row.label} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                                      <Toggle on={row.on} onToggle={row.toggle} />
+                                      <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, flex: 1 }}>{row.label}</span>
+                                    </div>
+                                  ))}
+
+                                  <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 20 }}>
+                                    <button onClick={() => setShowGoalsModal(false)} style={{ padding: "9px 16px", fontSize: 13, background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>Cancelar</button>
+                                    <button onClick={() => setShowGoalsModal(false)} style={{ padding: "9px 16px", fontSize: 13, background: "#2563EB", border: "none", borderRadius: 8, color: "white", cursor: "pointer", fontWeight: 500 }}>Guardar metas</button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Top bar */}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                              <div>
+                                <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Rendimiento de vendedores</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3 }}>Mayo 2026 · 3 vendedores activos</div>
+                              </div>
+                              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                <select style={{ padding: "6px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "rgba(255,255,255,0.6)", fontSize: 12, outline: "none", cursor: "pointer" }}>
+                                  {["Mayo 2026","Abril 2026","Marzo 2026","Q2 2026"].map(m => <option key={m}>{m}</option>)}
+                                </select>
+                                <button onClick={() => setShowGoalsModal(true)} style={{ padding: "6px 12px", fontSize: 12, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "rgba(255,255,255,0.6)", cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
+                                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+                                  Configurar metas
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Global goal card */}
+                            <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 12, padding: 18, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20 }}>
+                              <div>
+                                <div style={{ color: "white", fontSize: 14, fontWeight: 500 }}>Meta global del equipo</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Mayo 2026</div>
+                              </div>
+                              <div style={{ flex: 1, maxWidth: 300 }}>
+                                <div style={{ height: 8, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden", marginBottom: 8 }}>
+                                  <div style={{ width: `${Math.min(teamPct, 100)}%`, height: "100%", background: "#2563EB", borderRadius: 4 }} />
+                                </div>
+                                <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{fmtNum(totalActual)} de {fmtNum(teamGoalNum)}</div>
+                              </div>
+                              <div style={{ textAlign: "right" as const, flexShrink: 0 }}>
+                                <div style={{ color: "white", fontSize: 28, fontWeight: 600 }}>{teamPct}%</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>alcanzado</div>
+                              </div>
+                            </div>
+
+                            {/* Seller cards row */}
+                            <div style={{ display: "flex", gap: 14, marginBottom: showGoalsBanner ? 0 : 24 }}>
+                              {SELLERS.map(s => {
+                                const goalVal = parseInt(goalRates[s.key]?.replace(/\D/g,"") || "50000")
+                                const pct = Math.round((s.montoNum / goalVal) * 100)
+                                const diff = goalVal - s.montoNum
+                                const tooltip = diff > 0 ? `Faltan ${fmtNum(diff)} para la meta` : `¡Meta superada! +${fmtNum(-diff)}`
+                                return (
+                                  <div key={s.key} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 18, cursor: "pointer", transition: "border-color 0.15s, background 0.15s" }}
+                                    onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(37,99,235,0.2)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)" }}
+                                    onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.background = "rgba(255,255,255,0.03)" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                      <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{s.key}</div>
+                                      <div>
+                                        <div style={{ color: "white", fontSize: 14, fontWeight: 500 }}>{s.name}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{s.ventas} ventas este mes</div>
+                                      </div>
+                                    </div>
+                                    <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "14px 0" }} />
+                                    {[["MONTO TOTAL", s.monto],["TASA DE CIERRE", s.cierre],["TICKET PROMEDIO", s.ticket],["TIEMPO CIERRE", s.tiempo]].map(([k, v]) => (
+                                      <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                                        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{k}</span>
+                                        <span style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{v}</span>
+                                      </div>
+                                    ))}
+                                    <div style={{ marginTop: 4 }}>
+                                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                                        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>META MENSUAL</span>
+                                        <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 10 }}>{s.monto} / {fmtNum(goalVal)}</span>
+                                      </div>
+                                      <div title={tooltip} style={{ width: "100%", height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden", cursor: "help" }}>
+                                        <div style={{ width: `${Math.min(pct, 100)}%`, height: "100%", background: metaColor(pct), borderRadius: 2 }} />
+                                      </div>
+                                      <div style={{ color: metaColor(pct), fontSize: 11, marginTop: 4, textAlign: "right" as const }}>{pct}%</div>
+                                    </div>
+                                  </div>
+                                )
+                              })}
+                            </div>
+
+                            {/* Goal alerts banner */}
+                            {showGoalsBanner && (
+                              <div style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "10px 16px", margin: "16px 0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                  <span style={{ color: "#ef4444", fontSize: 13 }}>CA y MR están por debajo del 50% de su meta mensual</span>
+                                </div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                                  <button style={{ padding: "4px 10px", background: "rgba(239,68,68,0.1)", border: "none", borderRadius: 6, color: "#ef4444", fontSize: 12, cursor: "pointer" }}>Ver detalles</button>
+                                  <button onClick={() => setShowGoalsBanner(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "0 2px" }}>×</button>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Comparison table */}
+                            <div style={{ marginTop: showGoalsBanner ? 0 : 8 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }}>Comparativo detallado</div>
+                              <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: "8px 8px 0 0" }}>
+                                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr 1fr", padding: "10px 16px" }}>
+                                  {["VENDEDOR","VENTAS","MONTO","CIERRE %","TICKET","TIEMPO","VS MES ANT"].map(h => (
+                                    <span key={h} style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{h}</span>
+                                  ))}
+                                </div>
+                              </div>
+                              {SELLERS.map(s => (
+                                <div key={s.key} style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr 1fr", padding: "12px 16px", borderBottom: "1px solid rgba(255,255,255,0.04)", alignItems: "center" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                    <div style={{ width: 26, height: 26, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", fontSize: 10, fontWeight: 700 }}>{s.key}</div>
+                                    <span style={{ color: "white", fontSize: 13 }}>{s.name}</span>
+                                  </div>
+                                  <span style={{ color: "white", fontSize: 13 }}>{s.ventas}</span>
+                                  <span style={{ color: "white", fontSize: 13 }}>{s.monto}</span>
+                                  <span style={{ color: "white", fontSize: 13 }}>{s.cierre}</span>
+                                  <span style={{ color: "white", fontSize: 13 }}>{s.ticket}</span>
+                                  <span style={{ color: "white", fontSize: 13 }}>{s.tiempo}</span>
+                                  <span style={{ color: s.vsColor, fontSize: 13, fontWeight: 500 }}>{s.vsAnt}</span>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* AI patterns */}
+                            <div style={{ marginTop: 24 }}>
+                              <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>✦ Patrones detectados por Pupi</div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                                {PATTERNS.map(p => (
+                                  <div key={p.key} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "12px 16px", display: "flex", gap: 12, alignItems: "flex-start" }}>
+                                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{p.key}</div>
+                                    <div>
+                                      <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>{p.title}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{p.body}</div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div style={{ height: 24 }} />
+                          </div>
+                        )
+                      })()}
+
+                      {/* Productos view */}
+                      {ventasNavTab === "Productos" && (() => {
+                        // prodSearch/setProdSearch lifted to component state
+                        const PRODUCTS = [
+                          { name: "Producto A", cat: "Categoría 1", dot: "#2563EB", units: 32, revenue: "$28.800", margin: 62, trend: "up",   vs: "↑ 24%", vsColor: "#22c55e" },
+                          { name: "Producto B", cat: "Categoría 1", dot: "#a855f7", units: 18, revenue: "$48.750", margin: 45, trend: "up",   vs: "↑ 12%", vsColor: "#22c55e" },
+                          { name: "Producto C", cat: "Categoría 2", dot: "#22c55e", units: 24, revenue: "$14.400", margin: 68, trend: "flat", vs: "→ 0%",  vsColor: "rgba(255,255,255,0.4)" },
+                          { name: "Producto D", cat: "Categoría 2", dot: "#eab308", units: 11, revenue: "$9.900",  margin: 38, trend: "down", vs: "↓ 8%",  vsColor: "#ef4444" },
+                          { name: "Producto E", cat: "Categoría 3", dot: "#f97316", units: 8,  revenue: "$6.400",  margin: 52, trend: "up",   vs: "↑ 5%",  vsColor: "#22c55e" },
+                          { name: "Producto F", cat: "Categoría 3", dot: "#ef4444", units: 5,  revenue: "$3.750",  margin: 28, trend: "down", vs: "↓ 15%", vsColor: "#ef4444" },
+                        ]
+                        const marginColor = (m: number) => m >= 50 ? "#22c55e" : m >= 30 ? "#eab308" : "#ef4444"
+                        const Sparkline = ({ trend }: { trend: string }) => {
+                          const pts: Record<string, number[]> = {
+                            up:   [8,10,7,12,14,18],
+                            down: [18,15,14,12,10,8],
+                            flat: [12,11,13,12,12,13],
+                          }
+                          const vals = pts[trend] || pts.flat
+                          const maxV = Math.max(...vals), minV = Math.min(...vals)
+                          const W = 60, H = 20
+                          const px = (i: number) => (i / (vals.length - 1)) * W
+                          const py = (v: number) => H - ((v - minV) / (maxV - minV + 0.01)) * H
+                          const color = trend === "up" ? "#22c55e" : trend === "down" ? "#ef4444" : "rgba(255,255,255,0.3)"
+                          const points = vals.map((v, i) => `${px(i)},${py(v)}`).join(" ")
+                          return <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: "block" }}><polyline points={points} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round"/></svg>
+                        }
+                        const COMBOS = [
+                          { a: { name: "Producto A", dot: "#2563EB" }, b: { name: "Producto C", dot: "#22c55e" }, pct: "68%" },
+                          { a: { name: "Producto B", dot: "#a855f7" }, b: { name: "Producto D", dot: "#eab308" }, pct: "45%" },
+                          { a: { name: "Producto A", dot: "#2563EB" }, b: { name: "Producto B", dot: "#a855f7" }, pct: "32%" },
+                        ]
+                        const filtered = PRODUCTS.filter(p => !prodSearch || p.name.toLowerCase().includes(prodSearch.toLowerCase()))
+                        return (
+                          <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+                            {/* Top bar */}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                              <div>
+                                <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Ventas por producto</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3 }}>Historial y análisis</div>
+                              </div>
+                              <select style={{ padding: "6px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "rgba(255,255,255,0.6)", fontSize: 12, outline: "none", cursor: "pointer" }}>
+                                {["Mayo 2026","Abril 2026","Marzo 2026","Q2 2026"].map(m => <option key={m}>{m}</option>)}
+                              </select>
+                            </div>
+
+                            {/* Summary cards */}
+                            <div style={{ display: "flex", gap: 14, marginBottom: 24 }}>
+                              {[
+                                { label: "Producto más vendido", value: "Producto A", sub: "32 unidades este mes" },
+                                { label: "Mayor ingreso",        value: "Producto B", sub: "$48.750 este mes" },
+                                { label: "Mejor margen",         value: "Producto C", sub: "68% margen bruto" },
+                              ].map(c => (
+                                <div key={c.label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px 16px" }}>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 6 }}>{c.label}</div>
+                                  <div style={{ color: "white", fontSize: 16, fontWeight: 500 }}>{c.value}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 4 }}>{c.sub}</div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Search */}
+                            <input type="text" placeholder="Buscar producto..." value={prodSearch} onChange={e => setProdSearch(e.target.value)}
+                              style={{ width: 260, padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "white", fontSize: 13, outline: "none", marginBottom: 16 }} />
+
+                            {/* Table */}
+                            <div style={{ marginBottom: 24 }}>
+                              <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: "8px 8px 0 0" }}>
+                                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr", padding: "10px 16px" }}>
+                                  {["PRODUCTO","UNIDADES","INGRESOS","MARGEN","TENDENCIA","VS MES ANT"].map(h => (
+                                    <span key={h} style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{h}</span>
+                                  ))}
+                                </div>
+                              </div>
+                              {filtered.map(p => (
+                                <div key={p.name}
+                                  style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr", padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.04)", alignItems: "center", cursor: "pointer", transition: "background 0.15s" }}
+                                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
+                                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: p.dot, flexShrink: 0 }} />
+                                    <div>
+                                      <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{p.name}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{p.cat}</div>
+                                    </div>
+                                  </div>
+                                  <span style={{ color: "white", fontSize: 13 }}>{p.units}</span>
+                                  <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{p.revenue}</span>
+                                  <span style={{ color: marginColor(p.margin), fontSize: 13, fontWeight: 500 }}>{p.margin}%</span>
+                                  <Sparkline trend={p.trend} />
+                                  <span style={{ color: p.vsColor, fontSize: 13, fontWeight: 500 }}>{p.vs}</span>
+                                </div>
+                              ))}
+                              {filtered.length === 0 && (
+                                <div style={{ padding: "24px 16px", textAlign: "center" as const, color: "rgba(255,255,255,0.15)", fontSize: 13 }}>Sin resultados</div>
+                              )}
+                            </div>
+
+                            {/* Product combos */}
+                            <div style={{ marginTop: 24 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Productos que se venden juntos</div>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Basado en historial de compras</div>
+                              {COMBOS.map(c => (
+                                <div key={c.a.name + c.b.name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px", marginBottom: 8 }}>
+                                  <div>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: c.a.dot }} />
+                                      <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{c.a.name}</span>
+                                      <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>+</span>
+                                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: c.b.dot }} />
+                                      <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{c.b.name}</span>
+                                    </div>
+                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 4 }}>Se compran juntos en el {c.pct} de los casos</div>
+                                  </div>
+                                  <button style={{ padding: "5px 12px", background: "transparent", border: "1px solid rgba(37,99,235,0.3)", borderRadius: 6, color: "#2563EB", fontSize: 12, cursor: "pointer", flexShrink: 0 }}>Sugerir combo →</button>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* AI insights */}
+                            <div style={{ marginTop: 24 }}>
+                              <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>✦ Análisis Pupi</div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                                {[
+                                  { prio: "Alta prioridad",  pColor: "#ef4444",  title: "Producto D está perdiendo terreno",           body: "Caída del 8% este mes y tendencia negativa hace 3 meses. Revisá precio o estrategia de comunicación." },
+                                  { prio: "Media prioridad", pColor: "#eab308",  title: "Producto C tiene el mejor margen",             body: "Con 68% de margen y tendencia estable, es ideal para priorizar en campañas." },
+                                  { prio: "Media prioridad", pColor: "#eab308",  title: "Estacionalidad detectada en Producto A",       body: "Histórico muestra pico de ventas en mayo y noviembre. Preparar stock con anticipación." },
+                                ].map(r => (
+                                  <div key={r.title} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "12px 16px", display: "flex", gap: 12, alignItems: "flex-start" }}>
+                                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: r.pColor, marginTop: 5, flexShrink: 0 }} />
+                                    <div>
+                                      <div style={{ color: r.pColor, fontSize: 10, marginBottom: 3 }}>{r.prio}</div>
+                                      <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 3 }}>{r.title}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{r.body}</div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div style={{ height: 24 }} />
+                          </div>
+                        )
+                      })()}
+
+                      {/* Pipeline content */}
+                      {ventasNavTab === "Pipeline" && (
+                      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", padding: 24 }}>
+                      {/* Top bar */}
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexShrink: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                          <div>
+                            <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Pipeline</div>
+                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3 }}>4 oportunidades activas · $66.450 en juego</div>
+                          </div>
+                          <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
+                            {(["Kanban", "Embudo", "Ranking"] as const).map((m) => (
+                              <button key={m} onClick={() => setVentasPipeMode(m)} style={{
+                                padding: "5px 12px", borderRadius: 6, fontSize: 12, border: "none", cursor: "pointer",
+                                background: ventasPipeMode === m ? "rgba(37,99,235,0.2)" : "rgba(255,255,255,0.05)",
+                                color: ventasPipeMode === m ? "#2563EB" : "rgba(255,255,255,0.4)",
+                                transition: "background 0.15s, color 0.15s",
+                              }}>{m}</button>
+                            ))}
+                          </div>
+                        </div>
+                        <button onClick={() => setVentasView("new")} style={{ background: "#2563EB", color: "white", border: "none", borderRadius: 8, padding: "7px 16px", fontSize: 13, cursor: "pointer" }}>Nueva oportunidad +</button>
+                      </div>
+
+                      {/* Stats row */}
+                      <div style={{ display: "flex", gap: 12, marginBottom: 24, flexShrink: 0 }}>
+                        {[
+                          { label: "Este mes",       value: "$28.500", sub: "↑ 12% vs mes anterior",  subColor: "#22c55e" },
+                          { label: "Tasa de cierre", value: "68%",     sub: "↑ 5% vs mes anterior",   subColor: "#22c55e" },
+                          { label: "Ticket promedio",value: "$9.240",  sub: "→ Sin cambios",           subColor: "rgba(255,255,255,0.35)" },
+                          { label: "Tiempo de cierre",value: "18 días",sub: "↓ 3 días menos",         subColor: "#22c55e" },
+                        ].map(({ label, value, sub, subColor }) => (
+                          <div key={label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
+                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>{label}</div>
+                            <div style={{ color: "white", fontSize: 18, fontWeight: 500, marginBottom: 4 }}>{value}</div>
+                            <div style={{ color: subColor, fontSize: 11 }}>{sub}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Risk alert banner */}
+                      {showRiskBanner && (
+                        <div style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "10px 16px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            <span style={{ color: "#ef4444", fontSize: 13 }}>2 oportunidades en riesgo de perderse</span>
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <button onClick={() => setVentasView("risk")} style={{ background: "rgba(239,68,68,0.1)", color: "#ef4444", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: 12, cursor: "pointer" }}>Ver detalles</button>
+                            <button onClick={() => setShowRiskBanner(false)} style={{ background: "none", border: "none", color: "rgba(239,68,68,0.4)", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "0 2px" }}>×</button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Ranking view */}
+                      {ventasPipeMode === "Ranking" && (() => {
+                        const RANK_DATA = [
+                          { pos: 1, name: "Carlos Mendoza",  company: "Tech Solutions",   amount: "$18.500", stage: "Negociación", prob: 80, days: 3,  score: 96, action: "Cerrar →" },
+                          { pos: 2, name: "Martín Pérez",    company: "Constructora MP",  amount: "$9.350",  stage: "Negociación", prob: 75, days: 5,  score: 88, action: "Cerrar →" },
+                          { pos: 3, name: "Sofía Martínez",  company: "Retail Express",   amount: "$8.900",  stage: "Propuesta",   prob: 60, days: 7,  score: 74, action: "Hacer seguimiento →" },
+                          { pos: 4, name: "Luis Herrera",    company: "Sin empresa",       amount: "$3.500",  stage: "Prospecto",   prob: 30, days: 12, score: 52, action: "Calificar →" },
+                          { pos: 5, name: "Valentina Cruz",  company: "Sin empresa",       amount: "$1.200",  stage: "Prospecto",   prob: 20, days: 20, score: 31, action: "Calificar →" },
+                        ]
+                        const posColor = (p: number) => p === 1 ? "#2563EB" : p === 2 ? "rgba(255,255,255,0.6)" : p === 3 ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.2)"
+                        const probColor = (p: number) => p >= 75 ? "#22c55e" : p >= 50 ? "#eab308" : "#ef4444"
+                        const scoreColor = (s: number) => s >= 90 ? "#22c55e" : s >= 70 ? "#2563EB" : s >= 50 ? "#eab308" : "#ef4444"
+                        const STAGE_COLOR_MAP: Record<string, string> = { "Negociación": "#22c55e", "Propuesta": "#2563EB", "Prospecto": "#eab308", "Cerrado": "rgba(255,255,255,0.2)" }
+                        return (
+                          <div style={{ flex: 1, overflowY: "auto" }}>
+                            {/* Ranking header */}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                              <div>
+                                <div style={{ color: "white", fontSize: 14, fontWeight: 500 }}>Oportunidades por prioridad</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3 }}>Ordenadas por IA según probabilidad, urgencia y valor</div>
+                              </div>
+                              <select style={{ width: 180, padding: "6px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "rgba(255,255,255,0.6)", fontSize: 12, outline: "none", cursor: "pointer" }}>
+                                {["Prioridad IA","Mayor monto","Cierre más próximo","Mayor probabilidad"].map(o => <option key={o}>{o}</option>)}
+                              </select>
+                            </div>
+
+                            {/* Ranking rows */}
+                            {RANK_DATA.map(r => (
+                              <div key={r.pos}
+                                onClick={() => { setVentasSelectedOpp({ id: String(r.pos), name: r.name, company: r.company, amount: r.amount, seller: "JP", close: "2026-05-" + String(20 + r.days), prob: r.prob, stage: r.stage }); setVentasView("detail"); setVentasTab("Customer Journey") }}
+                                style={{ display: "grid", gridTemplateColumns: "40px 1fr 100px 100px 120px 140px 120px", alignItems: "center", gap: 16, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "16px 20px", marginBottom: 8, cursor: "pointer", transition: "background 0.15s, border-color 0.15s" }}
+                                onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)" }}
+                                onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.02)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)" }}>
+                                {/* Position */}
+                                <div style={{ color: posColor(r.pos), fontSize: 18, fontWeight: 600, textAlign: "center" as const }}>#{r.pos}</div>
+                                {/* Client info */}
+                                <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                                  <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{r.name.split(" ").map(w => w[0]).join("").slice(0,2)}</div>
+                                  <div style={{ minWidth: 0 }}>
+                                    <div style={{ color: "white", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.company}</div>
+                                    <span style={{ background: `${STAGE_COLOR_MAP[r.stage]}20`, color: STAGE_COLOR_MAP[r.stage], border: `1px solid ${STAGE_COLOR_MAP[r.stage]}40`, borderRadius: 4, padding: "1px 6px", fontSize: 10, marginTop: 2, display: "inline-block" }}>{r.stage}</span>
+                                  </div>
+                                </div>
+                                {/* Amount */}
+                                <div>
+                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 3 }}>Monto</div>
+                                  <div style={{ color: "white", fontSize: 14, fontWeight: 600 }}>{r.amount}</div>
+                                </div>
+                                {/* Probability */}
+                                <div>
+                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 3 }}>Prob. cierre</div>
+                                  <div style={{ color: probColor(r.prob), fontSize: 14, fontWeight: 600 }}>{r.prob}%</div>
+                                </div>
+                                {/* Closing date */}
+                                <div>
+                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 3 }}>Cierre estimado</div>
+                                  <div style={{ color: r.days < 5 ? "#ef4444" : "white", fontSize: 13, fontWeight: 500 }}>En {r.days} días</div>
+                                </div>
+                                {/* AI priority bar */}
+                                <div>
+                                  <div style={{ height: 6, background: "rgba(255,255,255,0.06)", borderRadius: 3, overflow: "hidden", marginBottom: 5 }}>
+                                    <div style={{ width: `${r.score}%`, height: "100%", background: scoreColor(r.score), borderRadius: 3 }} />
+                                  </div>
+                                  <div style={{ color: scoreColor(r.score), fontSize: 11, fontWeight: 500 }}>{r.score}/100</div>
+                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Prioridad Pupi</div>
+                                </div>
+                                {/* Quick action */}
+                                <div>
+                                  <button onClick={e => e.stopPropagation()} style={{ border: "1px solid rgba(37,99,235,0.3)", background: "transparent", color: "#2563EB", fontSize: 12, borderRadius: 6, padding: "6px 12px", cursor: "pointer", whiteSpace: "nowrap" as const }}>{r.action}</button>
+                                </div>
+                              </div>
+                            ))}
+
+                            {/* AI explanation box */}
+                            <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 10, padding: 16, marginTop: 16 }}>
+                              <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>✦ Cómo Pupi calcula la prioridad</div>
+                              <div style={{ display: "flex", alignItems: "stretch" }}>
+                                {([["35%","Probabilidad"],["25%","Urgencia"],["25%","Valor del trato"],["15%","Actividad reciente"]] as [string,string][]).map(([pct, label], i, arr) => (
+                                  <div key={label} style={{ display: "contents" }}>
+                                    <div style={{ flex: 1, textAlign: "center" as const }}>
+                                      <div style={{ color: "white", fontSize: 16, fontWeight: 600 }}>{pct}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 4 }}>{label}</div>
+                                    </div>
+                                    {i < arr.length - 1 && <div style={{ width: 1, background: "rgba(255,255,255,0.06)", margin: "0 8px", alignSelf: "stretch" }} />}
+                                  </div>
+                                ))}
+                              </div>
+                              <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, textAlign: "center" as const, marginTop: 12 }}>La prioridad se recalcula automáticamente cada 24 horas</div>
+                            </div>
+
+                            <div style={{ height: 16 }} />
+                          </div>
+                        )
+                      })()}
+
+                      {/* Kanban / Embudo toggle content */}
+                      {ventasPipeMode === "Kanban" ? (
+                        <div style={{ display: "flex", gap: 16, overflowX: "auto", flex: 1, paddingBottom: 8, minHeight: 0 }}>
+                          {stages.map((stage) => {
+                            const cards = byStage(stage)
+                            return (
+                              <div key={stage} style={{ minWidth: 220, flexShrink: 0, display: "flex", flexDirection: "column" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, borderTop: `2px solid ${STAGE_COLOR[stage]}`, paddingTop: 10 }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                    <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{stage}</span>
+                                    <span style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.4)", borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>{cards.length}</span>
+                                  </div>
+                                  <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>{stageTotal(stage)}</span>
+                                </div>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 10, overflowY: "auto" }}>
+                                  {cards.map((opp) => {
+                                    const hovered = ventasCardHover === opp.id
+                                    return (
+                                      <div
+                                        key={opp.id}
+                                        onMouseEnter={() => setVentasCardHover(opp.id)}
+                                        onMouseLeave={() => setVentasCardHover(null)}
+                                        onClick={() => { setVentasSelectedOpp(opp); setVentasView("detail"); setVentasTab("Customer Journey") }}
+                                        style={{
+                                          background: opp.won ? (hovered ? "rgba(34,197,94,0.08)" : "rgba(34,197,94,0.05)") : (hovered ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.04)"),
+                                          border: `1px solid ${opp.won ? (hovered ? "rgba(34,197,94,0.25)" : "rgba(34,197,94,0.15)") : (hovered ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.07)")}`,
+                                          borderRadius: 10, padding: 14, cursor: "pointer",
+                                          transition: "background 0.15s, border-color 0.15s",
+                                        }}
+                                      >
+                                        <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{opp.name}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>{opp.company}</div>
+                                        <div style={{ color: "white", fontSize: 15, fontWeight: 500, marginTop: 10 }}>{opp.amount}</div>
+                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
+                                          <div style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                            <span style={{ color: "#2563EB", fontSize: 9, fontWeight: 600 }}>{opp.seller}</span>
+                                          </div>
+                                          <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>{opp.close}</span>
+                                        </div>
+                                        <div style={{ marginTop: 10, height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                                          <div style={{ height: "100%", width: `${opp.prob}%`, background: STAGE_FILL[stage], borderRadius: 2 }} />
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      ) : (
+                        /* ── EMBUDO VIEW ── */
+                        <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "24px 40px", width: "100%" }}>
+                            {([
+                              { stage: "Prospecto"   as Stage, width: "100%", bg: "rgba(99,102,241,0.15)",  border: "rgba(99,102,241,0.3)",  conv: null,    count: 2, total: "$29.700" },
+                              { stage: "Propuesta"   as Stage, width: "78%",  bg: "rgba(234,179,8,0.15)",   border: "rgba(234,179,8,0.3)",   conv: "50%",   count: 1, total: "$8.900"  },
+                              { stage: "Negociación" as Stage, width: "58%",  bg: "rgba(249,115,22,0.15)",  border: "rgba(249,115,22,0.3)",  conv: "200%",  count: 2, total: "$27.850" },
+                              { stage: "Cerrado"     as Stage, width: "38%",  bg: "rgba(34,197,94,0.15)",   border: "rgba(34,197,94,0.3)",   conv: "50%",   count: 1, total: "$4.200"  },
+                            ]).map(({ stage, width, bg, border, conv, count, total }, idx) => (
+                              <div key={stage} style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+                                {idx > 0 && (
+                                  <div style={{ color: "rgba(255,255,255,0.15)", fontSize: 16, marginBottom: 4, lineHeight: 1 }}>▼</div>
+                                )}
+                                <div style={{ width, height: 64, background: bg, border: `1px solid ${border}`, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", transition: "width 0.3s" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                    <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{stage}</span>
+                                    <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{count} {count === 1 ? "oportunidad" : "oportunidades"}</span>
+                                  </div>
+                                  <div style={{ textAlign: "right" as const }}>
+                                    <div style={{ color: "white", fontSize: 14, fontWeight: 500 }}>{total}</div>
+                                    {conv && <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>→ {conv} conversión</div>}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Insight cards */}
+                          <div style={{ display: "flex", gap: 16, marginTop: 32, padding: "0 40px 32px" }}>
+                            <div style={{ flex: 1, background: "rgba(249,115,22,0.08)", border: "1px solid rgba(249,115,22,0.2)", borderRadius: 10, padding: 16 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>
+                                <span style={{ color: "#f97316", fontSize: 12, fontWeight: 500 }}>Cuello de botella detectado</span>
+                              </div>
+                              <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, lineHeight: 1.5, margin: 0 }}>
+                                La etapa Propuesta tiene la mayor caída de conversión (22%). Revisá el proceso de seguimiento post-propuesta.
+                              </p>
+                            </div>
+                            <div style={{ flex: 1, background: "rgba(37,99,235,0.08)", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 10, padding: 16 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+                                </svg>
+                                <span style={{ color: "#2563EB", fontSize: 12, fontWeight: 500 }}>Proyección del mes</span>
+                              </div>
+                              <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, lineHeight: 1.5, margin: 0 }}>
+                                Si se cierran las oportunidades en negociación, el mes terminaría en $56.350 — un 28% por encima del mes anterior.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      </div>
+                      )}
+                    </div>
+                  )
+                })()
+              ) : activeNode.id === 3 ? (
+                // ── MARKETING MODULE ──
+                (() => {
+                  type CampStatus = "Activa" | "Pausada" | "Finalizada"
+                  type CampChannel = "Email" | "Redes sociales" | "Google Ads" | "WhatsApp" | "Evento"
+                  const CAMPAIGNS: { id: number; name: string; channel: CampChannel; date: string; status: CampStatus; roi: string; roiDir: "up" | "down" | "flat"; budget: string }[] = [
+                    { id: 1, name: "Campaña Primavera 2026",    channel: "Email",           date: "Mayo 2026",  status: "Activa",    roi: "↑ 340%", roiDir: "up",   budget: "$2.400" },
+                    { id: 2, name: "Remarketing clientes fríos",channel: "Redes sociales",  date: "Mayo 2026",  status: "Activa",    roi: "↑ 180%", roiDir: "up",   budget: "$800"   },
+                    { id: 3, name: "Google Ads — Producto X",   channel: "Google Ads",      date: "Abril 2026", status: "Activa",    roi: "↑ 95%",  roiDir: "up",   budget: "$3.200" },
+                    { id: 4, name: "Newsletter mensual",        channel: "Email",           date: "Abril 2026", status: "Finalizada",roi: "↑ 220%", roiDir: "up",   budget: "$400"   },
+                    { id: 5, name: "Lanzamiento temporada",     channel: "Evento",          date: "Marzo 2026", status: "Finalizada",roi: "→",      roiDir: "flat", budget: "$5.000" },
+                    { id: 6, name: "WhatsApp broadcast",        channel: "WhatsApp",        date: "Marzo 2026", status: "Pausada",   roi: "↓ 20%",  roiDir: "down", budget: "$600"   },
+                  ]
+                  const CHANNEL_ICON: Record<CampChannel, { bg: string; color: string; icon: React.ReactNode }> = {
+                    "Email":          { bg: "rgba(37,99,235,0.2)",   color: "#2563EB", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> },
+                    "Redes sociales": { bg: "rgba(168,85,247,0.2)",  color: "#a855f7", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> },
+                    "Google Ads":     { bg: "rgba(234,179,8,0.2)",   color: "#eab308", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> },
+                    "WhatsApp":       { bg: "rgba(34,197,94,0.2)",   color: "#22c55e", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
+                    "Evento":         { bg: "rgba(249,115,22,0.2)",  color: "#f97316", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> },
+                  }
+                  const STATUS_STYLE: Record<CampStatus, { bg: string; color: string; border: string }> = {
+                    Activa:     { bg: "rgba(34,197,94,0.1)",  color: "#22c55e", border: "rgba(34,197,94,0.2)"  },
+                    Pausada:    { bg: "rgba(234,179,8,0.1)",  color: "#eab308", border: "rgba(234,179,8,0.2)"  },
+                    Finalizada: { bg: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.3)", border: "rgba(255,255,255,0.1)" },
+                  }
+                  const ROI_COLOR: Record<string, string> = { up: "#22c55e", down: "#ef4444", flat: "rgba(255,255,255,0.4)" }
+                  const filterLabel: React.CSSProperties = { color: "rgba(255,255,255,0.3)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
+                  const filteredCampaigns = CAMPAIGNS
+                    .filter(c => mktStatusFilter === "Todas" || c.status === mktStatusFilter.replace(/\s.*/, ""))
+                    .filter(c => mktChannelFilter === "Todos" || c.channel === mktChannelFilter)
+                    .filter(c => !mktSearch || c.name.toLowerCase().includes(mktSearch.toLowerCase()))
+
+                  // ── NEW CAMPAIGN FORM VIEW ──
+                  if (mktView === "new") {
+                    const inputStyle: React.CSSProperties = { width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "white", fontSize: 13, outline: "none", boxSizing: "border-box" as const, fontFamily: "inherit" }
+                    const labelStyle: React.CSSProperties = { color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 5, display: "block", textTransform: "uppercase" as const, letterSpacing: "0.04em" }
+                    const selectStyle: React.CSSProperties = { ...inputStyle, cursor: "pointer", appearance: "none" as const }
+                    const CHANNELS: { key: string; label: string; color: string; icon: React.ReactNode }[] = [
+                      { key: "Email",          label: "Email",    color: "#2563EB", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> },
+                      { key: "Redes sociales", label: "Redes",    color: "#a855f7", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> },
+                      { key: "Google Ads",     label: "Google",   color: "#eab308", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> },
+                      { key: "WhatsApp",       label: "WhatsApp", color: "#22c55e", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
+                      { key: "Evento",         label: "Evento",   color: "#f97316", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> },
+                      { key: "Otro",           label: "Otro",     color: "rgba(255,255,255,0.4)", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg> },
+                    ]
+                    const SEGS = ["Todos los clientes","Calientes","Tibios","Frío","Clientes VIP","Clientes nuevos"]
+                    const subjectScore = newCampSubject.length === 0 ? 0 : newCampSubject.length < 20 ? 4 : newCampSubject.length < 45 ? 8 : newCampSubject.length < 60 ? 9 : 6
+                    const scoreDesc: Record<number, string> = { 0: "", 4: "Asunto muy corto, sé más específico", 6: "Asunto largo, puede truncarse", 8: "Buen asunto, claro y directo", 9: "Excelente asunto" }
+                    const toggleSeg = (s: string) => setNewCampSegments(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s])
+                    const handleLaunch = () => {
+                      const monthNames = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
+                      const now = new Date()
+                      const monthLabel = monthNames[now.getMonth()] + " " + now.getFullYear()
+                      const newEntry = {
+                        id: Date.now(),
+                        name: newCampName || "Nueva campaña",
+                        channel: (newCampChannel || "Email") as CampChannel,
+                        date: monthLabel,
+                        status: "Activa" as CampStatus,
+                        roi: "→",
+                        roiDir: "flat" as "flat",
+                        budget: newCampBudget ? "$" + newCampBudget : "$0",
+                      }
+                      CAMPAIGNS.unshift(newEntry)
+                      setNewCampName(""); setNewCampChannel(null); setNewCampObjective("Generar nuevas ventas")
+                      setNewCampSegments([]); setNewCampBudget(""); setNewCampStart(""); setNewCampEnd("")
+                      setNewCampOwner("JP"); setNewCampSubject(""); setNewCampMessage(""); setNewCampCTA("")
+                      setNewCampTargetOpen(""); setNewCampTargetClick(""); setNewCampTargetConv("")
+                      setMktView("campaigns")
+                    }
+                    return (
+                      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                        {/* Form body */}
+                        <div style={{ flex: 1, overflowY: "auto", padding: "24px 24px 0 24px" }}>
+                          <div style={{ display: "flex", gap: 24 }}>
+                            {/* LEFT COLUMN */}
+                            <div style={{ width: "45%", flexShrink: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Datos de la campaña</div>
+
+                              {/* Nombre */}
+                              <div>
+                                <label style={labelStyle}>Nombre de la campaña</label>
+                                <input type="text" value={newCampName} onChange={e => setNewCampName(e.target.value)} placeholder="Ej: Campaña Primavera 2026" style={inputStyle} />
+                              </div>
+
+                              {/* Canal */}
+                              <div>
+                                <label style={labelStyle}>Canal</label>
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                                  {CHANNELS.map(ch => {
+                                    const sel = newCampChannel === ch.key
+                                    return (
+                                      <button key={ch.key} onClick={() => setNewCampChannel(sel ? null : ch.key)}
+                                        style={{ borderRadius: 8, padding: "10px 14px", display: "flex", flexDirection: "column" as const, alignItems: "center", gap: 6, cursor: "pointer", flex: 1, border: `1px solid ${sel ? ch.color : "rgba(255,255,255,0.08)"}`, background: sel ? `rgba(${ch.color === "#2563EB" ? "37,99,235" : ch.color === "#a855f7" ? "168,85,247" : ch.color === "#eab308" ? "234,179,8" : ch.color === "#22c55e" ? "34,197,94" : ch.color === "#f97316" ? "249,115,22" : "255,255,255"},0.1)` : "rgba(255,255,255,0.03)", transition: "border 0.15s, background 0.15s" }}>
+                                        {ch.icon}
+                                        <span style={{ fontSize: 11, color: sel ? ch.color : "rgba(255,255,255,0.5)" }}>{ch.label}</span>
+                                      </button>
+                                    )
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* Objetivo */}
+                              <div>
+                                <label style={labelStyle}>Objetivo principal</label>
+                                <select value={newCampObjective} onChange={e => setNewCampObjective(e.target.value)} style={selectStyle}>
+                                  {["Generar nuevas ventas","Recuperar clientes inactivos","Fidelizar clientes actuales","Dar a conocer producto nuevo","Aumentar ticket promedio"].map(o => <option key={o} value={o}>{o}</option>)}
+                                </select>
+                              </div>
+
+                              {/* Segmento */}
+                              <div>
+                                <label style={labelStyle}>Segmento objetivo</label>
+                                <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>
+                                  {SEGS.map(s => {
+                                    const sel = newCampSegments.includes(s)
+                                    return <button key={s} onClick={() => toggleSeg(s)} style={{ padding: "4px 10px", borderRadius: 20, fontSize: 12, border: `1px solid ${sel ? "rgba(37,99,235,0.3)" : "rgba(255,255,255,0.1)"}`, background: sel ? "rgba(37,99,235,0.15)" : "transparent", color: sel ? "#2563EB" : "rgba(255,255,255,0.4)", cursor: "pointer", transition: "all 0.15s" }}>{s}</button>
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* Presupuesto */}
+                              <div>
+                                <label style={labelStyle}>Presupuesto</label>
+                                <div style={{ position: "relative" as const }}>
+                                  <span style={{ position: "absolute" as const, left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.4)", fontSize: 13, pointerEvents: "none" }}>$</span>
+                                  <input type="number" value={newCampBudget} onChange={e => setNewCampBudget(e.target.value)} placeholder="0" style={{ ...inputStyle, paddingLeft: 24 }} />
+                                </div>
+                              </div>
+
+                              {/* Fechas */}
+                              <div>
+                                <label style={labelStyle}>Período</label>
+                                <div style={{ display: "flex", gap: 12 }}>
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 4 }}>Inicio</div>
+                                    <input type="date" value={newCampStart} onChange={e => setNewCampStart(e.target.value)} style={{ ...inputStyle, colorScheme: "dark" }} />
+                                  </div>
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 4 }}>Fin</div>
+                                    <input type="date" value={newCampEnd} onChange={e => setNewCampEnd(e.target.value)} style={{ ...inputStyle, colorScheme: "dark" }} />
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Responsable */}
+                              <div>
+                                <label style={labelStyle}>Responsable</label>
+                                <select value={newCampOwner} onChange={e => setNewCampOwner(e.target.value)} style={selectStyle}>
+                                  {[["JP","Juan Pérez"],["CA","Carla Andrés"],["MR","Marcos Ruiz"],["LP","Laura Pinto"]].map(([v,l]) => <option key={v} value={v}>{l}</option>)}
+                                </select>
+                              </div>
+                            </div>
+
+                            {/* RIGHT COLUMN */}
+                            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Contenido y mensaje</div>
+
+                              {/* Asunto */}
+                              <div>
+                                <label style={labelStyle}>Asunto / Título</label>
+                                <input type="text" value={newCampSubject} onChange={e => setNewCampSubject(e.target.value)} placeholder='Ej: "Tu oferta vence esta semana"' style={inputStyle} />
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+                                  <div style={{ color: "#2563EB", fontSize: 11 }}>
+                                    {newCampSubject.length > 0 && `✦ Puntuación Pupi: ${subjectScore}/10 — ${scoreDesc[subjectScore]}`}
+                                  </div>
+                                  <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10 }}>{newCampSubject.length}/60 caracteres</div>
+                                </div>
+                              </div>
+
+                              {/* Mensaje */}
+                              <div>
+                                <label style={labelStyle}>Mensaje o descripción</label>
+                                <textarea value={newCampMessage} onChange={e => setNewCampMessage(e.target.value)} placeholder="Escribí el mensaje principal de la campaña..." style={{ ...inputStyle, minHeight: 100, resize: "vertical" as const }} />
+                              </div>
+
+                              {/* CTA */}
+                              <div>
+                                <label style={labelStyle}>Llamado a la acción (CTA)</label>
+                                <input type="text" value={newCampCTA} onChange={e => setNewCampCTA(e.target.value)} placeholder="Ej: Ver ofertas, Comprar ahora, Reservar lugar" style={inputStyle} />
+                              </div>
+
+                              {/* Upload area */}
+                              <div>
+                                <label style={labelStyle}>Material adjunto</label>
+                                <div style={{ border: "1px dashed rgba(255,255,255,0.1)", borderRadius: 8, padding: 16, textAlign: "center" as const }}>
+                                  <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, marginBottom: 8 }}>Arrastrá imágenes o archivos</div>
+                                  <button style={{ padding: "5px 12px", fontSize: 11, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>+ Adjuntar</button>
+                                </div>
+                              </div>
+
+                              {/* Métricas objetivo */}
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginTop: 8, marginBottom: 4 }}>Métricas objetivo</div>
+                              <div style={{ display: "flex", gap: 10 }}>
+                                {[
+                                  { label: "APERTURA OBJETIVO", suffix: "%",      placeholder: "40", val: newCampTargetOpen,  set: setNewCampTargetOpen  },
+                                  { label: "CLICKS OBJETIVO",   suffix: "%",      placeholder: "15", val: newCampTargetClick, set: setNewCampTargetClick },
+                                  { label: "CONVERSIONES",      suffix: "ventas", placeholder: "10", val: newCampTargetConv,  set: setNewCampTargetConv  },
+                                ].map(m => (
+                                  <div key={m.label} style={{ flex: 1 }}>
+                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginBottom: 5, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{m.label}</div>
+                                    <div style={{ position: "relative" as const }}>
+                                      <input type="number" value={m.val} onChange={e => m.set(e.target.value)} placeholder={m.placeholder} style={{ ...inputStyle, paddingRight: m.suffix === "ventas" ? 48 : 28 }} />
+                                      <span style={{ position: "absolute" as const, right: 10, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.3)", fontSize: 11, pointerEvents: "none" }}>{m.suffix}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+
+                              {/* AI suggestion */}
+                              <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 10, padding: "12px 14px", marginTop: 8 }}>
+                                <div style={{ color: "#60a5fa", fontSize: 12, fontWeight: 600, marginBottom: 6 }}>✦ Pupi sugiere</div>
+                                <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, lineHeight: 1.6 }}>Basado en campañas anteriores de email, el mejor día para enviar es el martes a las 10am. La tasa de apertura promedio de tu base es 42%.</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Bottom bar */}
+                        <div style={{ padding: "14px 24px", borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+                          <button onClick={() => setMktView("campaigns")} style={{ padding: "9px 16px", fontSize: 13, background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer" }}>Cancelar</button>
+                          <div style={{ display: "flex", gap: 10 }}>
+                            <button onClick={() => setMktView("campaigns")} style={{ padding: "9px 16px", fontSize: 13, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>Guardar borrador</button>
+                            <button onClick={handleLaunch} style={{ padding: "9px 16px", fontSize: 13, background: "#2563EB", border: "none", borderRadius: 8, color: "white", cursor: "pointer", fontWeight: 500 }}>Lanzar campaña</button>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  }
+
+                  // ── CAMPAIGN DETAIL VIEW ──
+                  if (mktView === "detail" && mktSelectedCamp) {
+                    const camp = mktSelectedCamp
+                    const ch = CHANNEL_ICON[camp.channel as CampChannel]
+                    const st = STATUS_STYLE[camp.status as CampStatus]
+                    const metricCard = (label: string, value: string, sub: string, color: string) => (
+                      <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "12px 16px", flex: 1 }}>
+                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 4 }}>{label}</div>
+                        <div style={{ color, fontSize: 20, fontWeight: 700 }}>{value}</div>
+                        <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, marginTop: 2 }}>{sub}</div>
+                      </div>
+                    )
+                    const aiCard = (icon: string, label: string, value: string, valueColor: string, sub: string) => (
+                      <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 10, padding: "12px 14px", display: "flex", gap: 12, alignItems: "flex-start" }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>{icon}</div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{label}</div>
+                          <div style={{ color: valueColor, fontSize: 16, fontWeight: 700, marginTop: 1 }}>{value}</div>
+                          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginTop: 2 }}>{sub}</div>
+                        </div>
+                      </div>
+                    )
+                    // SVG line chart data
+                    const days = ["L","M","X","J","V","S","D"]
+                    const opens  = [410, 620, 580, 710, 680, 750, 700]
+                    const clicks = [120, 190, 160, 220, 200, 240, 210]
+                    const maxVal = 800
+                    const W = 360, H = 100
+                    const px = (i: number) => (i / (days.length - 1)) * W
+                    const py = (v: number) => H - (v / maxVal) * H
+                    const polyline = (arr: number[]) => arr.map((v, i) => `${px(i)},${py(v)}`).join(" ")
+                    // Funnel
+                    const funnel = [
+                      { label: "Enviados",     val: 2840, pct: 100 },
+                      { label: "Abiertos",     val: 1931, pct: 68  },
+                      { label: "Clicks",       val: 683,  pct: 24  },
+                      { label: "Conversiones", val: 8,    pct: 0.3 },
+                    ]
+                    return (
+                      <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+                        {/* Left column */}
+                        <div style={{ width: "32%", flexShrink: 0, borderRight: "1px solid rgba(255,255,255,0.06)", padding: "24px 20px", display: "flex", flexDirection: "column", gap: 16, overflowY: "auto" }}>
+                          {/* Channel icon + name */}
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, paddingBottom: 16, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                            <div style={{ width: 56, height: 56, borderRadius: 16, background: ch.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={ch.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                {camp.channel === "Email"          && <><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></>}
+                                {camp.channel === "Redes sociales" && <><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></>}
+                                {camp.channel === "Google Ads"     && <><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>}
+                                {camp.channel === "WhatsApp"       && <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>}
+                                {camp.channel === "Evento"         && <><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></>}
+                              </svg>
+                            </div>
+                            <div style={{ textAlign: "center" as const }}>
+                              <div style={{ color: "white", fontSize: 14, fontWeight: 600 }}>{camp.name}</div>
+                              <span style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}`, borderRadius: 20, padding: "2px 10px", fontSize: 11, display: "inline-block", marginTop: 6 }}>{camp.status}</span>
+                            </div>
+                          </div>
+
+                          {/* Info rows */}
+                          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                            {[
+                              ["Canal",         camp.channel],
+                              ["Estado",        camp.status],
+                              ["Inicio",        "01 " + camp.date],
+                              ["Fin estimado",  "31 " + camp.date],
+                              ["Presupuesto",   camp.budget],
+                              ["Responsable",   "Equipo Marketing"],
+                              ["Segmento",      "Clientes activos"],
+                            ].map(([k, v]) => (
+                              <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>{k}</span>
+                                <span style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 500 }}>{v}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Budget progress */}
+                          <div>
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                              <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>Presupuesto ejecutado</span>
+                              <span style={{ color: "white", fontSize: 11, fontWeight: 600 }}>65%</span>
+                            </div>
+                            <div style={{ height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 3, overflow: "hidden" }}>
+                              <div style={{ width: "65%", height: "100%", background: "linear-gradient(90deg, #2563EB, #60a5fa)", borderRadius: 3 }} />
+                            </div>
+                          </div>
+
+                          {/* AI cards */}
+                          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                            <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Análisis IA</div>
+                            {aiCard("📈", "ROI",                  camp.roi === "→" ? "Plano" : camp.roi, ROI_COLOR[camp.roiDir], "vs. promedio de campañas")}
+                            {aiCard("👥", "Clientes generados",   "8",    "white", "en este período")}
+                            {aiCard("💰", "Costo por cliente",    "$195", "white", "por conversión")}
+                            {aiCard("🤖", "Recomendación",        "Aumentar presupuesto", "#60a5fa", "canal con mejor CPL del trimestre")}
+                          </div>
+                        </div>
+
+                        {/* Right column */}
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                          {/* Tabs */}
+                          <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "0 24px", flexShrink: 0 }}>
+                            {(["Resultados","Audiencia","Contenido","Notas"] as const).map(t => (
+                              <button key={t} onClick={() => setMktDetailTab(t)} style={{ padding: "12px 14px", fontSize: 13, background: "none", border: "none", cursor: "pointer", color: mktDetailTab === t ? "white" : "rgba(255,255,255,0.35)", borderBottom: `2px solid ${mktDetailTab === t ? "#2563EB" : "transparent"}`, marginBottom: -1, transition: "color 0.15s, border-color 0.15s" }}>{t}</button>
+                            ))}
+                          </div>
+
+                          <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px" }}>
+                            {/* ── RESULTADOS ── */}
+                            {mktDetailTab === "Resultados" && (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                                {/* Metric cards */}
+                                <div style={{ display: "flex", gap: 10 }}>
+                                  {metricCard("Enviados",     "2.840", "Total destinatarios", "white")}
+                                  {metricCard("Tasa apertura","68%",   "↑ 12 pp vs. anterior", "#22c55e")}
+                                  {metricCard("CTR",          "24%",   "Clicks / abiertos",   "white")}
+                                  {metricCard("Conversiones", "8",     "Últimos 30 días",     "#60a5fa")}
+                                </div>
+
+                                {/* Line chart */}
+                                <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "16px 20px" }}>
+                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 12, display: "flex", gap: 16 }}>
+                                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 10, height: 2, background: "#2563EB", display: "inline-block", borderRadius: 2 }}/>Aperturas</span>
+                                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 10, height: 2, background: "#22c55e", display: "inline-block", borderRadius: 2 }}/>Clicks</span>
+                                  </div>
+                                  <svg width="100%" viewBox={`0 0 ${W} ${H + 20}`} style={{ overflow: "visible" }}>
+                                    {/* Grid lines */}
+                                    {[0, 0.25, 0.5, 0.75, 1].map(t => (
+                                      <line key={t} x1="0" y1={py(maxVal * t)} x2={W} y2={py(maxVal * t)} stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
+                                    ))}
+                                    {/* Opens area */}
+                                    <polyline points={polyline(opens)}  fill="none" stroke="#2563EB" strokeWidth="2" strokeLinejoin="round"/>
+                                    {/* Clicks area */}
+                                    <polyline points={polyline(clicks)} fill="none" stroke="#22c55e" strokeWidth="2" strokeLinejoin="round"/>
+                                    {/* Day labels */}
+                                    {days.map((d, i) => (
+                                      <text key={d} x={px(i)} y={H + 16} textAnchor="middle" fill="rgba(255,255,255,0.25)" fontSize="10">{d}</text>
+                                    ))}
+                                  </svg>
+                                </div>
+
+                                {/* Funnel */}
+                                <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "16px 20px" }}>
+                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 14 }}>Embudo de conversión</div>
+                                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                    {funnel.map((f, i) => {
+                                      const colors = ["#2563EB","#3b82f6","#60a5fa","#22c55e"]
+                                      return (
+                                        <div key={f.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                          <div style={{ width: 90, color: "rgba(255,255,255,0.4)", fontSize: 11, textAlign: "right" as const, flexShrink: 0 }}>{f.label}</div>
+                                          <div style={{ flex: 1, height: 20, background: "rgba(255,255,255,0.05)", borderRadius: 4, overflow: "hidden" }}>
+                                            <div style={{ width: `${f.pct}%`, height: "100%", background: colors[i], borderRadius: 4, minWidth: 4 }} />
+                                          </div>
+                                          <div style={{ width: 56, color: "white", fontSize: 12, fontWeight: 600, textAlign: "right" as const, flexShrink: 0 }}>{f.val.toLocaleString()}</div>
+                                          <div style={{ width: 36, color: "rgba(255,255,255,0.3)", fontSize: 11, textAlign: "right" as const, flexShrink: 0 }}>{f.pct}%</div>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* ── AUDIENCIA ── */}
+                            {mktDetailTab === "Audiencia" && (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                                <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "16px 20px" }}>
+                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 12 }}>Segmento</div>
+                                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" as const }}>
+                                    {[["Clientes activos","68%"],["Clientes inactivos","20%"],["Prospectos","12%"]].map(([seg, pct]) => (
+                                      <div key={seg} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                        <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>{seg}</div>
+                                        <div style={{ color: "white", fontSize: 20, fontWeight: 700 }}>{pct}</div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div>
+                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Top respondentes</div>
+                                  {[
+                                    { name: "Farmacia Central",      email: "central@farmacia.com",   opens: 14 },
+                                    { name: "Distribuidora Norte",   email: "norte@distribuidora.com",opens: 11 },
+                                    { name: "Clínica San Martín",    email: "info@clinicasm.com",     opens: 9  },
+                                  ].map(r => (
+                                    <div key={r.name} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{r.name[0]}</div>
+                                      <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ color: "white", fontSize: 13 }}>{r.name}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>{r.email}</div>
+                                      </div>
+                                      <div style={{ color: "#60a5fa", fontSize: 12, fontWeight: 600 }}>{r.opens} aperturas</div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* ── CONTENIDO ── */}
+                            {mktDetailTab === "Contenido" && (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                                <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "16px 20px" }}>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 4 }}>Asunto del email</div>
+                                  <div style={{ color: "white", fontSize: 14, fontWeight: 500, marginBottom: 12 }}>🌸 ¡Llegó la Primavera! Descubrí nuestras novedades</div>
+                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>Puntuación IA</span>
+                                    <div style={{ display: "flex", gap: 2 }}>
+                                      {[1,2,3,4,5].map(s => <span key={s} style={{ color: s <= 4 ? "#eab308" : "rgba(255,255,255,0.15)", fontSize: 16 }}>★</span>)}
+                                      <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginLeft: 6, alignSelf: "center" }}>4/5</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div>
+                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Sugerencias IA</div>
+                                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const }}>
+                                    {["Agregar CTA más específico", "Reducir longitud en 20%"].map(sug => (
+                                      <span key={sug} style={{ background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 20, padding: "5px 12px", color: "#60a5fa", fontSize: 12 }}>{sug}</span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* ── NOTAS ── */}
+                            {mktDetailTab === "Notas" && (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                                <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>Notas internas de la campaña</div>
+                                <textarea placeholder="Escribí tus notas aquí..." style={{ width: "100%", minHeight: 180, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, color: "white", fontSize: 13, padding: "12px 14px", resize: "vertical" as const, outline: "none", boxSizing: "border-box" as const, fontFamily: "inherit" }} />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                      {/* Secondary nav */}
+                      <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "0 24px", flexShrink: 0 }}>
+                        {(["Campañas", "Insights", "Investigaciones"] as const).map(nav => (
+                          <button key={nav} onClick={() => setMktNavTab(nav)} style={{ padding: "12px 16px", fontSize: 13, background: "none", border: "none", cursor: "pointer", color: mktNavTab === nav ? "white" : "rgba(255,255,255,0.35)", borderBottom: `2px solid ${mktNavTab === nav ? "#2563EB" : "transparent"}`, transition: "color 0.15s, border-color 0.15s", marginBottom: -1 }}>{nav}</button>
+                        ))}
+                      </div>
+
+                      {/* Placeholders for non-campaigns tabs */}
+                      {mktNavTab === "Investigaciones" && (
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
+                          <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 13 }}>Investigaciones</span>
+                          <span style={{ color: "rgba(255,255,255,0.1)", fontSize: 11 }}>Próximamente</span>
+                        </div>
+                      )}
+
+                      {mktNavTab === "Insights" && (
+                        <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+                          {/* Top summary cards */}
+                          <div style={{ display: "flex", gap: 14, marginBottom: 24 }}>
+                            {[
+                              { label: "ROI promedio campañas", value: "209%", valueColor: "#22c55e", sub: "↑ 34% vs trimestre anterior", subColor: "#22c55e" },
+                              { label: "Canal más efectivo",    value: "Email", valueColor: "white",   sub: "68% apertura promedio",       subColor: "rgba(255,255,255,0.35)" },
+                              { label: "Costo por cliente",     value: "$195",  valueColor: "white",   sub: "↓ $40 vs mes anterior",       subColor: "#22c55e" },
+                            ].map(c => (
+                              <div key={c.label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px 16px" }}>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 6 }}>{c.label}</div>
+                                <div style={{ color: c.valueColor, fontSize: 20, fontWeight: 600 }}>{c.value}</div>
+                                <div style={{ color: c.subColor, fontSize: 11, marginTop: 4 }}>{c.sub}</div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Channel comparison */}
+                          <div style={{ marginBottom: 4 }}>
+                            <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }}>Rendimiento por canal</div>
+                            {[
+                              { key: "Email",          label: "Email",          campañas: 3, roi: 280,  barPct: 100, color: "#2563EB", bg: "rgba(37,99,235,0.2)",   icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> },
+                              { key: "Redes",          label: "Redes sociales", campañas: 1, roi: 180,  barPct: 64,  color: "#a855f7", bg: "rgba(168,85,247,0.2)", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> },
+                              { key: "Google",         label: "Google Ads",     campañas: 1, roi: 95,   barPct: 34,  color: "#eab308", bg: "rgba(234,179,8,0.2)",  icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> },
+                              { key: "WhatsApp",       label: "WhatsApp",       campañas: 1, roi: -20,  barPct: 0,   color: "#22c55e", bg: "rgba(34,197,94,0.2)",  icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
+                              { key: "Evento",         label: "Evento",         campañas: 1, roi: 0,    barPct: 0,   color: "#f97316", bg: "rgba(249,115,22,0.2)", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> },
+                            ].map(ch => (
+                              <div key={ch.key} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                                <div style={{ width: 32, height: 32, borderRadius: "50%", background: ch.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{ch.icon}</div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{ch.label}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{ch.campañas} {ch.campañas === 1 ? "campaña" : "campañas"}</div>
+                                </div>
+                                <div style={{ flex: 1, maxWidth: 180, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                                  <div style={{ width: `${ch.barPct}%`, height: "100%", background: ch.color, borderRadius: 2, minWidth: ch.barPct > 0 ? 4 : 0 }} />
+                                </div>
+                                <div style={{ width: 52, textAlign: "right" as const, flexShrink: 0, color: ch.roi > 0 ? "#22c55e" : ch.roi < 0 ? "#ef4444" : "rgba(255,255,255,0.3)", fontSize: 13, fontWeight: 500 }}>{ch.roi > 0 ? `+${ch.roi}%` : ch.roi < 0 ? `${ch.roi}%` : "—"}</div>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "24px 0" }} />
+
+                          {/* Segment insights */}
+                          <div>
+                            <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }}>Insights por segmento</div>
+                            <div style={{ display: "flex", gap: 12 }}>
+                              {[
+                                { name: "Clientes calientes", count: "284 clientes", stats: [["Apertura","74%"],["Clicks","31%"],["Conversión","12%"]], ai: "Mayor conversión del portfolio" },
+                                { name: "Clientes tibios",    count: "156 clientes", stats: [["Apertura","52%"],["Clicks","18%"],["Conversión","6%"]],  ai: "Potencial de mejora con personalización" },
+                                { name: "Clientes fríos",     count: "89 clientes",  stats: [["Apertura","28%"],["Clicks","8%"],["Conversión","2%"]],   ai: "Requieren campaña de re-engagement" },
+                              ].map(seg => (
+                                <div key={seg.name} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 16 }}>
+                                  <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{seg.name}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 12 }}>{seg.count}</div>
+                                  {seg.stats.map(([k, v]) => (
+                                    <div key={k} style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                                      <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>{k}</span>
+                                      <span style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{v}</span>
+                                    </div>
+                                  ))}
+                                  <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "10px 0" }} />
+                                  <div style={{ color: "#2563EB", fontSize: 11 }}>✦ {seg.ai}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "24px 0" }} />
+
+                          {/* AI Recommendations */}
+                          <div>
+                            <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>✦ Recomendaciones Pupi</div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                              {[
+                                { prio: "Alta prioridad",  pct: "#ef4444", title: "Pausar campaña de WhatsApp",                     body: "ROI negativo de -20% en los últimos 30 días. Redistribuir presupuesto a Email." },
+                                { prio: "Alta prioridad",  pct: "#ef4444", title: "Crear campaña de re-engagement para clientes fríos", body: "89 clientes sin comprar. Un descuento puede recuperar hasta 20% de ellos." },
+                                { prio: "Media prioridad", pct: "#eab308", title: "Personalizar asuntos de email con nombre del cliente", body: "Campañas personalizadas muestran +15% de apertura en tu industria." },
+                                { prio: "Baja prioridad",  pct: "rgba(255,255,255,0.3)", title: "Probar canal Google Ads con mayor presupuesto", body: "ROI de 95% con bajo presupuesto. Escalarlo puede multiplicar resultados." },
+                              ].map(r => (
+                                <div key={r.title} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "12px 16px", display: "flex", gap: 12, alignItems: "flex-start" }}>
+                                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: r.pct, marginTop: 5, flexShrink: 0 }} />
+                                  <div>
+                                    <div style={{ color: r.pct, fontSize: 10, marginBottom: 3 }}>{r.prio}</div>
+                                    <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 3 }}>{r.title}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{r.body}</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "24px 0" }} />
+
+                          {/* Ideal client profile */}
+                          <div>
+                            <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>✦ Perfil del cliente ideal</div>
+                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Generado desde datos reales de conversión</div>
+                            <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 12, padding: 20 }}>
+                              <div style={{ display: "flex", gap: 24 }}>
+                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0, minWidth: 80 }}>
+                                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                  </div>
+                                  <div style={{ color: "white", fontSize: 14, fontWeight: 500, marginTop: 10, textAlign: "center" as const }}>Cliente ideal</div>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textAlign: "center" as const }}>Top 15% de conversión</div>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                  {[
+                                    ["TEMPERATURA",      "Caliente"],
+                                    ["TICKET PROMEDIO",  "+$8.000"],
+                                    ["FRECUENCIA",       "Cada 20-30 días"],
+                                    ["ANTIGÜEDAD",       "+6 meses"],
+                                    ["CANAL PREFERIDO",  "Email"],
+                                    ["MEJOR MOMENTO",    "Martes 10am"],
+                                  ].map(([k, v]) => (
+                                    <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                                      <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{k}</span>
+                                      <span style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{v}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={{ height: 24 }} />
+                        </div>
+                      )}
+
+                      {mktNavTab === "Campañas" && (
+                        <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+                          {/* Left sidebar */}
+                          <div style={{ width: "25%", flexShrink: 0, background: "rgba(255,255,255,0.02)", borderRight: "1px solid rgba(255,255,255,0.06)", padding: "20px 16px", display: "flex", flexDirection: "column", overflowY: "auto" }}>
+                            <input type="text" placeholder="Buscar campaña..." value={mktSearch} onChange={e => setMktSearch(e.target.value)} style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "white", fontSize: 13, outline: "none", boxSizing: "border-box" as const }} />
+
+                            <div style={{ marginTop: 20, marginBottom: 8, ...filterLabel }}>Estado</div>
+                            {["Todas", "Activa 🟢", "Pausada 🟡", "Finalizada ⚫"].map(f => (
+                              <button key={f} onClick={() => setMktStatusFilter(f)} style={{ textAlign: "left" as const, padding: "7px 10px", borderRadius: 6, fontSize: 12, border: "none", cursor: "pointer", marginBottom: 2, background: mktStatusFilter === f ? "rgba(37,99,235,0.15)" : "transparent", color: mktStatusFilter === f ? "#2563EB" : "rgba(255,255,255,0.4)", transition: "background 0.15s, color 0.15s" }}>{f}</button>
+                            ))}
+
+                            <div style={{ marginTop: 16, marginBottom: 8, ...filterLabel }}>Canal</div>
+                            {["Todos", "Email", "Redes sociales", "Google Ads", "WhatsApp", "Evento"].map(f => (
+                              <button key={f} onClick={() => setMktChannelFilter(f)} style={{ textAlign: "left" as const, padding: "7px 10px", borderRadius: 6, fontSize: 12, border: "none", cursor: "pointer", marginBottom: 2, background: mktChannelFilter === f ? "rgba(37,99,235,0.15)" : "transparent", color: mktChannelFilter === f ? "#2563EB" : "rgba(255,255,255,0.4)", transition: "background 0.15s, color 0.15s" }}>{f}</button>
+                            ))}
+
+                            <div style={{ marginTop: 16, marginBottom: 8, ...filterLabel }}>Período</div>
+                            {["Este mes", "Último trimestre", "Este año"].map(f => (
+                              <button key={f} onClick={() => setMktPeriodFilter(f)} style={{ textAlign: "left" as const, padding: "7px 10px", borderRadius: 6, fontSize: 12, border: "none", cursor: "pointer", marginBottom: 2, background: mktPeriodFilter === f ? "rgba(37,99,235,0.15)" : "transparent", color: mktPeriodFilter === f ? "#2563EB" : "rgba(255,255,255,0.4)", transition: "background 0.15s, color 0.15s" }}>{f}</button>
+                            ))}
+                          </div>
+
+                          {/* Right section */}
+                          <div style={{ flex: 1, padding: "20px 24px", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexShrink: 0 }}>
+                              <div>
+                                <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Campañas</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>6 campañas · 3 activas</div>
+                              </div>
+                              <button onClick={() => setMktView("new")} style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Nueva campaña +</button>
+                            </div>
+
+                            <div style={{ flex: 1, overflowY: "auto" }}>
+                              {filteredCampaigns.map(camp => {
+                                const ch = CHANNEL_ICON[camp.channel]
+                                const st = STATUS_STYLE[camp.status]
+                                return (
+                                  <div key={camp.id} style={{ display: "flex", alignItems: "center", gap: 12, height: 64, borderBottom: "1px solid rgba(255,255,255,0.04)", padding: "0 12px", cursor: "pointer", transition: "background 0.15s" }}
+                                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
+                                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                                    onClick={() => { setMktSelectedCamp(camp); setMktView("detail"); setMktDetailTab("Resultados"); }}
+                                  >
+                                    <div style={{ width: 36, height: 36, borderRadius: "50%", background: ch.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{ch.icon}</div>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <div style={{ color: "white", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{camp.name}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{camp.channel} · {camp.date}</div>
+                                    </div>
+                                    <span style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}`, borderRadius: 20, padding: "2px 8px", fontSize: 11, flexShrink: 0 }}>{camp.status}</span>
+                                    <span style={{ color: ROI_COLOR[camp.roiDir], fontSize: 12, fontWeight: 500, width: 64, textAlign: "right" as const, flexShrink: 0 }}>{camp.roi}</span>
+                                    <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, width: 56, textAlign: "right" as const, flexShrink: 0 }}>{camp.budget}</span>
+                                  </div>
+                                )
+                              })}
+                              {filteredCampaigns.length === 0 && (
+                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, paddingTop: 48 }}>
+                                  <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 13 }}>Sin campañas</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })()
               ) : (
                 // ── PLACEHOLDER for other modules ──
                 <div
