@@ -149,12 +149,36 @@ export default function DashboardPage() {
   const [showDupBanner, setShowDupBanner] = useState(true)
   const [ventasView, setVentasView] = useState<"pipeline" | "detail" | "new" | "forecast" | "risk" | "sellers" | "products" | "ranking">("pipeline")
   const [showRiskBanner, setShowRiskBanner] = useState(true)
-  const [mktView, setMktView] = useState<"campaigns" | "detail" | "new" | "insights">("campaigns")
+  const [mktView, setMktView] = useState<"campaigns" | "detail" | "new" | "insights" | "research" | "newresearch" | "researchdetail">("campaigns")
   const [mktNavTab, setMktNavTab] = useState<"Campañas" | "Insights" | "Investigaciones">("Campañas")
   const [mktSearch, setMktSearch] = useState("")
   const [mktStatusFilter, setMktStatusFilter] = useState("Todas")
   const [mktChannelFilter, setMktChannelFilter] = useState("Todos")
   const [mktPeriodFilter, setMktPeriodFilter] = useState("Este mes")
+  const [resSearch, setResSearch] = useState("")
+  const [resTipoFilter, setResTipoFilter] = useState("Todos")
+  const [resStatusFilter, setResStatusFilter] = useState("Todos")
+  const [resAuthorFilter, setResAuthorFilter] = useState("Todos")
+  const [resSelected, setResSelected] = useState<{ title: string; type: string; author: string; date: string; desc: string; tags: string[]; status: string; files: number; ai: boolean } | null>(null)
+  const [resDetailTab, setResDetailTab] = useState<"Resumen" | "Hallazgos" | "Documentos" | "Notas">("Resumen")
+  const [showExportModal, setShowExportModal] = useState(false)
+  const [rrhhView, setRrhhView] = useState<"team" | "detail" | "new" | "orgchart" | "pulse" | "payroll">("team")
+  const [rrhhNavTab, setRrhhNavTab] = useState<"Equipo" | "Organigrama" | "Clima laboral" | "Sueldos" | "Resumen semanal">("Equipo")
+  const [rrhhSearch, setRrhhSearch] = useState("")
+  const [rrhhStatusFilter, setRrhhStatusFilter] = useState("Todos")
+  const [rrhhAreaFilter, setRrhhAreaFilter] = useState("Todas")
+  const [rrhhAlertFilter, setRrhhAlertFilter] = useState("Sin alertas")
+  const [rrhhSelectedEmp, setRrhhSelectedEmp] = useState<{ id: number; name: string; role: string; area: string; status: string; score: number; alert: string; seniority: string; initials: string } | null>(null)
+  const [showRrhhAlertBanner, setShowRrhhAlertBanner] = useState(true)
+  const [exportChecks, setExportChecks] = useState<boolean[]>([true, true, true, true, true, true])
+  const [exportPeriod, setExportPeriod] = useState("Este mes")
+  const [exportCustomFrom, setExportCustomFrom] = useState("")
+  const [exportCustomTo, setExportCustomTo] = useState("")
+  const [exportFormat, setExportFormat] = useState(0)
+  const [exportLogo, setExportLogo] = useState(true)
+  const [exportBrand, setExportBrand] = useState(true)
+  const [exportTitle, setExportTitle] = useState("Reporte de Marketing — Mayo 2026")
+  const [exportState, setExportState] = useState<"idle" | "loading" | "done">("idle")
   const [mktSelectedCamp, setMktSelectedCamp] = useState<{ id: number; name: string; channel: string; date: string; status: string; roi: string; roiDir: string; budget: string } | null>(null)
   const [mktDetailTab, setMktDetailTab] = useState<"Resultados" | "Audiencia" | "Contenido" | "Notas">("Resultados")
   const [newCampName, setNewCampName] = useState("")
@@ -650,6 +674,14 @@ export default function DashboardPage() {
                       <button onClick={() => setVentasView("pipeline")} style={{ color: "rgba(255,255,255,0.4)", fontSize: 16, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")} onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>{activeNode.title}</button>
                       <span style={{ color: "rgba(255,255,235,0.2)", fontSize: 14 }}>/</span>
                       <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>Oportunidades en riesgo</span>
+                    </>
+                  ) : activeNode.id === 3 && mktView === "researchdetail" && resSelected ? (
+                    <>
+                      <button onClick={() => setMktView("campaigns")} style={{ color: "rgba(255,255,255,0.4)", fontSize: 16, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")} onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>{activeNode.title}</button>
+                      <span style={{ color: "rgba(255,255,235,0.2)", fontSize: 14 }}>/</span>
+                      <button onClick={() => { setMktNavTab("Investigaciones"); setMktView("campaigns") }} style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")} onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>Investigaciones</button>
+                      <span style={{ color: "rgba(255,255,235,0.2)", fontSize: 14 }}>/</span>
+                      <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>{resSelected.title}</span>
                     </>
                   ) : activeNode.id === 3 && mktView === "new" ? (
                     <>
@@ -3728,19 +3760,472 @@ export default function DashboardPage() {
                   return (
                     <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
                       {/* Secondary nav */}
-                      <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "0 24px", flexShrink: 0 }}>
+                      <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "0 24px", flexShrink: 0, position: "relative" as const, alignItems: "center" }}>
                         {(["Campañas", "Insights", "Investigaciones"] as const).map(nav => (
                           <button key={nav} onClick={() => setMktNavTab(nav)} style={{ padding: "12px 16px", fontSize: 13, background: "none", border: "none", cursor: "pointer", color: mktNavTab === nav ? "white" : "rgba(255,255,255,0.35)", borderBottom: `2px solid ${mktNavTab === nav ? "#2563EB" : "transparent"}`, transition: "color 0.15s, border-color 0.15s", marginBottom: -1 }}>{nav}</button>
                         ))}
+                        <button onClick={() => { setShowExportModal(true); setExportState("idle") }} style={{ position: "absolute" as const, right: 24, display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", fontSize: 12, background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                          Exportar reporte
+                        </button>
+
+                        {/* Export modal */}
+                        {showExportModal && (
+                          <div style={{ position: "fixed" as const, inset: 0, background: "rgba(0,0,0,0.65)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setShowExportModal(false)}>
+                            <div style={{ background: "#0f1e35", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, padding: 24, width: 480, maxHeight: "88vh", overflowY: "auto" as const }} onClick={e => e.stopPropagation()}>
+                              <div style={{ color: "white", fontSize: 16, fontWeight: 500 }}>Exportar reporte</div>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 20, marginTop: 2 }}>Generado por Pupi AI</div>
+
+                              {/* Checkboxes */}
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>¿Qué querés exportar?</div>
+                              {[
+                                ["Resumen de campañas",     "Performance, ROI y métricas clave"],
+                                ["Análisis por canal",       "Comparativo de todos los canales"],
+                                ["Insights de segmentos",   "Rendimiento por tipo de cliente"],
+                                ["Atribución de clientes",  "Qué campañas generan más valor"],
+                                ["Estacionalidad",          "Calendario anual de demanda"],
+                                ["Recomendaciones Pupi",    "Acciones sugeridas por la IA"],
+                              ].map(([label, desc], i) => (
+                                <div key={label} onClick={() => setExportChecks(p => p.map((v, j) => j === i ? !v : v))} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)", cursor: "pointer" }}>
+                                  <div style={{ width: 16, height: 16, borderRadius: 4, border: `1px solid ${exportChecks[i] ? "#2563EB" : "rgba(255,255,255,0.2)"}`, background: exportChecks[i] ? "#2563EB" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
+                                    {exportChecks[i] && <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,6 5,9 10,3"/></svg>}
+                                  </div>
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ color: "white", fontSize: 13 }}>{label}</div>
+                                  </div>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textAlign: "right" as const, maxWidth: 160 }}>{desc}</div>
+                                </div>
+                              ))}
+
+                              <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "20px 0" }} />
+
+                              {/* Period */}
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Período</div>
+                              <div style={{ display: "flex", gap: 6, marginBottom: exportPeriod === "Personalizado" ? 12 : 0 }}>
+                                {["Este mes","Último trimestre","Este año","Personalizado"].map(p => (
+                                  <button key={p} onClick={() => setExportPeriod(p)} style={{ padding: "6px 12px", fontSize: 12, borderRadius: 6, border: `1px solid ${exportPeriod === p ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`, background: exportPeriod === p ? "rgba(37,99,235,0.1)" : "transparent", color: exportPeriod === p ? "#2563EB" : "rgba(255,255,255,0.4)", cursor: "pointer", transition: "all 0.15s" }}>{p}</button>
+                                ))}
+                              </div>
+                              {exportPeriod === "Personalizado" && (
+                                <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 4 }}>Desde</div>
+                                    <input type="date" value={exportCustomFrom} onChange={e => setExportCustomFrom(e.target.value)} style={{ width: "100%", padding: "7px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white", fontSize: 12, outline: "none", colorScheme: "dark", boxSizing: "border-box" as const }} />
+                                  </div>
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 4 }}>Hasta</div>
+                                    <input type="date" value={exportCustomTo} onChange={e => setExportCustomTo(e.target.value)} style={{ width: "100%", padding: "7px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white", fontSize: 12, outline: "none", colorScheme: "dark", boxSizing: "border-box" as const }} />
+                                  </div>
+                                </div>
+                              )}
+
+                              <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "20px 0" }} />
+
+                              {/* Format */}
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Formato</div>
+                              {[
+                                { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>, label: "Reporte PDF",      desc: "Ideal para presentaciones y reuniones con clientes" },
+                                { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>, label: "Planilla Excel",   desc: "Datos crudos para análisis personalizado" },
+                                { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>, label: "Presentación",    desc: "Slides listos para presentar al equipo" },
+                              ].map((f, i) => (
+                                <div key={f.label} onClick={() => setExportFormat(i)} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 14px", borderRadius: 8, border: `1px solid ${exportFormat === i ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`, background: exportFormat === i ? "rgba(37,99,235,0.08)" : "rgba(255,255,255,0.02)", cursor: "pointer", marginBottom: 8, transition: "all 0.15s" }}>
+                                  <div style={{ marginTop: 2 }}>{f.icon}</div>
+                                  <div>
+                                    <div style={{ color: "white", fontSize: 13 }}>{f.label}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{f.desc}</div>
+                                  </div>
+                                  <div style={{ marginLeft: "auto", width: 14, height: 14, borderRadius: "50%", border: `2px solid ${exportFormat === i ? "#2563EB" : "rgba(255,255,255,0.2)"}`, background: exportFormat === i ? "#2563EB" : "transparent", flexShrink: 0, marginTop: 3 }} />
+                                </div>
+                              ))}
+
+                              <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "20px 0" }} />
+
+                              {/* Personalización */}
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Personalización</div>
+                              {[
+                                { label: "Incluir logo de la empresa", on: exportLogo, toggle: () => setExportLogo(p => !p) },
+                                { label: "Incluir marca Pupi AI",      on: exportBrand, toggle: () => setExportBrand(p => !p) },
+                              ].map(row => (
+                                <div key={row.label} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+                                  <div onClick={row.toggle} style={{ width: 36, height: 20, borderRadius: 10, background: row.on ? "#2563EB" : "rgba(255,255,255,0.1)", cursor: "pointer", position: "relative" as const, flexShrink: 0, transition: "background 0.2s" }}>
+                                    <div style={{ width: 16, height: 16, borderRadius: "50%", background: "white", position: "absolute" as const, top: 2, left: row.on ? 18 : 2, transition: "left 0.2s" }} />
+                                  </div>
+                                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>{row.label}</span>
+                                </div>
+                              ))}
+                              <div style={{ marginTop: 12 }}>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 5 }}>Título del reporte</div>
+                                <input type="text" value={exportTitle} onChange={e => setExportTitle(e.target.value)} placeholder="Reporte de Marketing — Mayo 2026" style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white", fontSize: 13, outline: "none", boxSizing: "border-box" as const }} />
+                              </div>
+
+                              {/* Preview card */}
+                              <div style={{ marginTop: 16, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 16 }}>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Vista previa</div>
+                                <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: 16, textAlign: "center" as const }}>
+                                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block", margin: "0 auto" }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, marginTop: 10 }}>{exportTitle || "Reporte de Marketing — Mayo 2026"}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, marginTop: 4 }}>{exportChecks.filter(Boolean).length} secciones · {["PDF","Excel","PowerPoint"][exportFormat]} · ~{exportChecks.filter(Boolean).length + 2} páginas</div>
+                                  <div style={{ color: "#2563EB", fontSize: 11, marginTop: 6 }}>✦ Generado por Pupi AI</div>
+                                </div>
+                              </div>
+
+                              {/* Footer */}
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20 }}>
+                                <button onClick={() => setShowExportModal(false)} style={{ padding: "8px 16px", fontSize: 13, background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer" }}>Cancelar</button>
+                                <div style={{ display: "flex", gap: 10 }}>
+                                  <button style={{ padding: "8px 16px", fontSize: 13, background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>Vista previa</button>
+                                  <button
+                                    onClick={() => {
+                                      if (exportState !== "idle") return
+                                      setExportState("loading")
+                                      setTimeout(() => {
+                                        setExportState("done")
+                                        setTimeout(() => setShowExportModal(false), 1000)
+                                      }, 2000)
+                                    }}
+                                    style={{ padding: "8px 16px", fontSize: 13, background: exportState === "done" ? "#22c55e" : "#2563EB", border: "none", borderRadius: 8, color: "white", cursor: "pointer", fontWeight: 500, display: "flex", alignItems: "center", gap: 6, minWidth: 150, justifyContent: "center", transition: "background 0.3s" }}>
+                                    {exportState === "idle"    && "Exportar reporte →"}
+                                    {exportState === "loading" && <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "spin 1s linear infinite" }}><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>Generando...</>}
+                                    {exportState === "done"    && <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>¡Reporte listo!</>}
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Placeholders for non-campaigns tabs */}
-                      {mktNavTab === "Investigaciones" && (
-                        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
-                          <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 13 }}>Investigaciones</span>
-                          <span style={{ color: "rgba(255,255,255,0.1)", fontSize: 11 }}>Próximamente</span>
-                        </div>
-                      )}
+                      {mktNavTab === "Investigaciones" && (() => {
+                        type ResType = "Análisis de mercado" | "Estudio de competencia" | "Encuesta" | "Focus group" | "Tendencias"
+                        type ResStatus = "En proceso" | "Finalizado" | "Archivado"
+                        const RESEARCH: { title: string; type: ResType; author: string; date: string; desc: string; tags: string[]; status: ResStatus; files: number; ai: boolean }[] = [
+                          { title: "Análisis de mercado Q2 2026",          type: "Análisis de mercado",    author: "JP",                 date: "15 Mayo 2026",  desc: "Relevamiento completo del mercado objetivo para el segundo trimestre. Incluye análisis de demanda y oportunidades.",                tags: ["Q2 2026","Mercado","Demanda"],   status: "En proceso",  files: 3, ai: true  },
+                          { title: "Estudio de competencia — Competidores directos", type: "Estudio de competencia", author: "CA",          date: "10 Mayo 2026",  desc: "Mapeo de competidores directos, precios, estrategias y posicionamiento actual.",                                                    tags: ["Competencia","Precios"],         status: "Finalizado",  files: 5, ai: true  },
+                          { title: "Encuesta satisfacción clientes 2026",   type: "Encuesta",               author: "MR",                 date: "5 Mayo 2026",   desc: "Encuesta enviada a 284 clientes activos sobre satisfacción del servicio.",                                                           tags: ["Satisfacción","Clientes"],       status: "Finalizado",  files: 2, ai: true  },
+                          { title: "Tendencias del sector primer semestre", type: "Tendencias",             author: "Consultor externo",  date: "1 Abril 2026",  desc: "Informe de tendencias del sector para planificación estratégica del primer semestre.",                                               tags: ["Tendencias","Estrategia"],       status: "Archivado",   files: 1, ai: false },
+                          { title: "Focus group — Nuevo producto X",        type: "Focus group",            author: "JP",                 date: "20 Marzo 2026", desc: "Sesión de focus group con 12 participantes sobre percepción del nuevo producto.",                                                      tags: ["Producto X","Focus group"],      status: "Finalizado",  files: 4, ai: true  },
+                        ]
+                        const TYPE_ICON: Record<ResType, { bg: string; color: string; icon: React.ReactNode }> = {
+                          "Análisis de mercado":    { bg: "rgba(37,99,235,0.2)",  color: "#2563EB", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> },
+                          "Estudio de competencia": { bg: "rgba(239,68,68,0.2)",  color: "#ef4444", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> },
+                          "Encuesta":               { bg: "rgba(34,197,94,0.2)",  color: "#22c55e", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> },
+                          "Focus group":            { bg: "rgba(168,85,247,0.2)", color: "#a855f7", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
+                          "Tendencias":             { bg: "rgba(234,179,8,0.2)",  color: "#eab308", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> },
+                        }
+                        const STATUS_STYLE: Record<ResStatus, { bg: string; color: string; border: string }> = {
+                          "En proceso": { bg: "rgba(37,99,235,0.1)",    color: "#2563EB", border: "rgba(37,99,235,0.2)"  },
+                          "Finalizado": { bg: "rgba(34,197,94,0.1)",    color: "#22c55e", border: "rgba(34,197,94,0.2)"  },
+                          "Archivado":  { bg: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.3)", border: "rgba(255,255,255,0.1)" },
+                        }
+                        const AUTHOR_MAP: Record<string, string> = { "JP": "JP — Juan Pérez", "CA": "CA — Carlos Acosta", "MR": "MR — María Ruiz", "Consultor externo": "Consultor externo" }
+                        const filterLabel: React.CSSProperties = { color: "rgba(255,255,255,0.3)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
+                        const filtered = RESEARCH
+                          .filter(r => !resSearch || r.title.toLowerCase().includes(resSearch.toLowerCase()))
+                          .filter(r => resTipoFilter === "Todos" || r.type === resTipoFilter)
+                          .filter(r => resStatusFilter === "Todos" || r.status === resStatusFilter)
+                          .filter(r => resAuthorFilter === "Todos" || AUTHOR_MAP[r.author] === resAuthorFilter || r.author === resAuthorFilter)
+
+                        // ── RESEARCH DETAIL VIEW ──
+                        if (mktView === "researchdetail" && resSelected) {
+                          const r = resSelected
+                          const ti = TYPE_ICON[r.type as ResType] || TYPE_ICON["Análisis de mercado"]
+                          const st = STATUS_STYLE[r.status as ResStatus] || STATUS_STYLE["Finalizado"]
+                          const AUTHOR_DISPLAY: Record<string, string> = { "JP": "JP — Juan Pérez", "CA": "CA — Carlos Acosta", "MR": "MR — María Ruiz", "Consultor externo": "Consultor externo" }
+                          const FILES_DATA = [
+                            { name: "análisis-mercado-q2.pdf",    size: "2.4 MB",  color: "#ef4444" },
+                            { name: "datos-encuesta.xlsx",         size: "840 KB",  color: "#22c55e" },
+                            { name: "resumen-ejecutivo.docx",      size: "156 KB",  color: "#2563EB" },
+                          ]
+                          const FINDINGS = [
+                            { title: "Demanda creciente en B2B norte",    desc: "El segmento creció 34% interanual con baja presencia competidora.",             impact: "Alto impacto",  impactBg: "rgba(239,68,68,0.1)",   impactColor: "#ef4444" },
+                            { title: "Precio percibido como competitivo", desc: "84% de los relevados considera el precio igual o mejor al mercado.",            impact: "Medio impacto", impactBg: "rgba(234,179,8,0.1)",   impactColor: "#eab308" },
+                            { title: "Canal digital sub-utilizado",        desc: "Solo el 23% de empresas del segmento usa email marketing.",                     impact: "Alto impacto",  impactBg: "rgba(239,68,68,0.1)",   impactColor: "#ef4444" },
+                            { title: "Preferencia por contacto presencial",desc: "62% prefiere reunión presencial para primera compra.",                          impact: "Medio impacto", impactBg: "rgba(234,179,8,0.1)",   impactColor: "#eab308" },
+                            { title: "Estacionalidad en mayo y noviembre", desc: "Picos de demanda detectados en ambos períodos históricos.",                     impact: "Bajo impacto",  impactBg: "rgba(34,197,94,0.1)",   impactColor: "#22c55e" },
+                          ]
+                          return (
+                            <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+                              {/* LEFT COLUMN */}
+                              <div style={{ width: "35%", flexShrink: 0, borderRight: "1px solid rgba(255,255,255,0.06)", padding: "24px 20px", display: "flex", flexDirection: "column", gap: 0, overflowY: "auto" }}>
+                                {/* Icon + title + status */}
+                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingBottom: 16, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                                  <div style={{ width: 52, height: 52, borderRadius: "50%", background: ti.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={ti.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                      {r.type === "Análisis de mercado"    && <><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></>}
+                                      {r.type === "Estudio de competencia" && <><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></>}
+                                      {r.type === "Encuesta"               && <><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></>}
+                                      {r.type === "Focus group"            && <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>}
+                                      {r.type === "Tendencias"             && <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>}
+                                    </svg>
+                                  </div>
+                                  <div style={{ color: "white", fontSize: 16, fontWeight: 500, textAlign: "center" as const, marginTop: 12 }}>{r.title}</div>
+                                  <span style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}`, borderRadius: 20, padding: "2px 10px", fontSize: 11, marginTop: 6, display: "inline-block" }}>{r.status}</span>
+                                </div>
+
+                                {/* Info rows */}
+                                <div style={{ padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column", gap: 8 }}>
+                                  {[
+                                    ["TIPO",     r.type],
+                                    ["AUTOR",    AUTHOR_DISPLAY[r.author] || r.author],
+                                    ["FECHA",    r.date],
+                                    ["ESTADO",   r.status],
+                                    ["ARCHIVOS", `${r.files} ${r.files === 1 ? "archivo" : "archivos"}`],
+                                  ].map(([k, v]) => (
+                                    <div key={k} style={{ display: "flex", justifyContent: "space-between" }}>
+                                      <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>{k}</span>
+                                      <span style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 500, textAlign: "right" as const, maxWidth: "60%" }}>{v}</span>
+                                    </div>
+                                  ))}
+                                </div>
+
+                                {/* Files */}
+                                <div style={{ padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Archivos adjuntos</div>
+                                  {FILES_DATA.slice(0, r.files).map(f => (
+                                    <div key={f.name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={f.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                      <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ color: "white", fontSize: 12, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.name}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>{f.size}</div>
+                                      </div>
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ cursor: "pointer" }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    </div>
+                                  ))}
+                                  <button style={{ marginTop: 10, padding: "6px 12px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, color: "rgba(255,255,255,0.4)", fontSize: 11, cursor: "pointer" }}>+ Adjuntar archivo</button>
+                                </div>
+
+                                {/* Tags */}
+                                <div style={{ padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Etiquetas</div>
+                                  <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>
+                                    {r.tags.map(tag => (
+                                      <span key={tag} style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "2px 8px", fontSize: 11, color: "rgba(255,255,255,0.5)" }}>{tag}</span>
+                                    ))}
+                                  </div>
+                                  <button style={{ marginTop: 8, background: "none", border: "none", color: "#2563EB", fontSize: 11, cursor: "pointer", padding: 0 }}>+ Agregar etiqueta</button>
+                                </div>
+
+                                {/* AI section */}
+                                <div style={{ paddingTop: 16 }}>
+                                  <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>✦ Inteligencia Pupi</div>
+                                  {r.ai ? (
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                      {[
+                                        { icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>, title: "Hallazgo principal", value: "Demanda creciente en segmento B2B", color: "#2563EB" },
+                                        { icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>, title: "Oportunidad detectada", value: "Mercado sub-atendido en región norte", color: "#22c55e" },
+                                        { icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>, title: "Riesgo identificado", value: "Competidor X expandiendo presupuesto en digital", color: "#eab308" },
+                                        { icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>, title: "Acción sugerida", value: "Lanzar campaña en región norte antes de junio", color: "#2563EB" },
+                                      ].map(card => (
+                                        <div key={card.title} style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.12)", borderRadius: 8, padding: "10px 12px", display: "flex", gap: 8, alignItems: "flex-start" }}>
+                                          <div style={{ marginTop: 2, flexShrink: 0 }}>{card.icon}</div>
+                                          <div>
+                                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginBottom: 2 }}>{card.title}</div>
+                                            <div style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{card.value}</div>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: 14, textAlign: "center" as const }}>
+                                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block", margin: "0 auto 8px" }}><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="10"/></svg>
+                                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, marginBottom: 10 }}>Sin análisis de IA</div>
+                                      <button style={{ padding: "7px 14px", background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.25)", borderRadius: 6, color: "#2563EB", fontSize: 12, cursor: "pointer" }}>Analizar con Pupi</button>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* RIGHT COLUMN */}
+                              <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                                {/* Tabs */}
+                                <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "0 24px", flexShrink: 0 }}>
+                                  {(["Resumen","Hallazgos","Documentos","Notas"] as const).map(t => (
+                                    <button key={t} onClick={() => setResDetailTab(t)} style={{ padding: "12px 14px", fontSize: 13, background: "none", border: "none", cursor: "pointer", color: resDetailTab === t ? "white" : "rgba(255,255,255,0.35)", borderBottom: `2px solid ${resDetailTab === t ? "#2563EB" : "transparent"}`, marginBottom: -1, transition: "color 0.15s, border-color 0.15s" }}>{t}</button>
+                                  ))}
+                                </div>
+
+                                <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px" }}>
+                                  {/* RESUMEN TAB */}
+                                  {resDetailTab === "Resumen" && (
+                                    <div>
+                                      {/* Executive summary */}
+                                      <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 18, marginBottom: 20 }}>
+                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Resumen ejecutivo</div>
+                                        <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, lineHeight: 1.7, margin: 0 }}>El análisis de mercado Q2 2026 revela una demanda creciente en el segmento B2B, especialmente en la región norte. Se identificaron oportunidades de expansión en tres categorías de producto y un riesgo competitivo en el canal digital.</p>
+                                        <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+                                          {[["284","EMPRESAS RELEVADAS"],["3","OPORTUNIDADES"],["1","RIESGO CRÍTICO"]].map(([v, l]) => (
+                                            <div key={l} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, padding: "10px 12px" }}>
+                                              <div style={{ color: "white", fontSize: 18, fontWeight: 600 }}>{v}</div>
+                                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginTop: 3, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{l}</div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+
+                                      {/* AI analysis */}
+                                      <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>✦ Análisis Pupi</div>
+                                      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+                                        {[
+                                          { stroke: "#22c55e", icon: "trend",    prio: "Oportunidad principal",       body: "El segmento B2B en la región norte muestra un crecimiento del 34% interanual con baja penetración de competidores directos. Ventana de oportunidad estimada: 3-6 meses." },
+                                          { stroke: "#eab308", icon: "alert",    prio: "Amenaza a monitorear",         body: "Competidor X aumentó su presupuesto digital un 180% en los últimos 90 días. Está apuntando al mismo segmento objetivo." },
+                                          { stroke: "#2563EB", icon: "zap",      prio: "Recomendación estratégica",    body: "Lanzar campaña de penetración en región norte antes de junio, priorizando canal email y visitas presenciales según perfil del segmento." },
+                                        ].map(c => (
+                                          <div key={c.prio} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "12px 16px", display: "flex", gap: 10, alignItems: "flex-start" }}>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c.stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: 2, flexShrink: 0 }}>
+                                              {c.icon === "trend" && <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>}
+                                              {c.icon === "alert" && <><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></>}
+                                              {c.icon === "zap"   && <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>}
+                                            </svg>
+                                            <div>
+                                              <div style={{ color: c.stroke, fontSize: 11, fontWeight: 500, marginBottom: 3 }}>{c.prio}</div>
+                                              <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.6 }}>{c.body}</div>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+
+                                      {/* Connected campaigns */}
+                                      <div>
+                                        <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 12 }}>Campañas relacionadas</div>
+                                        <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 8, marginBottom: 8 }}>
+                                          {["Campaña Primavera 2026","Google Ads — Producto X"].map(name => (
+                                            <div key={name} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20, padding: "5px 12px", cursor: "pointer" }}>
+                                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                              <span style={{ color: "white", fontSize: 12 }}>{name}</span>
+                                              <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>→</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                        <button style={{ background: "none", border: "none", color: "#2563EB", fontSize: 11, cursor: "pointer", padding: 0 }}>+ Vincular campaña</button>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* HALLAZGOS TAB */}
+                                  {resDetailTab === "Hallazgos" && (
+                                    <div>
+                                      {FINDINGS.map((f, i) => (
+                                        <div key={i} style={{ display: "flex", gap: 12, padding: "14px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                          <div style={{ width: 22, height: 22, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 2 }}>{i + 1}</div>
+                                          <div>
+                                            <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{f.title}</div>
+                                            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{f.desc}</div>
+                                            <span style={{ display: "inline-block", marginTop: 6, background: f.impactBg, color: f.impactColor, borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>{f.impact}</span>
+                                          </div>
+                                        </div>
+                                      ))}
+                                      <button style={{ marginTop: 16, padding: "7px 14px", background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 8, color: "#2563EB", fontSize: 12, cursor: "pointer" }}>+ Agregar hallazgo</button>
+                                    </div>
+                                  )}
+
+                                  {/* DOCUMENTOS TAB */}
+                                  {resDetailTab === "Documentos" && (
+                                    <div>
+                                      {FILES_DATA.slice(0, r.files).map(f => (
+                                        <div key={f.name} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={f.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                          <div style={{ flex: 1 }}>
+                                            <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{f.name}</div>
+                                            <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>{f.size}</div>
+                                          </div>
+                                          <button style={{ padding: "4px 10px", background: "rgba(255,255,255,0.1)", border: "none", borderRadius: 6, color: "rgba(255,255,255,0.5)", fontSize: 11, cursor: "pointer" }}>Ver preview</button>
+                                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ cursor: "pointer" }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+
+                                  {/* NOTAS TAB */}
+                                  {resDetailTab === "Notas" && (
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                                      <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>Notas internas de la investigación</div>
+                                      <textarea placeholder="Escribí tus notas aquí..." style={{ width: "100%", minHeight: 180, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, color: "white", fontSize: 13, padding: "12px 14px", resize: "vertical" as const, outline: "none", boxSizing: "border-box" as const, fontFamily: "inherit" }} />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        }
+
+                        return (
+                          <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+                            {/* Left sidebar */}
+                            <div style={{ width: "25%", flexShrink: 0, background: "rgba(255,255,255,0.02)", borderRight: "1px solid rgba(255,255,255,0.06)", padding: "20px 16px", display: "flex", flexDirection: "column", overflowY: "auto" }}>
+                              <input type="text" placeholder="Buscar investigación..." value={resSearch} onChange={e => setResSearch(e.target.value)} style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "white", fontSize: 13, outline: "none", boxSizing: "border-box" as const }} />
+
+                              <div style={{ marginTop: 20, marginBottom: 8, ...filterLabel }}>Tipo</div>
+                              {["Todos","Análisis de mercado","Estudio de competencia","Encuesta","Focus group","Tendencias"].map(f => (
+                                <button key={f} onClick={() => setResTipoFilter(f)} style={{ textAlign: "left" as const, padding: "7px 10px", borderRadius: 6, fontSize: 12, border: "none", cursor: "pointer", marginBottom: 2, background: resTipoFilter === f ? "rgba(37,99,235,0.15)" : "transparent", color: resTipoFilter === f ? "#2563EB" : "rgba(255,255,255,0.4)", transition: "background 0.15s, color 0.15s" }}>{f}</button>
+                              ))}
+
+                              <div style={{ marginTop: 16, marginBottom: 8, ...filterLabel }}>Estado</div>
+                              {["Todos","En proceso","Finalizado","Archivado"].map(f => (
+                                <button key={f} onClick={() => setResStatusFilter(f)} style={{ textAlign: "left" as const, padding: "7px 10px", borderRadius: 6, fontSize: 12, border: "none", cursor: "pointer", marginBottom: 2, background: resStatusFilter === f ? "rgba(37,99,235,0.15)" : "transparent", color: resStatusFilter === f ? "#2563EB" : "rgba(255,255,255,0.4)", transition: "background 0.15s, color 0.15s" }}>{f}</button>
+                              ))}
+
+                              <div style={{ marginTop: 16, marginBottom: 8, ...filterLabel }}>Autor</div>
+                              {["Todos","JP — Juan Pérez","CA — Carlos Acosta","MR — María Ruiz","Consultor externo"].map(f => (
+                                <button key={f} onClick={() => setResAuthorFilter(f)} style={{ textAlign: "left" as const, padding: "7px 10px", borderRadius: 6, fontSize: 12, border: "none", cursor: "pointer", marginBottom: 2, background: resAuthorFilter === f ? "rgba(37,99,235,0.15)" : "transparent", color: resAuthorFilter === f ? "#2563EB" : "rgba(255,255,255,0.4)", transition: "background 0.15s, color 0.15s" }}>{f}</button>
+                              ))}
+                            </div>
+
+                            {/* Right section */}
+                            <div style={{ flex: 1, padding: "20px 24px", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexShrink: 0 }}>
+                                <div>
+                                  <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Investigaciones</div>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>5 investigaciones · 2 en proceso</div>
+                                </div>
+                                <button onClick={() => setMktView("newresearch")} style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Nueva investigación +</button>
+                              </div>
+
+                              <div style={{ flex: 1, overflowY: "auto" }}>
+                                {filtered.map((r, idx) => {
+                                  const ti = TYPE_ICON[r.type]
+                                  const st = STATUS_STYLE[r.status]
+                                  return (
+                                    <div key={idx}
+                                      onClick={() => { setResSelected(r); setMktView("researchdetail"); setResDetailTab("Resumen") }}
+                                      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 16, marginBottom: 8, cursor: "pointer", display: "flex", gap: 16, alignItems: "flex-start", transition: "background 0.15s, border-color 0.15s" }}
+                                      onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)" }}
+                                      onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.02)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)" }}>
+                                      {/* Type icon */}
+                                      <div style={{ width: 40, height: 40, borderRadius: "50%", background: ti.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{ti.icon}</div>
+                                      {/* Center */}
+                                      <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ color: "white", fontSize: 14, fontWeight: 500, marginBottom: 3 }}>{r.title}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 6 }}>{r.type} · {r.author} · {r.date}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, lineHeight: 1.5, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>{r.desc}</div>
+                                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" as const, marginTop: 8 }}>
+                                          {r.tags.map(tag => (
+                                            <span key={tag} style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "2px 8px", fontSize: 11, color: "rgba(255,255,255,0.5)" }}>{tag}</span>
+                                          ))}
+                                        </div>
+                                      </div>
+                                      {/* Right */}
+                                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
+                                        <span style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}`, borderRadius: 20, padding: "2px 10px", fontSize: 11 }}>{r.status}</span>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                          <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>{r.files} {r.files === 1 ? "archivo" : "archivos"}</span>
+                                        </div>
+                                        {r.ai && <span style={{ color: "#2563EB", fontSize: 11 }}>✦ Analizado por Pupi</span>}
+                                      </div>
+                                    </div>
+                                  )
+                                })}
+                                {filtered.length === 0 && (
+                                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 48, gap: 8 }}>
+                                    <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 13 }}>Sin investigaciones</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })()}
 
                       {mktNavTab === "Insights" && (
                         <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
@@ -3836,6 +4321,252 @@ export default function DashboardPage() {
 
                           <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "24px 0" }} />
 
+                          {/* Seasonality section */}
+                          {(() => {
+                            const MONTHS = [
+                              { abbr: "Ene", pct: 35,  bg: "rgba(37,99,235,0.20)", peak: false },
+                              { abbr: "Feb", pct: 42,  bg: "rgba(37,99,235,0.25)", peak: false },
+                              { abbr: "Mar", pct: 58,  bg: "rgba(37,99,235,0.35)", peak: false },
+                              { abbr: "Abr", pct: 71,  bg: "rgba(37,99,235,0.44)", peak: false },
+                              { abbr: "May", pct: 88,  bg: "rgba(37,99,235,0.60)", peak: true,  current: true },
+                              { abbr: "Jun", pct: 45,  bg: "rgba(37,99,235,0.28)", peak: false },
+                              { abbr: "Jul", pct: 32,  bg: "rgba(37,99,235,0.20)", peak: false },
+                              { abbr: "Ago", pct: 38,  bg: "rgba(37,99,235,0.22)", peak: false },
+                              { abbr: "Sep", pct: 65,  bg: "rgba(37,99,235,0.40)", peak: false },
+                              { abbr: "Oct", pct: 72,  bg: "rgba(37,99,235,0.46)", peak: false },
+                              { abbr: "Nov", pct: 91,  bg: "rgba(37,99,235,0.65)", peak: true  },
+                              { abbr: "Dic", pct: 55,  bg: "rgba(37,99,235,0.34)", peak: false },
+                            ]
+                            const TOOLTIPS: Record<string, { label: string; avg: string; vs: string }> = {
+                              "Ene": { label: "Enero — Volumen bajo",        avg: "$18.200",  vs: "↓ 35% vs mes base" },
+                              "Feb": { label: "Febrero — Volumen moderado",  avg: "$22.500",  vs: "↓ 18% vs mes base" },
+                              "Mar": { label: "Marzo — Volumen medio",       avg: "$31.400",  vs: "↑ 12% vs mes base" },
+                              "Abr": { label: "Abril — Volumen alto",        avg: "$38.900",  vs: "↑ 40% vs mes base" },
+                              "May": { label: "Mayo — Alto volumen",         avg: "$48.750",  vs: "↑ 88% vs mes base" },
+                              "Jun": { label: "Junio — Volumen moderado",    avg: "$24.100",  vs: "↓ 14% vs mes base" },
+                              "Jul": { label: "Julio — Temporada baja",      avg: "$17.300",  vs: "↓ 42% vs mes base" },
+                              "Ago": { label: "Agosto — Temporada baja",     avg: "$19.800",  vs: "↓ 35% vs mes base" },
+                              "Sep": { label: "Septiembre — Recuperación",   avg: "$35.200",  vs: "↑ 28% vs mes base" },
+                              "Oct": { label: "Octubre — Volumen alto",      avg: "$39.400",  vs: "↑ 43% vs mes base" },
+                              "Nov": { label: "Noviembre — Pico máximo",     avg: "$52.100",  vs: "↑ 91% vs mes base" },
+                              "Dic": { label: "Diciembre — Cierre de año",   avg: "$29.800",  vs: "↑ 9% vs mes base" },
+                            }
+                            return (
+                              <div>
+                                <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>✦ Estacionalidad detectada</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 20 }}>Basado en historial de ventas de los últimos 12 meses</div>
+
+                                {/* Calendar grid */}
+                                <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 6, marginBottom: 12 }}>
+                                  {MONTHS.map(m => {
+                                    const tip = TOOLTIPS[m.abbr]
+                                    return (
+                                      <div key={m.abbr} style={{ borderRadius: 8, padding: "10px 6px", textAlign: "center" as const, cursor: "pointer", border: m.current ? "1px solid rgba(37,99,235,0.6)" : m.peak ? "1px solid rgba(234,179,8,0.4)" : "1px solid transparent", transition: "all 0.2s", position: "relative" as const }}
+                                        onMouseEnter={e => {
+                                          const el = e.currentTarget
+                                          const tt = el.querySelector(".seas-tooltip") as HTMLElement
+                                          if (tt) { tt.style.opacity = "1"; tt.style.pointerEvents = "auto" }
+                                        }}
+                                        onMouseLeave={e => {
+                                          const el = e.currentTarget
+                                          const tt = el.querySelector(".seas-tooltip") as HTMLElement
+                                          if (tt) { tt.style.opacity = "0"; tt.style.pointerEvents = "none" }
+                                        }}>
+                                        {/* Tooltip */}
+                                        <div className="seas-tooltip" style={{ position: "absolute" as const, bottom: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)", background: "rgba(10,10,20,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", width: 170, zIndex: 50, opacity: 0, pointerEvents: "none", transition: "opacity 0.15s", textAlign: "left" as const, whiteSpace: "nowrap" as const }}>
+                                          <div style={{ color: "white", fontSize: 12, fontWeight: 500, marginBottom: 2 }}>{tip.label}</div>
+                                          <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginBottom: 2 }}>{tip.avg} promedio histórico</div>
+                                          <div style={{ color: tip.vs.startsWith("↑") ? "#22c55e" : "#ef4444", fontSize: 11 }}>{tip.vs}</div>
+                                        </div>
+                                        {/* Peak indicator */}
+                                        {m.peak && <div style={{ fontSize: 9, marginBottom: 2, color: "#eab308" }}>★</div>}
+                                        {/* Month name */}
+                                        <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, marginBottom: m.peak ? 2 : 6 }}>{m.abbr}</div>
+                                        {m.current && <div style={{ color: "#2563EB", fontSize: 9, marginBottom: 3 }}>Hoy</div>}
+                                        {/* Intensity bar */}
+                                        <div style={{ width: "100%", height: 32, borderRadius: 3, background: m.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                          <span style={{ color: "white", fontSize: 11, fontWeight: 500 }}>{m.pct}%</span>
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+
+                                {/* Legend */}
+                                <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 24 }}>
+                                  {[
+                                    { bg: "rgba(37,99,235,0.2)",  label: "Bajo volumen"  },
+                                    { bg: "rgba(37,99,235,0.4)",  label: "Volumen medio" },
+                                    { bg: "rgba(37,99,235,0.65)", label: "Alto volumen"  },
+                                  ].map(l => (
+                                    <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                      <div style={{ width: 10, height: 10, borderRadius: 2, background: l.bg, flexShrink: 0 }} />
+                                      <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{l.label}</span>
+                                    </div>
+                                  ))}
+                                </div>
+
+                                {/* Peak period cards */}
+                                <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
+                                  <div style={{ flex: 1, background: "rgba(37,99,235,0.08)", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 10, padding: 16 }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                                      <span style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Pico principal</span>
+                                    </div>
+                                    <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Mayo — Noviembre</div>
+                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5, marginTop: 6 }}>Estos meses concentran el 42% de las ventas anuales. Preparar campañas con 6 semanas de anticipación.</div>
+                                  </div>
+                                  <div style={{ flex: 1, background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)", borderRadius: 10, padding: 16 }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+                                      <span style={{ color: "#ef4444", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Temporada baja</span>
+                                    </div>
+                                    <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Julio — Agosto</div>
+                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5, marginTop: 6 }}>Ventas caen un 35% en estos meses. Ideal para campañas de fidelización y reactivación de clientes tibios.</div>
+                                  </div>
+                                </div>
+
+                                {/* Seasonality AI recommendations */}
+                                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                                  {[
+                                    { prio: "Alta prioridad",  pColor: "#ef4444", title: "Preparar campaña de noviembre ya",                  body: "Faltan 6 meses para el segundo pico de ventas. Las campañas preparadas con anticipación generan 40% más de conversión." },
+                                    { prio: "Media prioridad", pColor: "#eab308", title: "Crear campaña de reactivación para julio",            body: "La temporada baja puede aprovecharse para recuperar clientes fríos con descuentos o promociones especiales." },
+                                    { prio: "Baja prioridad",  pColor: "rgba(255,255,255,0.3)", title: "Aumentar stock en abril para responder al pico de mayo", body: "Históricamente mayo supera la capacidad de respuesta. Coordiná con operaciones." },
+                                  ].map(r => (
+                                    <div key={r.title} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "12px 16px", display: "flex", gap: 12, alignItems: "flex-start" }}>
+                                      <div style={{ width: 6, height: 6, borderRadius: "50%", background: r.pColor, marginTop: 5, flexShrink: 0 }} />
+                                      <div>
+                                        <div style={{ color: r.pColor, fontSize: 10, marginBottom: 3 }}>{r.prio}</div>
+                                        <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 3 }}>{r.title}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{r.body}</div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )
+                          })()}
+
+                          <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "24px 0" }} />
+
+                          {/* Attribution section */}
+                          {(() => {
+                            const chIcon = (ch: string, sz = 14) => {
+                              const props = { width: sz, height: sz, viewBox: "0 0 24 24", fill: "none", strokeWidth: 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const }
+                              if (ch === "Email")    return <svg {...props} stroke="#2563EB"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                              if (ch === "Redes")    return <svg {...props} stroke="#a855f7"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                              if (ch === "Google")   return <svg {...props} stroke="#eab308"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                              if (ch === "WhatsApp") return <svg {...props} stroke="#22c55e"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                              return null
+                            }
+                            const ROWS = [
+                              { name: "Campaña Primavera 2026",         ch: "Email",    chLabel: "Email",          clientes: 8, ticket: "$4.200",  tickUp: true,  ltv: "$28.400", score: 4.8 },
+                              { name: "Google Ads — Producto X",        ch: "Google",   chLabel: "Google Ads",     clientes: 3, ticket: "$12.800", tickUp: true,  ltv: "$48.200", score: 4.5 },
+                              { name: "Remarketing clientes fríos",     ch: "Redes",    chLabel: "Redes sociales", clientes: 5, ticket: "$2.100",  tickUp: false, ltv: "$12.600", score: 3.2 },
+                              { name: "Newsletter mensual",             ch: "Email",    chLabel: "Email",          clientes: 4, ticket: "$6.400",  tickUp: true,  ltv: "$32.100", score: 4.1 },
+                              { name: "WhatsApp broadcast",             ch: "WhatsApp", chLabel: "WhatsApp",       clientes: 1, ticket: "$890",    tickUp: false, ltv: "$4.200",  score: 2.1 },
+                            ]
+                            const Stars = ({ score }: { score: number }) => {
+                              const filled = Math.round(score)
+                              return (
+                                <div>
+                                  <div style={{ display: "flex", gap: 3 }}>
+                                    {[1,2,3,4,5].map(i => <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: i <= filled ? "#2563EB" : "rgba(255,255,255,0.1)" }} />)}
+                                  </div>
+                                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 3 }}>{score.toFixed(1)}/5</div>
+                                </div>
+                              )
+                            }
+                            const CLIENTS = [
+                              { initials: "MG", name: "María González",  company: "Distribuidora Norte",  camp: "Campaña Primavera 2026",  ticket: "$4.200",  temp: "Caliente" },
+                              { initials: "LH", name: "Luis Herrera",    company: "Grupo Herrera SA",     camp: "Google Ads — Producto X", ticket: "$28.500", temp: "Caliente" },
+                              { initials: "DL", name: "Diego López",     company: "Importadora DL",       camp: "Newsletter mensual",      ticket: "$9.750",  temp: "Caliente" },
+                            ]
+                            const tempColor = (t: string) => t === "Caliente" ? { bg: "rgba(239,68,68,0.1)", color: "#ef4444", border: "rgba(239,68,68,0.2)" } : t === "Tibio" ? { bg: "rgba(234,179,8,0.1)", color: "#eab308", border: "rgba(234,179,8,0.2)" } : { bg: "rgba(37,99,235,0.1)", color: "#2563EB", border: "rgba(37,99,235,0.2)" }
+                            return (
+                              <div>
+                                <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>✦ Atribución de campañas</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 20 }}>Qué campañas generan los clientes más rentables</div>
+
+                                {/* Attribution table */}
+                                <div style={{ marginBottom: 24 }}>
+                                  <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: "8px 8px 0 0" }}>
+                                    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", padding: "10px 16px" }}>
+                                      {["CAMPAÑA","CLIENTES","TICKET PROM","LTV EST","CALIDAD"].map(h => (
+                                        <span key={h} style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{h}</span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  {ROWS.map(r => (
+                                    <div key={r.name}
+                                      style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.04)", alignItems: "center", transition: "background 0.15s", cursor: "pointer" }}
+                                      onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
+                                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                        {chIcon(r.ch)}
+                                        <div>
+                                          <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{r.name}</div>
+                                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{r.chLabel}</div>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{r.clientes}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>nuevos clientes</div>
+                                      </div>
+                                      <div>
+                                        <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{r.ticket}</div>
+                                        <div style={{ color: r.tickUp ? "#22c55e" : "#ef4444", fontSize: 10 }}>{r.tickUp ? "↑ vs promedio" : "↓ vs promedio"}</div>
+                                      </div>
+                                      <div>
+                                        <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, marginBottom: 2 }}>Lifetime value est.</div>
+                                        <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{r.ltv}</div>
+                                      </div>
+                                      <Stars score={r.score} />
+                                    </div>
+                                  ))}
+                                </div>
+
+                                {/* Best source card */}
+                                <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 10, padding: "16px 20px", display: "flex", gap: 16, alignItems: "center", marginBottom: 24 }}>
+                                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+                                  <div>
+                                    <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>✦ Mejor fuente de clientes rentables</div>
+                                    <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Google Ads — Producto X</div>
+                                    <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>Genera el menor volumen pero los clientes más rentables: ticket promedio $12.800 y LTV estimado de $48.200 por cliente. Recomendamos aumentar el presupuesto.</div>
+                                  </div>
+                                </div>
+
+                                {/* CRM connection */}
+                                <div style={{ marginBottom: 24 }}>
+                                  <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Clientes generados por campaña</div>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Conectado con CRM en tiempo real</div>
+                                  <div style={{ display: "flex", gap: 12 }}>
+                                    {CLIENTS.map(c => {
+                                      const tc = tempColor(c.temp)
+                                      return (
+                                        <div key={c.name} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 14 }}>
+                                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                                            <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{c.initials}</div>
+                                            <div style={{ minWidth: 0 }}>
+                                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
+                                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.company}</div>
+                                            </div>
+                                          </div>
+                                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>Origen: <span style={{ color: "#2563EB" }}>{c.camp}</span></div>
+                                          <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginTop: 4 }}>Ticket: {c.ticket}</div>
+                                          <span style={{ display: "inline-block", marginTop: 6, background: tc.bg, color: tc.color, border: `1px solid ${tc.border}`, borderRadius: 20, padding: "1px 8px", fontSize: 10 }}>{c.temp}</span>
+                                          <div><button style={{ marginTop: 8, background: "none", border: "none", color: "#2563EB", fontSize: 11, cursor: "pointer", padding: 0 }}>Ver en CRM →</button></div>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          })()}
+
+                          <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "24px 0" }} />
+
                           {/* Ideal client profile */}
                           <div>
                             <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>✦ Perfil del cliente ideal</div>
@@ -3928,6 +4659,157 @@ export default function DashboardPage() {
                               {filteredCampaigns.length === 0 && (
                                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, paddingTop: 48 }}>
                                   <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 13 }}>Sin campañas</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })()
+              ) : activeNode.id === 4 ? (
+                // ── RRHH MODULE ──
+                (() => {
+                  type EmpStatus = "Activo" | "Licencia" | "Baja"
+                  const EMPLOYEES: { id: number; name: string; initials: string; role: string; area: string; status: EmpStatus; score: number; alert: string; seniority: string }[] = [
+                    { id: 1, name: "Juan Pérez",      initials: "JP", role: "Vendedor Senior",      area: "Ventas",          status: "Activo",   score: 4.8, alert: "",                seniority: "3 años"    },
+                    { id: 2, name: "Carlos Acosta",   initials: "CA", role: "Vendedor",             area: "Ventas",          status: "Activo",   score: 3.9, alert: "Sobrecargado",     seniority: "1 año"     },
+                    { id: 3, name: "María Ruiz",      initials: "MR", role: "Vendedora",            area: "Ventas",          status: "Activo",   score: 4.2, alert: "",                seniority: "2 años"    },
+                    { id: 4, name: "Ana González",    initials: "AG", role: "Analista Marketing",   area: "Marketing",       status: "Activo",   score: 4.5, alert: "",                seniority: "2 años"    },
+                    { id: 5, name: "Pedro Martínez",  initials: "PM", role: "Administrativo",       area: "Administración",  status: "Licencia", score: 3.8, alert: "",                seniority: "4 años"    },
+                    { id: 6, name: "Laura Sánchez",   initials: "LS", role: "Coordinadora Ops",     area: "Operaciones",     status: "Activo",   score: 4.1, alert: "Riesgo renuncia", seniority: "3 años"    },
+                    { id: 7, name: "Diego Torres",    initials: "DT", role: "Asistente Admin",      area: "Administración",  status: "Activo",   score: 3.2, alert: "Bajo desempeño",  seniority: "8 meses"   },
+                    { id: 8, name: "Sofía Reyes",     initials: "SR", role: "Analista Operaciones", area: "Operaciones",     status: "Activo",   score: 4.6, alert: "",                seniority: "1 año"     },
+                  ]
+                  const STATUS_STYLE: Record<EmpStatus, { bg: string; color: string; border: string }> = {
+                    Activo:   { bg: "rgba(34,197,94,0.1)",    color: "#22c55e", border: "rgba(34,197,94,0.2)"  },
+                    Licencia: { bg: "rgba(234,179,8,0.1)",    color: "#eab308", border: "rgba(234,179,8,0.2)"  },
+                    Baja:     { bg: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.3)", border: "rgba(255,255,255,0.1)" },
+                  }
+                  const filterLabel: React.CSSProperties = { color: "rgba(255,255,255,0.3)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
+                  const ScoreDots = ({ score }: { score: number }) => {
+                    const filled = Math.round(score)
+                    return (
+                      <div>
+                        <div style={{ display: "flex", gap: 3 }}>
+                          {[1,2,3,4,5].map(i => <div key={i} style={{ width: 7, height: 7, borderRadius: "50%", background: i <= filled ? "#2563EB" : "rgba(255,255,255,0.1)" }} />)}
+                        </div>
+                        <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, marginTop: 2 }}>{score.toFixed(1)}/5</div>
+                      </div>
+                    )
+                  }
+                  const filtered = EMPLOYEES
+                    .filter(e => !rrhhSearch || e.name.toLowerCase().includes(rrhhSearch.toLowerCase()))
+                    .filter(e => rrhhStatusFilter === "Todos" || e.status === rrhhStatusFilter.replace(/\s.*/, ""))
+                    .filter(e => rrhhAreaFilter === "Todas" || e.area === rrhhAreaFilter)
+                    .filter(e => {
+                      if (rrhhAlertFilter === "Sin alertas") return true
+                      if (rrhhAlertFilter === "Riesgo renuncia") return e.alert === "Riesgo renuncia"
+                      if (rrhhAlertFilter === "Sobrecargado") return e.alert === "Sobrecargado"
+                      if (rrhhAlertFilter === "Bajo desempeño") return e.alert === "Bajo desempeño"
+                      return true
+                    })
+                  const alertCount = EMPLOYEES.filter(e => e.alert).length
+                  return (
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                      {/* Secondary nav */}
+                      <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "0 24px", flexShrink: 0 }}>
+                        {(["Equipo","Organigrama","Clima laboral","Sueldos","Resumen semanal"] as const).map(nav => (
+                          <button key={nav} onClick={() => setRrhhNavTab(nav)} style={{ padding: "12px 16px", fontSize: 13, background: "none", border: "none", cursor: "pointer", color: rrhhNavTab === nav ? "white" : "rgba(255,255,255,0.35)", borderBottom: `2px solid ${rrhhNavTab === nav ? "#2563EB" : "transparent"}`, transition: "color 0.15s, border-color 0.15s", marginBottom: -1 }}>{nav}</button>
+                        ))}
+                      </div>
+
+                      {/* Placeholder for non-Equipo tabs */}
+                      {rrhhNavTab !== "Equipo" && (
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
+                          <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 13 }}>{rrhhNavTab}</span>
+                          <span style={{ color: "rgba(255,255,255,0.1)", fontSize: 11 }}>Próximamente</span>
+                        </div>
+                      )}
+
+                      {/* Equipo tab */}
+                      {rrhhNavTab === "Equipo" && (
+                        <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+                          {/* Left sidebar */}
+                          <div style={{ width: "25%", flexShrink: 0, background: "rgba(255,255,255,0.02)", borderRight: "1px solid rgba(255,255,255,0.06)", padding: "20px 16px", display: "flex", flexDirection: "column", overflowY: "auto" }}>
+                            <input type="text" placeholder="Buscar empleado..." value={rrhhSearch} onChange={e => setRrhhSearch(e.target.value)} style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "white", fontSize: 13, outline: "none", boxSizing: "border-box" as const }} />
+
+                            <div style={{ marginTop: 20, marginBottom: 8, ...filterLabel }}>Estado</div>
+                            {["Todos","Activo 🟢","Licencia 🟡","Baja ⚫"].map(f => (
+                              <button key={f} onClick={() => setRrhhStatusFilter(f)} style={{ textAlign: "left" as const, padding: "7px 10px", borderRadius: 6, fontSize: 12, border: "none", cursor: "pointer", marginBottom: 2, background: rrhhStatusFilter === f ? "rgba(37,99,235,0.15)" : "transparent", color: rrhhStatusFilter === f ? "#2563EB" : "rgba(255,255,255,0.4)", transition: "background 0.15s, color 0.15s" }}>{f}</button>
+                            ))}
+
+                            <div style={{ marginTop: 16, marginBottom: 8, ...filterLabel }}>Área</div>
+                            {["Todas","Ventas","Marketing","Administración","Operaciones"].map(f => (
+                              <button key={f} onClick={() => setRrhhAreaFilter(f)} style={{ textAlign: "left" as const, padding: "7px 10px", borderRadius: 6, fontSize: 12, border: "none", cursor: "pointer", marginBottom: 2, background: rrhhAreaFilter === f ? "rgba(37,99,235,0.15)" : "transparent", color: rrhhAreaFilter === f ? "#2563EB" : "rgba(255,255,255,0.4)", transition: "background 0.15s, color 0.15s" }}>{f}</button>
+                            ))}
+
+                            <div style={{ marginTop: 16, marginBottom: 8, ...filterLabel }}>Alerta</div>
+                            {["Sin alertas","Riesgo renuncia","Sobrecargado","Bajo desempeño"].map(f => (
+                              <button key={f} onClick={() => setRrhhAlertFilter(f)} style={{ textAlign: "left" as const, padding: "7px 10px", borderRadius: 6, fontSize: 12, border: "none", cursor: "pointer", marginBottom: 2, background: rrhhAlertFilter === f ? "rgba(37,99,235,0.15)" : "transparent", color: rrhhAlertFilter === f ? "#2563EB" : "rgba(255,255,255,0.4)", transition: "background 0.15s, color 0.15s" }}>{f}</button>
+                            ))}
+                          </div>
+
+                          {/* Right section */}
+                          <div style={{ flex: 1, padding: "20px 24px", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexShrink: 0 }}>
+                              <div>
+                                <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Empleados</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>8 empleados · 1 en licencia</div>
+                              </div>
+                              <button style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Nuevo empleado +</button>
+                            </div>
+
+                            {/* Alert banner */}
+                            {showRrhhAlertBanner && alertCount > 0 && (
+                              <div style={{ background: "rgba(234,179,8,0.06)", border: "1px solid rgba(234,179,8,0.2)", borderRadius: 8, padding: "10px 16px", marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                  <span style={{ color: "#eab308", fontSize: 13 }}>{alertCount} empleados requieren atención</span>
+                                </div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <button style={{ padding: "4px 10px", background: "rgba(234,179,8,0.1)", border: "none", borderRadius: 6, color: "#eab308", fontSize: 12, cursor: "pointer" }}>Ver alertas →</button>
+                                  <button onClick={() => setShowRrhhAlertBanner(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "0 2px" }}>×</button>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Employee list */}
+                            <div style={{ flex: 1, overflowY: "auto" }}>
+                              {filtered.map(emp => {
+                                const st = STATUS_STYLE[emp.status]
+                                return (
+                                  <div key={emp.id}
+                                    onClick={() => { setRrhhSelectedEmp(emp); setRrhhView("detail") }}
+                                    style={{ display: "flex", alignItems: "center", gap: 12, height: 64, borderBottom: "1px solid rgba(255,255,255,0.04)", padding: "0 12px", cursor: "pointer", transition: "background 0.15s" }}
+                                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+                                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                                    {/* Avatar */}
+                                    <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 13, fontWeight: 500, flexShrink: 0 }}>{emp.initials}</div>
+                                    {/* Name + role */}
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{emp.name}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{emp.role} · {emp.area}</div>
+                                    </div>
+                                    {/* Status badge */}
+                                    <span style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}`, borderRadius: 20, padding: "2px 8px", fontSize: 11, flexShrink: 0 }}>{emp.status}</span>
+                                    {/* Score dots */}
+                                    <div style={{ flexShrink: 0, minWidth: 60 }}><ScoreDots score={emp.score} /></div>
+                                    {/* Alert */}
+                                    <div style={{ width: 120, flexShrink: 0 }}>
+                                      {emp.alert === "Riesgo renuncia" && <span style={{ color: "#ef4444", fontSize: 11 }}>⚠ Riesgo renuncia</span>}
+                                      {emp.alert === "Sobrecargado"    && <span style={{ color: "#eab308", fontSize: 11 }}>⚡ Sobrecargado</span>}
+                                      {emp.alert === "Bajo desempeño"  && <span style={{ color: "#ef4444", fontSize: 11 }}>⚠ Bajo desempeño</span>}
+                                    </div>
+                                    {/* Seniority */}
+                                    <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, flexShrink: 0, width: 56, textAlign: "right" as const }}>{emp.seniority}</span>
+                                  </div>
+                                )
+                              })}
+                              {filtered.length === 0 && (
+                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 48, gap: 8 }}>
+                                  <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 13 }}>Sin empleados</span>
                                 </div>
                               )}
                             </div>
