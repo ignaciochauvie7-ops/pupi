@@ -868,46 +868,59 @@ export default function DashboardPage() {
               glowSize = "0 0 30px"
             }
 
+            const orbitAnim = isPaused ? "paused" : "running"
             return (
-              <button
+              <div
                 key={node.id}
-                className="absolute flex flex-col items-center z-10"
+                className="absolute z-10"
                 style={{
-                  gap: 8,
                   top: "50%",
                   left: "50%",
                   transform: `translate(calc(-50% + ${node.x}px), calc(-50% + ${node.y}px))`,
                   opacity: activeNode && !isActive && !isRelated ? 0.3 : 1,
                   transition: "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
-                onMouseEnter={() => setHoveredNodeId(node.id)}
-                onMouseLeave={() => setHoveredNodeId(null)}
-                onClick={(e) => {
-                  if (isActive) {
-                    closePanel()
-                  } else {
-                    openPanel(node, e)
-                  }
-                }}
               >
                 <div
-                  className="rounded-full flex items-center justify-center"
                   style={{
-                    width: 72,
-                    height: 72,
-                    backgroundColor: isActive ? "#2563EB" : isRelated ? "rgba(37,99,235,0.25)" : "rgba(37,99,235,0.1)",
-                    border: `1px solid ${isActive ? "#2563EB" : "rgba(37,99,235,0.3)"}`,
-                    boxShadow: `${glowSize} ${glowColor}`,
-                    transform: isActive ? "scale(1.12)" : isHovered ? "scale(1.07)" : "scale(1)",
-                    transition: "background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.4s ease, transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1)",
+                    animation: "orbitSpin 80s linear infinite reverse",
+                    animationPlayState: orbitAnim,
                   }}
                 >
-                  <Icon size={30} style={{ color: "white" }} />
+                  <button
+                    type="button"
+                    className="flex flex-col items-center"
+                    style={{ gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                    onMouseEnter={() => setHoveredNodeId(node.id)}
+                    onMouseLeave={() => setHoveredNodeId(null)}
+                    onClick={(e) => {
+                      if (isActive) {
+                        closePanel()
+                      } else {
+                        openPanel(node, e)
+                      }
+                    }}
+                  >
+                    <div
+                      className="rounded-full flex items-center justify-center"
+                      style={{
+                        width: 72,
+                        height: 72,
+                        backgroundColor: isActive ? "#2563EB" : isRelated ? "rgba(37,99,235,0.25)" : "rgba(37,99,235,0.1)",
+                        border: `1px solid ${isActive ? "#2563EB" : "rgba(37,99,235,0.3)"}`,
+                        boxShadow: `${glowSize} ${glowColor}`,
+                        transform: isActive ? "scale(1.12)" : isHovered ? "scale(1.07)" : "scale(1)",
+                        transition: "background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.4s ease, transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1)",
+                      }}
+                    >
+                      <Icon size={30} style={{ color: "white" }} />
+                    </div>
+                    <span style={{ color: "white", fontSize: 15, fontWeight: 500, whiteSpace: "nowrap" }}>
+                      {node.title}
+                    </span>
+                  </button>
                 </div>
-                <span style={{ color: "white", fontSize: 15, fontWeight: 500, whiteSpace: "nowrap" }}>
-                  {node.title}
-                </span>
-              </button>
+              </div>
             )
           })}
         </div>
