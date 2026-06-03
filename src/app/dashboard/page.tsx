@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import {
   Users,
   TrendingUp,
@@ -8,7 +8,54 @@ import {
   UserCheck,
   Calculator,
   LayoutDashboard,
+  BarChart2,
+  FileText,
+  Crown,
+  Briefcase,
+  User,
+  Camera,
+  Brain,
+  Zap,
+  AlertTriangle,
+  Clock,
+  Heart,
+  TrendingDown,
+  Target,
+  Mic,
 } from "lucide-react"
+
+// Web Speech API (Chrome) — minimal types to avoid DOM lib coupling
+interface SpeechRecognitionResultLike { readonly 0: { transcript: string }; isFinal: boolean }
+interface SpeechRecognitionEventLike { resultIndex: number; results: ArrayLike<SpeechRecognitionResultLike> }
+interface SpeechRecognitionInstance {
+  continuous: boolean
+  lang: string
+  interimResults: boolean
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null
+  onend: (() => void) | null
+  onerror: (() => void) | null
+  start(): void
+  stop(): void
+  abort(): void
+}
+type SpeechRecognitionCtor = new () => SpeechRecognitionInstance
+
+function getPupiChatReply(text: string) {
+  const t = text.toLowerCase()
+  if (t.includes("venta") || t.includes("pipeline")) {
+    return "Tenés 5 oportunidades activas por $56.350 en total. Carlos Mendoza está a punto de cerrar $18.500 — te recomiendo darle seguimiento hoy."
+  }
+  if (t.includes("cliente") || t.includes("crm")) {
+    return "Tu base tiene 284 clientes. Hay 32 sin contacto en más de 30 días que requieren atención esta semana."
+  }
+  if (t.includes("equipo") || t.includes("rrhh") || t.includes("empleado")) {
+    return "El clima laboral está en 7.8/10. Carlos Acosta está sobrecargado y Laura muestra riesgo de renuncia — conviene actuar esta semana."
+  }
+  if (t.includes("marketing") || t.includes("campaña")) {
+    return "La campaña de WhatsApp tiene ROI negativo. Tu mejor canal este mes es Email con 4.2x de retorno."
+  }
+  return "Entiendo. Basado en los datos de tu empresa, puedo ayudarte con ventas, clientes, equipo, finanzas o marketing. ¿Qué querés revisar?"
+}
 
 type Status = "completed" | "in-progress" | "pending"
 
@@ -18,7 +65,7 @@ interface TimelineItem {
   date: string
   content: string
   category: string
-  icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>
+  icon: React.ComponentType<{ size?: number | string; style?: React.CSSProperties }>
   relatedIds: number[]
   status: Status
   energy: number
@@ -77,7 +124,7 @@ const timelineData: TimelineItem[] = [
     category: "contabilidad",
     icon: Calculator,
     relatedIds: [1, 2, 4],
-    status: "in-progress",
+    status: "completed",
     energy: 45,
   },
   {
@@ -93,13 +140,17 @@ const timelineData: TimelineItem[] = [
   },
 ]
 
-const STATUS_COLORS: Record<Status, string> = {
-  completed: "#22c55e",
-  "in-progress": "#f59e0b",
-  pending: "#6b7280",
-}
-
 const ORBIT_RADIUS = 220
+
+const STATIC_NODE_POSITIONS = timelineData.map((item, index) => {
+  const angle = (index / timelineData.length) * 360
+  const rad = (angle * Math.PI) / 180
+  return {
+    ...item,
+    x: Math.cos(rad) * ORBIT_RADIUS,
+    y: Math.sin(rad) * ORBIT_RADIUS,
+  }
+})
 
 type Temp = "Todos" | "Caliente" | "Tibio" | "Frío"
 
@@ -130,6 +181,73 @@ const TEMP_STYLES: Record<"Caliente" | "Tibio" | "Frío", { bg: string; color: s
   Frío:     { bg: "rgba(37,99,235,0.15)",   color: "#60a5fa",  emoji: "🔵" },
 }
 
+type WorkspaceReportIcon = "trending-up" | "users" | "calculator" | "megaphone" | "bar-chart-2" | "file-text"
+
+type WorkspaceReportTemplate = {
+  id: string
+  icon: WorkspaceReportIcon
+  color: string
+  bg: string
+  title: string
+  description: string
+  tags: string[]
+}
+
+type WorkspaceGeneratedReport = {
+  id: number
+  icon: WorkspaceReportIcon
+  color: string
+  bg: string
+  name: string
+  generated: string
+  period: string
+  format: string
+  size: string
+}
+
+const WS_REPORT_TEMPLATES: WorkspaceReportTemplate[] = [
+  { id: "sales", icon: "trending-up", color: "#22c55e", bg: "rgba(34,197,94,0.15)", title: "Reporte de ventas", description: "Pipeline, cierres y pronóstico", tags: ["Semanal", "PDF"] },
+  { id: "team", icon: "users", color: "#2563EB", bg: "rgba(37,99,235,0.15)", title: "Estado del equipo", description: "Desempeño, clima y alertas RRHH", tags: ["Semanal", "PDF"] },
+  { id: "finance", icon: "calculator", color: "#eab308", bg: "rgba(234,179,8,0.15)", title: "Resumen financiero", description: "Ingresos, gastos y proyecciones", tags: ["Mensual", "Excel"] },
+  { id: "marketing", icon: "megaphone", color: "#a855f7", bg: "rgba(168,85,247,0.15)", title: "Performance de marketing", description: "Campañas, ROI e insights", tags: ["Mensual", "PDF"] },
+  { id: "executive", icon: "bar-chart-2", color: "rgba(249,115,22,1)", bg: "rgba(249,115,22,0.15)", title: "Reporte ejecutivo", description: "Resumen completo de la empresa", tags: ["Mensual", "PDF"] },
+  { id: "custom", icon: "file-text", color: "rgba(255,255,255,0.4)", bg: "rgba(255,255,255,0.08)", title: "Reporte personalizado", description: "Elegí qué incluir y el período", tags: ["Manual", "PDF/Excel"] },
+]
+
+const WS_GENERATED_REPORTS: WorkspaceGeneratedReport[] = [
+  { id: 1, icon: "trending-up", color: "#22c55e", bg: "rgba(34,197,94,0.15)", name: "Reporte de ventas — Semana 20", generated: "Generado el 25 Mayo · Por Pupi AI", period: "Semana 20", format: "PDF", size: "248 KB" },
+  { id: 2, icon: "users", color: "#2563EB", bg: "rgba(37,99,235,0.15)", name: "Estado del equipo — Semana 20", generated: "Generado el 25 Mayo · Por Pupi AI", period: "Semana 20", format: "PDF", size: "186 KB" },
+  { id: 3, icon: "calculator", color: "#eab308", bg: "rgba(234,179,8,0.15)", name: "Resumen financiero — Abril 2026", generated: "Generado el 1 Mayo · Por Pupi AI", period: "Abril 2026", format: "Excel", size: "412 KB" },
+  { id: 4, icon: "bar-chart-2", color: "#f97316", bg: "rgba(249,115,22,0.15)", name: "Reporte ejecutivo — Abril 2026", generated: "Generado el 1 Mayo · Por Pupi AI", period: "Abril 2026", format: "PDF", size: "1.2 MB" },
+  { id: 5, icon: "megaphone", color: "#a855f7", bg: "rgba(168,85,247,0.15)", name: "Performance marketing — Marzo 2026", generated: "Generado el 1 Abril · Por Pupi AI", period: "Marzo 2026", format: "PDF", size: "334 KB" },
+]
+
+type WsPermLevel = "full" | "partial" | "none"
+type WsSettingsTab = "roles" | "empresa" | "notificaciones" | "integraciones"
+type WsPermModule = "crm" | "ventas" | "mktg" | "rrhh" | "cont" | "config"
+
+const WS_PERM_MODULES: { key: WsPermModule; label: string }[] = [
+  { key: "crm", label: "CRM" },
+  { key: "ventas", label: "Ventas" },
+  { key: "mktg", label: "Mktg" },
+  { key: "rrhh", label: "RRHH" },
+  { key: "cont", label: "Cont" },
+  { key: "config", label: "Config" },
+]
+
+const WS_DEFAULT_ROLE_PERMS: Record<string, Record<WsPermModule, WsPermLevel>> = {
+  dueno: { crm: "full", ventas: "full", mktg: "full", rrhh: "full", cont: "full", config: "full" },
+  gerente: { crm: "full", ventas: "full", mktg: "full", rrhh: "partial", cont: "partial", config: "none" },
+  vendedor: { crm: "partial", ventas: "full", mktg: "none", rrhh: "none", cont: "none", config: "none" },
+  empleado: { crm: "none", ventas: "none", mktg: "none", rrhh: "partial", cont: "none", config: "none" },
+}
+
+const WS_PARTIAL_SUB_OPTS: Record<string, string[]> = {
+  crm: ["Ver clientes asignados", "Registrar interacciones", "Ver historial propio"],
+  ventas: ["Ver su pipeline", "Crear oportunidades", "Ver comisiones propias"],
+  rrhh: ["Ver sus tareas", "Ver su desempeño", "Ver sus documentos"],
+}
+
 function getInitials(name: string) {
   return name.split(" ").map((w) => w[0]).slice(0, 2).join("")
 }
@@ -138,10 +256,20 @@ export default function DashboardPage() {
   const [activeNode, setActiveNode] = useState<TimelineItem | null>(null)
   const [panelVisible, setPanelVisible] = useState(false)
   const [transformOrigin, setTransformOrigin] = useState("50% 50%")
-  const [rotation, setRotation] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
+  const [voiceReady, setVoiceReady] = useState(false)
   const [centerHovered, setCenterHovered] = useState(false)
   const [showVoiceInput, setShowVoiceInput] = useState(false)
+  const [showChatPanel, setShowChatPanel] = useState(false)
+  const [speechSupported, setSpeechSupported] = useState(false)
+  const [voiceListening, setVoiceListening] = useState(false)
+  const [showWakeGreeting, setShowWakeGreeting] = useState(false)
+  const [chatButtonPulse, setChatButtonPulse] = useState(false)
+  const [chatMessages, setChatMessages] = useState<{ role: "user" | "assistant"; text: string }[]>([
+    { role: "assistant", text: "¡Hola! Soy Pupi. Preguntame lo que necesites sobre tu negocio." },
+  ])
+  const [chatInput, setChatInput] = useState("")
+  const [showMicTooltip, setShowMicTooltip] = useState(false)
   const [hoveredNodeId, setHoveredNodeId] = useState<number | null>(null)
   const [crmClients, setCrmClients] = useState<Client[]>(CRM_CLIENTS)
   const [crmView, setCrmView] = useState<"list" | "detail" | "new" | "import" | "duplicates" | "map">("list")
@@ -220,8 +348,80 @@ export default function DashboardPage() {
   const [exportCustomTo2, setExportCustomTo2] = useState("2026-05-25")
   const [exportCustomChecks, setExportCustomChecks] = useState<Record<string,boolean>>({ Ingresos:true, Gastos:true, Comisiones:true, Sueldos:true, IVA:false, Comprobantes:false })
   const [exportGenState, setExportGenState] = useState<"idle"|"loading"|"done">("idle")
-  const [wsView, setWsView] = useState<"home"|"chat"|"history"|"search"|"reports"|"settings"|"onboarding">("home")
+  const [wsView, setWsView] = useState<"home"|"history"|"search"|"reports"|"settings"|"onboarding"|"memory">("home")
   const [wsTasks, setWsTasks] = useState<Record<number,boolean>>({ 4: true })
+  const [wsGeneratedReports, setWsGeneratedReports] = useState<WorkspaceGeneratedReport[]>(WS_GENERATED_REPORTS)
+  const [showWsReportModal, setShowWsReportModal] = useState(false)
+  const [wsSelectedReportTemplate, setWsSelectedReportTemplate] = useState<string | null>(null)
+  const [wsReportPeriod, setWsReportPeriod] = useState("Este mes")
+  const [wsReportFrom, setWsReportFrom] = useState("2026-05-01")
+  const [wsReportTo, setWsReportTo] = useState("2026-05-25")
+  const [wsReportChecks, setWsReportChecks] = useState<Record<string, boolean>>({
+    "Resumen de ventas": true,
+    "Estado del equipo": true,
+    "Situación financiera": true,
+    "Alertas activas": true,
+    "Recomendaciones Pupi": true,
+    "Próximos pasos": true,
+  })
+  const [wsReportFormat, setWsReportFormat] = useState("PDF")
+  const [wsReportTitle, setWsReportTitle] = useState("")
+  const [wsReportBrand, setWsReportBrand] = useState(true)
+  const [wsReportGenState, setWsReportGenState] = useState<"idle" | "loading" | "done">("idle")
+  const [wsDownloadStates, setWsDownloadStates] = useState<Record<number, "idle" | "loading" | "done">>({})
+  const [wsScheduledOn, setWsScheduledOn] = useState<Record<number, boolean>>({ 1: true, 2: true, 3: false })
+  const [wsSettingsTab, setWsSettingsTab] = useState<WsSettingsTab>("roles")
+  const [wsSettingsDirty, setWsSettingsDirty] = useState(false)
+  const [wsRolePerms, setWsRolePerms] = useState(WS_DEFAULT_ROLE_PERMS)
+  const [wsPartialSubChecks, setWsPartialSubChecks] = useState<Record<string, Record<string, boolean>>>({
+    crm: { "Ver clientes asignados": true, "Registrar interacciones": true, "Ver historial propio": false },
+    ventas: { "Ver su pipeline": true, "Crear oportunidades": true, "Ver comisiones propias": true },
+    rrhh: { "Ver sus tareas": true, "Ver su desempeño": false, "Ver sus documentos": false },
+  })
+  const [showWsPermModal, setShowWsPermModal] = useState(false)
+  const [wsPermModalRole, setWsPermModalRole] = useState<string | null>(null)
+  const [wsDraftPerms, setWsDraftPerms] = useState<Record<WsPermModule, WsPermLevel>>(WS_DEFAULT_ROLE_PERMS.dueno)
+  const [wsDraftPartialSubs, setWsDraftPartialSubs] = useState<Record<string, boolean>>({})
+  const [wsRoleExpanded, setWsRoleExpanded] = useState<Record<string, boolean>>({ dueno: true, vendedor: false, empleado: false })
+  const [wsEmpresaNombre, setWsEmpresaNombre] = useState("Distribuidora Norte S.A.")
+  const [wsEmpresaRubro, setWsEmpresaRubro] = useState("Distribución y logística")
+  const [wsEmpresaAnios, setWsEmpresaAnios] = useState("12")
+  const [wsEmpresaEmpleados, setWsEmpresaEmpleados] = useState("24")
+  const [wsEmpresaPais, setWsEmpresaPais] = useState("Argentina")
+  const [wsEmpresaCiudad, setWsEmpresaCiudad] = useState("Buenos Aires")
+  const [wsEmpresaWeb, setWsEmpresaWeb] = useState("www.distribuidoranorte.com")
+  const [wsEmpresaDesc, setWsEmpresaDesc] = useState("Empresa líder en distribución B2B con operaciones en todo el país.")
+  const [wsBrandColor, setWsBrandColor] = useState("#2563EB")
+  const [wsNotifAlerts, setWsNotifAlerts] = useState({
+    ventasCerradas: true, nuevasOportunidades: true, clientesRiesgo: true, alertasFinancieras: true,
+    estadoEquipo: true, campanasBajo: true, metasRiesgo: false, resumenDiario: true,
+  })
+  const [wsNotifFreq, setWsNotifFreq] = useState({ diario: true, semanal: true, mensual: true })
+  const [wsNotifChannels, setWsNotifChannels] = useState({ pupi: true, email: true, whatsapp: false })
+  const [wsIntegrations, setWsIntegrations] = useState<Record<string, boolean>>({
+    whatsapp: false, google: false, mercadopago: false, slack: false, sheets: false, zapier: false,
+  })
+  const [wsOnbStage, setWsOnbStage] = useState<"form" | "upload" | "diagnosis">("form")
+  const [wsOnbEmpresa, setWsOnbEmpresa] = useState("")
+  const [wsOnbRubro, setWsOnbRubro] = useState("Distribución / Mayorista")
+  const [wsOnbAnios, setWsOnbAnios] = useState("")
+  const [wsOnbFacturacion, setWsOnbFacturacion] = useState("$50.000 - $200.000 USD")
+  const [wsOnbDescNegocio, setWsOnbDescNegocio] = useState("")
+  const [wsOnbEmpleados, setWsOnbEmpleados] = useState("")
+  const [wsOnbVendedores, setWsOnbVendedores] = useState("")
+  const [wsOnbSucursales, setWsOnbSucursales] = useState(false)
+  const [wsOnbSucursalesCount, setWsOnbSucursalesCount] = useState("")
+  const [wsOnbPerfilCliente, setWsOnbPerfilCliente] = useState("Empresas (B2B)")
+  const [wsOnbTicket, setWsOnbTicket] = useState("")
+  const [wsOnbFrecuencia, setWsOnbFrecuencia] = useState("Mensual")
+  const [wsOnbZona, setWsOnbZona] = useState("")
+  const [wsOnbPainPoints, setWsOnbPainPoints] = useState<Record<string, boolean>>({})
+  const [wsOnbGoals, setWsOnbGoals] = useState<Record<string, boolean>>({})
+  const [wsOnbTools, setWsOnbTools] = useState<Record<string, boolean>>({ "Excel / Google Sheets": true, "WhatsApp": true })
+  const [wsOnbUploads, setWsOnbUploads] = useState<Record<string, { name: string; size: string } | null>>({})
+  const [wsOnboardingProcessing, setWsOnboardingProcessing] = useState(false)
+  const [wsOnbProgress, setWsOnbProgress] = useState(0)
+  const [wsOnbProcSteps, setWsOnbProcSteps] = useState<string[]>([])
   const [histSearch, setHistSearch] = useState("")
   const [histModulo, setHistModulo] = useState("Todos")
   const [histTipo, setHistTipo] = useState("Todos")
@@ -342,8 +542,12 @@ export default function DashboardPage() {
     resetNewForm()
     setCrmView("list")
   }
-  const animationRef = useRef<number | undefined>(undefined)
-  const lastTimeRef = useRef<number | undefined>(undefined)
+  const wakeRecRef = useRef<SpeechRecognitionInstance | null>(null)
+  const commandRecRef = useRef<SpeechRecognitionInstance | null>(null)
+  const voiceModeRef = useRef<"wake" | "command" | "idle">("idle")
+  const commandTextRef = useRef("")
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const startWakeRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
     if (activeNode) {
@@ -374,40 +578,195 @@ export default function DashboardPage() {
     }, 250)
   }
 
+  const stopWakeRecognition = useCallback(() => {
+    const rec = wakeRecRef.current
+    wakeRecRef.current = null
+    if (rec) {
+      try { rec.abort() } catch { try { rec.stop() } catch { /* noop */ } }
+    }
+  }, [])
+
+  const stopCommandRecognition = useCallback(() => {
+    const rec = commandRecRef.current
+    commandRecRef.current = null
+    if (rec) {
+      try { rec.abort() } catch { try { rec.stop() } catch { /* noop */ } }
+    }
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current)
+      silenceTimerRef.current = null
+    }
+  }, [])
+
+  const finishVoiceCommand = useCallback((rawText: string) => {
+    const text = rawText.replace(/\bpupi\b/gi, "").trim() || rawText.trim()
+    if (!text) {
+      voiceModeRef.current = "wake"
+      setVoiceListening(false)
+      stopCommandRecognition()
+      startWakeRef.current?.()
+      return
+    }
+    voiceModeRef.current = "wake"
+    setVoiceListening(false)
+    stopCommandRecognition()
+    setChatMessages(prev => [...prev, { role: "user", text }])
+    setTimeout(() => {
+      setChatMessages(prev => [...prev, { role: "assistant", text: getPupiChatReply(text) }])
+    }, 600)
+    startWakeRef.current?.()
+  }, [stopCommandRecognition])
+
+  const startCommandVoice = useCallback(() => {
+    const win = window as Window & { SpeechRecognition?: SpeechRecognitionCtor; webkitSpeechRecognition?: SpeechRecognitionCtor }
+    const SR = win.SpeechRecognition || win.webkitSpeechRecognition
+    if (!SR) return
+    voiceModeRef.current = "command"
+    stopWakeRecognition()
+    stopCommandRecognition()
+    setVoiceListening(true)
+    commandTextRef.current = ""
+    const rec = new SR()
+    rec.continuous = true
+    rec.lang = "es-ES"
+    rec.interimResults = true
+    rec.onresult = (event: SpeechRecognitionEventLike) => {
+      let text = ""
+      for (let i = 0; i < event.results.length; i++) {
+        text += event.results[i][0].transcript
+      }
+      text = text.trim()
+      if (!text) return
+      commandTextRef.current = text
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current)
+      silenceTimerRef.current = setTimeout(() => finishVoiceCommand(commandTextRef.current), 2000)
+    }
+    rec.onend = () => {
+      if (voiceModeRef.current === "command" && commandRecRef.current === rec) {
+        try { rec.start() } catch { setTimeout(() => { try { rec.start() } catch { /* noop */ } }, 400) }
+      }
+    }
+    rec.onerror = () => {
+      if (voiceModeRef.current === "command") {
+        setTimeout(() => {
+          if (voiceModeRef.current === "command") {
+            try { rec.start() } catch { /* noop */ }
+          }
+        }, 400)
+      }
+    }
+    commandRecRef.current = rec
+    try { rec.start() } catch { setTimeout(() => { try { rec.start() } catch { /* noop */ } }, 400) }
+  }, [stopWakeRecognition, stopCommandRecognition, finishVoiceCommand])
+
+  const triggerWakeWord = useCallback(() => {
+    setShowChatPanel(true)
+    setShowWakeGreeting(true)
+    setChatButtonPulse(true)
+    setTimeout(() => setChatButtonPulse(false), 300)
+    setTimeout(() => setShowWakeGreeting(false), 2500)
+    startCommandVoice()
+  }, [startCommandVoice])
+
+  const toggleChatPanel = useCallback(() => {
+    setShowChatPanel(prev => !prev)
+    setShowWakeGreeting(false)
+  }, [])
+
+  const sendChatMessage = useCallback(() => {
+    const text = chatInput.trim()
+    if (!text) return
+    setChatInput("")
+    setChatMessages(prev => [...prev, { role: "user", text }])
+    setTimeout(() => {
+      setChatMessages(prev => [...prev, { role: "assistant", text: getPupiChatReply(text) }])
+    }, 600)
+  }, [chatInput])
+
+  useEffect(() => {
+    const enableVoice = () => setVoiceReady(true)
+    window.addEventListener("pointerdown", enableVoice, { once: true })
+    return () => window.removeEventListener("pointerdown", enableVoice)
+  }, [])
+
+  useEffect(() => {
+    if (!voiceReady || activeNode) return
+    const win = window as Window & { SpeechRecognition?: SpeechRecognitionCtor; webkitSpeechRecognition?: SpeechRecognitionCtor }
+    const SR = win.SpeechRecognition || win.webkitSpeechRecognition
+    if (!SR) {
+      setSpeechSupported(false)
+      return
+    }
+    setSpeechSupported(true)
+    voiceModeRef.current = "wake"
+
+    const startWake = () => {
+      if (voiceModeRef.current !== "wake" || activeNode) return
+      stopWakeRecognition()
+      const rec = new SR()
+      rec.continuous = true
+      rec.lang = "es-ES"
+      rec.interimResults = false
+      rec.onresult = (event: SpeechRecognitionEventLike) => {
+        if (voiceModeRef.current !== "wake") return
+        let transcript = ""
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript
+        }
+        if (transcript.toLowerCase().includes("pupi")) {
+          triggerWakeWord()
+        }
+      }
+      rec.onend = () => {
+        if (voiceModeRef.current === "wake" && wakeRecRef.current === rec) {
+          try { rec.start() } catch { setTimeout(startWake, 500) }
+        }
+      }
+      rec.onerror = () => {
+        if (voiceModeRef.current === "wake") {
+          setTimeout(startWake, 500)
+        }
+      }
+      wakeRecRef.current = rec
+      try { rec.start() } catch { setTimeout(startWake, 500) }
+    }
+
+    startWakeRef.current = startWake
+    startWake()
+
+    return () => {
+      stopWakeRecognition()
+    }
+  }, [voiceReady, activeNode, triggerWakeWord, stopWakeRecognition])
+
+  useEffect(() => {
+    if (activeNode) {
+      voiceModeRef.current = "idle"
+      stopWakeRecognition()
+      stopCommandRecognition()
+    } else if (voiceReady && !voiceListening) {
+      voiceModeRef.current = "wake"
+      startWakeRef.current?.()
+    }
+  }, [activeNode, voiceReady, voiceListening, stopWakeRecognition, stopCommandRecognition])
+
+  useEffect(() => {
+    return () => {
+      voiceModeRef.current = "idle"
+      stopWakeRecognition()
+      stopCommandRecognition()
+    }
+  }, [stopWakeRecognition, stopCommandRecognition])
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") closePanel()
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  })
+  }, [])
 
-  useEffect(() => {
-    const animate = (time: number) => {
-      if (lastTimeRef.current !== undefined && !isPaused) {
-        const delta = time - lastTimeRef.current
-        setRotation((prev) => (prev + delta * 0.008) % 360)
-      }
-      lastTimeRef.current = time
-      animationRef.current = requestAnimationFrame(animate)
-    }
-    animationRef.current = requestAnimationFrame(animate)
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current)
-    }
-  }, [isPaused])
-
-  const nodePositions = timelineData.map((item, index) => {
-    const angle = (index / timelineData.length) * 360 + rotation
-    const rad = (angle * Math.PI) / 180
-    return {
-      ...item,
-      x: Math.cos(rad) * ORBIT_RADIUS,
-      y: Math.sin(rad) * ORBIT_RADIUS,
-    }
-  })
-
-  const containerSize = ORBIT_RADIUS * 2 + 140
+  const containerSize = ORBIT_RADIUS * 2 + 160
 
   return (
     <div
@@ -419,6 +778,7 @@ export default function DashboardPage() {
         }
       }}
     >
+      <style>{`@keyframes orbitSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       {/* Logo */}
       <div className="absolute top-6 left-8 z-20">
         <span style={{ color: "white", fontWeight: 700 }}>Pupi</span>
@@ -434,50 +794,123 @@ export default function DashboardPage() {
           if (!activeNode) setIsPaused(false)
         }}
       >
-        {/* SVG layer: rings + lines */}
+        {/* Rings (static) */}
         <svg
           className="absolute inset-0 pointer-events-none"
           width={containerSize}
           height={containerSize}
           viewBox={`${-containerSize / 2} ${-containerSize / 2} ${containerSize} ${containerSize}`}
         >
-          <circle
-            cx="0" cy="0" r={ORBIT_RADIUS * 0.6}
-            fill="none" stroke="rgba(37,99,235,0.06)" strokeWidth="1"
-          />
-          <circle
-            cx="0" cy="0" r={ORBIT_RADIUS}
-            fill="none" stroke="rgba(37,99,235,0.12)" strokeWidth="1" strokeDasharray="5 5"
-          />
-          {nodePositions.map((node) => {
+          <circle cx="0" cy="0" r={ORBIT_RADIUS * 0.6} fill="none" stroke="rgba(37,99,235,0.06)" strokeWidth="1" />
+          <circle cx="0" cy="0" r={ORBIT_RADIUS} fill="none" stroke="rgba(37,99,235,0.12)" strokeWidth="1" strokeDasharray="5 5" />
+        </svg>
+
+        {/* Orbiting layer — CSS animation (no React re-renders per frame) */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            animation: "orbitSpin 80s linear infinite",
+            animationPlayState: isPaused ? "paused" : "running",
+            willChange: "transform",
+          }}
+        >
+          <svg
+            className="absolute inset-0 pointer-events-none"
+            width={containerSize}
+            height={containerSize}
+            viewBox={`${-containerSize / 2} ${-containerSize / 2} ${containerSize} ${containerSize}`}
+          >
+            {STATIC_NODE_POSITIONS.map((node) => {
+              const isActive = activeNode?.id === node.id
+              const isRelated = activeNode?.relatedIds.includes(node.id) ?? false
+              let stroke = "rgba(37,99,235,0.15)"
+              let strokeWidth = 1
+              if (isActive) { stroke = "rgba(37,99,235,0.6)"; strokeWidth = 1.5 }
+              else if (isRelated) { stroke = "rgba(37,99,235,0.35)" }
+              return (
+                <line
+                  key={`center-line-${node.id}`}
+                  x1={node.x} y1={node.y} x2={0} y2={0}
+                  stroke={stroke} strokeWidth={strokeWidth}
+                />
+              )
+            })}
+            {activeNode &&
+              STATIC_NODE_POSITIONS
+                .filter((node) => activeNode.relatedIds.includes(node.id))
+                .map((node) => {
+                  const origin = STATIC_NODE_POSITIONS.find((n) => n.id === activeNode.id)!
+                  return (
+                    <line
+                      key={`rel-line-${node.id}`}
+                      x1={origin.x} y1={origin.y} x2={node.x} y2={node.y}
+                      stroke="rgba(37,99,235,0.4)" strokeWidth="1"
+                    />
+                  )
+                })}
+          </svg>
+
+          {STATIC_NODE_POSITIONS.map((node) => {
+            const Icon = node.icon
             const isActive = activeNode?.id === node.id
             const isRelated = activeNode?.relatedIds.includes(node.id) ?? false
-            let stroke = "rgba(37,99,235,0.15)"
-            let strokeWidth = 1
-            if (isActive) { stroke = "rgba(37,99,235,0.6)"; strokeWidth = 1.5 }
-            else if (isRelated) { stroke = "rgba(37,99,235,0.35)" }
+            const isHovered = hoveredNodeId === node.id
+
+            let glowColor = "rgba(37,99,235,0.15)"
+            let glowSize = "0 0 12px"
+            if (isHovered) {
+              glowColor = "rgba(37,99,235,0.4)"
+              glowSize = "0 0 20px"
+            }
+            if (isActive) {
+              glowColor = "rgba(37,99,235,0.7)"
+              glowSize = "0 0 30px"
+            }
+
             return (
-              <line
-                key={`center-line-${node.id}`}
-                x1={node.x} y1={node.y} x2={0} y2={0}
-                stroke={stroke} strokeWidth={strokeWidth}
-              />
+              <button
+                key={node.id}
+                className="absolute flex flex-col items-center z-10"
+                style={{
+                  gap: 8,
+                  top: "50%",
+                  left: "50%",
+                  transform: `translate(calc(-50% + ${node.x}px), calc(-50% + ${node.y}px))`,
+                  opacity: activeNode && !isActive && !isRelated ? 0.3 : 1,
+                  transition: "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                }}
+                onMouseEnter={() => setHoveredNodeId(node.id)}
+                onMouseLeave={() => setHoveredNodeId(null)}
+                onClick={(e) => {
+                  if (isActive) {
+                    closePanel()
+                  } else {
+                    openPanel(node, e)
+                  }
+                }}
+              >
+                <div
+                  className="rounded-full flex items-center justify-center"
+                  style={{
+                    width: 72,
+                    height: 72,
+                    backgroundColor: isActive ? "#2563EB" : isRelated ? "rgba(37,99,235,0.25)" : "rgba(37,99,235,0.1)",
+                    border: `1px solid ${isActive ? "#2563EB" : "rgba(37,99,235,0.3)"}`,
+                    boxShadow: `${glowSize} ${glowColor}`,
+                    transform: isActive ? "scale(1.12)" : isHovered ? "scale(1.07)" : "scale(1)",
+                    transition: "background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.4s ease, transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1)",
+                  }}
+                >
+                  <Icon size={30} style={{ color: "white" }} />
+                </div>
+                <span style={{ color: "white", fontSize: 15, fontWeight: 500, whiteSpace: "nowrap" }}>
+                  {node.title}
+                </span>
+              </button>
             )
           })}
-          {activeNode &&
-            nodePositions
-              .filter((node) => activeNode.relatedIds.includes(node.id))
-              .map((node) => {
-                const origin = nodePositions.find((n) => n.id === activeNode.id)!
-                return (
-                  <line
-                    key={`rel-line-${node.id}`}
-                    x1={origin.x} y1={origin.y} x2={node.x} y2={node.y}
-                    stroke="rgba(37,99,235,0.4)" strokeWidth="1"
-                  />
-                )
-              })}
-        </svg>
+        </div>
 
         {/* Center circle */}
         <div className="relative z-10">
@@ -500,8 +933,8 @@ export default function DashboardPage() {
           <div
             className="rounded-full cursor-pointer"
             style={{
-              width: 110,
-              height: 110,
+              width: 124,
+              height: 124,
               borderRadius: "50%",
               overflow: "hidden",
               backgroundImage: "url(/pupi-logo-circle.png)",
@@ -518,75 +951,6 @@ export default function DashboardPage() {
             onClick={() => setShowVoiceInput((v) => !v)}
           />
         </div>
-
-        {/* Nodes */}
-        {nodePositions.map((node) => {
-          const Icon = node.icon
-          const isActive = activeNode?.id === node.id
-          const isRelated = activeNode?.relatedIds.includes(node.id) ?? false
-          const isHovered = hoveredNodeId === node.id
-          const isAlert = node.status === "in-progress"
-
-          let glowColor = "rgba(37,99,235,0.15)"
-          let glowSize = "0 0 12px"
-          if (isAlert) glowColor = "rgba(239,68,68,0.3)"
-          if (isHovered) {
-            glowColor = isAlert ? "rgba(239,68,68,0.5)" : "rgba(37,99,235,0.4)"
-            glowSize = "0 0 20px"
-          }
-          if (isActive) {
-            glowColor = "rgba(37,99,235,0.7)"
-            glowSize = "0 0 30px"
-          }
-
-          return (
-            <button
-              key={node.id}
-              className="absolute flex flex-col items-center gap-1 z-10"
-              style={{
-                top: "50%",
-                left: "50%",
-                transform: `translate(calc(-50% + ${node.x}px), calc(-50% + ${node.y}px))`,
-                opacity: activeNode && !isActive && !isRelated ? 0.3 : 1,
-                transition: "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-              }}
-              onMouseEnter={() => setHoveredNodeId(node.id)}
-              onMouseLeave={() => setHoveredNodeId(null)}
-              onClick={(e) => {
-                if (isActive) {
-                  closePanel()
-                } else {
-                  openPanel(node, e)
-                }
-              }}
-            >
-              <div
-                className="rounded-full flex items-center justify-center"
-                style={{
-                  width: 62,
-                  height: 62,
-                  backgroundColor: isActive
-                    ? "#2563EB"
-                    : isRelated
-                    ? "rgba(37,99,235,0.25)"
-                    : "rgba(37,99,235,0.1)",
-                  border: `1px solid ${isActive ? "#2563EB" : isAlert ? "rgba(239,68,68,0.4)" : "rgba(37,99,235,0.3)"}`,
-                  boxShadow: `${glowSize} ${glowColor}`,
-                  transform: isActive ? "scale(1.12)" : isHovered ? "scale(1.07)" : "scale(1)",
-                  transition: "background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.4s ease, transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1)",
-                }}
-              >
-                <Icon size={26} style={{ color: "white" }} />
-              </div>
-              <span style={{ color: "white", fontSize: 13, whiteSpace: "nowrap" }}>
-                {node.title}
-              </span>
-              <span style={{ fontSize: 11, color: STATUS_COLORS[node.status], whiteSpace: "nowrap" }}>
-                {node.status === "completed" ? "Activo" : node.status === "in-progress" ? "Alerta" : "Inactivo"}
-              </span>
-            </button>
-          )
-        })}
       </div>
 
       {/* Voice input bar */}
@@ -626,9 +990,7 @@ export default function DashboardPage() {
         style={{
           position: "fixed",
           inset: 0,
-          backgroundColor: "rgba(0,0,0,0.5)",
-          backdropFilter: "blur(4px)",
-          WebkitBackdropFilter: "blur(4px)",
+          backgroundColor: "rgba(0,0,0,0.65)",
           zIndex: 40,
           opacity: panelVisible ? 1 : 0,
           pointerEvents: activeNode ? "auto" : "none",
@@ -7226,12 +7588,12 @@ export default function DashboardPage() {
                 (() => {
                   const WS_NAV: { key: typeof wsView; label: string }[] = [
                     { key:"home",       label:"Inicio"        },
-                    { key:"chat",       label:"Chat con Pupi" },
                     { key:"history",    label:"Historial"     },
                     { key:"search",     label:"Buscador"      },
                     { key:"reports",    label:"Reportes"      },
                     { key:"settings",   label:"Configuración" },
                     { key:"onboarding", label:"Onboarding"    },
+                    { key:"memory",     label:"Memoria"       },
                   ]
                   const ALERTS = [
                     { color:"#ef4444", title:"Laura Sánchez — Riesgo renuncia",      sub:"RRHH · Hace 3 semanas"  },
@@ -7264,6 +7626,41 @@ export default function DashboardPage() {
                   ]
                   const prioColor = (p: string) => p==="Alta" ? "#ef4444" : p==="Media" ? "#eab308" : p==="done" ? "#22c55e" : "rgba(255,255,255,0.3)"
                   const cardStyle: React.CSSProperties = { background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:"14px 16px" }
+                  const renderReportIcon = (icon: WorkspaceReportIcon, color: string, size = 18) => {
+                    const iconMap = { "trending-up": TrendingUp, users: Users, calculator: Calculator, megaphone: Megaphone, "bar-chart-2": BarChart2, "file-text": FileText }
+                    const ReportIcon = iconMap[icon]
+                    return <ReportIcon size={size} style={{ color }} />
+                  }
+                  const openReportModal = (templateId: string | null) => {
+                    const template = WS_REPORT_TEMPLATES.find(t => t.id === templateId)
+                    setWsSelectedReportTemplate(templateId)
+                    setWsReportPeriod("Este mes")
+                    setWsReportFormat(template?.tags.includes("Excel") ? "Excel" : "PDF")
+                    setWsReportTitle(template ? `${template.title} Mayo 2026` : "")
+                    setWsReportBrand(true)
+                    setWsReportGenState("idle")
+                    setShowWsReportModal(true)
+                  }
+                  const reportIncludeOptions = (templateId: string | null) => {
+                    if (templateId === "sales") return ["Resumen de ventas", "Pipeline activo", "Cierres recientes", "Pronóstico", "Recomendaciones Pupi"]
+                    if (templateId === "team") return ["Estado del equipo", "Clima laboral", "Alertas RRHH", "Desempeño individual", "Próximos pasos"]
+                    if (templateId === "finance") return ["Situación financiera", "Ingresos y gastos", "Flujo de caja", "Proyecciones", "Alertas activas"]
+                    if (templateId === "marketing") return ["Performance de campañas", "ROI por canal", "Insights", "Recomendaciones Pupi", "Próximos pasos"]
+                    return ["Resumen de ventas", "Estado del equipo", "Situación financiera", "Alertas activas", "Recomendaciones Pupi", "Próximos pasos"]
+                  }
+                  const selectedTemplate = WS_REPORT_TEMPLATES.find(t => t.id === wsSelectedReportTemplate)
+                  const selectedIncludeOptions = reportIncludeOptions(wsSelectedReportTemplate)
+                  const pillStyle: React.CSSProperties = { background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.4)", borderRadius:20, padding:"2px 8px", fontSize:10 }
+                  const Toggle = ({ on, onToggle }: { on: boolean; onToggle: () => void }) => (
+                    <button onClick={onToggle} style={{ width:36, height:20, borderRadius:10, background:on ? "#2563EB" : "rgba(255,255,255,0.1)", border:"none", cursor:"pointer", position:"relative", flexShrink:0, transition:"background 0.2s" }}>
+                      <span style={{ width:16, height:16, borderRadius:"50%", background:"white", position:"absolute", top:2, left:on ? 18 : 2, transition:"left 0.2s" }} />
+                    </button>
+                  )
+                  const SCHEDULED_REPORTS = [
+                    { id:1, icon:"trending-up" as const, color:"#22c55e", bg:"rgba(34,197,94,0.15)", name:"Reporte de ventas semanal", schedule:"Todos los lunes a las 8:00 AM" },
+                    { id:2, icon:"calculator" as const, color:"#eab308", bg:"rgba(234,179,8,0.15)", name:"Resumen financiero mensual", schedule:"Primer día de cada mes · 8:00 AM" },
+                    { id:3, icon:"bar-chart-2" as const, color:"#f97316", bg:"rgba(249,115,22,0.15)", name:"Reporte ejecutivo mensual", schedule:"Primer lunes de cada mes · 9:00 AM" },
+                  ]
                   return (
                     <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
                       {/* Secondary nav */}
@@ -7467,8 +7864,963 @@ export default function DashboardPage() {
                         )
                       })()}
 
+                      {/* Reports view */}
+                      {wsView === "reports" && (
+                        <div style={{ flex:1, overflowY:"auto", padding:24 }}>
+                          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
+                            <div>
+                              <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Reportes automáticos</div>
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:3 }}>Generados por Pupi AI<br />listos para presentar</div>
+                            </div>
+                            <button onClick={() => openReportModal(null)} style={{ padding:"7px 14px", fontSize:13, background:"#2563EB", color:"white", border:"none", borderRadius:8, cursor:"pointer", fontWeight:500 }}>+ Nuevo reporte</button>
+                          </div>
+
+                          <div>
+                            <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Plantillas disponibles</div>
+                            <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:12 }}>
+                              {WS_REPORT_TEMPLATES.map(template => (
+                                <div
+                                  key={template.id}
+                                  onClick={() => openReportModal(template.id)}
+                                  style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:12, padding:18, cursor:"pointer", transition:"all 200ms" }}
+                                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(37,99,235,0.3)"; e.currentTarget.style.background = "rgba(255,255,255,0.05)" }}
+                                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.background = "rgba(255,255,255,0.03)" }}
+                                >
+                                  <div style={{ width:40, height:40, borderRadius:"50%", background:template.bg, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto" }}>
+                                    {renderReportIcon(template.icon, template.color)}
+                                  </div>
+                                  <div style={{ color:"white", fontSize:13, fontWeight:500, textAlign:"center", marginTop:10 }}>{template.title}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, textAlign:"center", marginTop:4, lineHeight:1.5 }}>{template.description}</div>
+                                  <div style={{ display:"flex", justifyContent:"center", gap:6, marginTop:10 }}>
+                                    {template.tags.map(tag => <span key={tag} style={pillStyle}>{tag}</span>)}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div style={{ marginTop:32 }}>
+                            <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Reportes generados</div>
+                            <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Historial de reportes<br />creados automáticamente</div>
+                            {wsGeneratedReports.map(report => {
+                              const downloadState = wsDownloadStates[report.id] || "idle"
+                              return (
+                                <div
+                                  key={report.id}
+                                  style={{ display:"flex", alignItems:"center", gap:14, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:16, marginBottom:8, cursor:"pointer", transition:"all 200ms" }}
+                                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)" }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.02)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)" }}
+                                >
+                                  <div style={{ width:40, height:40, borderRadius:"50%", background:report.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                                    {renderReportIcon(report.icon, report.color)}
+                                  </div>
+                                  <div style={{ flex:1, minWidth:0 }}>
+                                    <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{report.name}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:4 }}>{report.generated}</div>
+                                    <div style={{ display:"flex", gap:6, marginTop:6 }}>
+                                      <span style={pillStyle}>{report.period}</span>
+                                      <span style={pillStyle}>{report.format}</span>
+                                    </div>
+                                  </div>
+                                  <div style={{ color:"rgba(255,255,255,0.3)", fontSize:11, flexShrink:0 }}>{report.size}</div>
+                                  <div style={{ display:"flex", gap:8, flexShrink:0 }}>
+                                    <button style={{ border:"1px solid rgba(255,255,255,0.1)", background:"transparent", color:"rgba(255,255,255,0.5)", fontSize:11, borderRadius:6, padding:"4px 10px", cursor:"pointer" }}>Ver</button>
+                                    <button
+                                      onClick={e => {
+                                        e.stopPropagation()
+                                        if (downloadState !== "idle") return
+                                        setWsDownloadStates(prev => ({ ...prev, [report.id]: "loading" }))
+                                        setTimeout(() => {
+                                          setWsDownloadStates(prev => ({ ...prev, [report.id]: "done" }))
+                                          setTimeout(() => setWsDownloadStates(prev => ({ ...prev, [report.id]: "idle" })), 2000)
+                                        }, 1500)
+                                      }}
+                                      style={{ border:`1px solid ${downloadState === "done" ? "#22c55e" : "rgba(37,99,235,0.3)"}`, background:downloadState === "done" ? "#22c55e" : "transparent", color:downloadState === "done" ? "white" : "#2563EB", fontSize:11, borderRadius:6, padding:"4px 10px", cursor:"pointer", minWidth:92, transition:"all 0.2s" }}
+                                    >
+                                      {downloadState === "idle" && "↓ Descargar"}
+                                      {downloadState === "loading" && "Descndo..."}
+                                      {downloadState === "done" && "✓ Descargado"}
+                                    </button>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+
+                          <div style={{ marginTop:32 }}>
+                            <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Reportes programados</div>
+                            <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Se generan automáticamente</div>
+                            {SCHEDULED_REPORTS.map(report => (
+                              <div key={report.id} style={{ display:"flex", alignItems:"center", gap:12, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:"14px 16px", marginBottom:8 }}>
+                                <div style={{ width:36, height:36, borderRadius:"50%", background:report.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                                  {renderReportIcon(report.icon, report.color)}
+                                </div>
+                                <div style={{ flex:1, minWidth:0 }}>
+                                  <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{report.name}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:3 }}>{report.schedule}</div>
+                                </div>
+                                <Toggle on={wsScheduledOn[report.id]} onToggle={() => setWsScheduledOn(prev => ({ ...prev, [report.id]: !prev[report.id] }))} />
+                                <button style={{ background:"none", border:"none", color:"rgba(255,255,255,0.3)", fontSize:11, marginLeft:12, cursor:"pointer" }}>Editar</button>
+                              </div>
+                            ))}
+                          </div>
+
+                          {showWsReportModal && (
+                            <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.65)", zIndex:300, display:"flex", alignItems:"center", justifyContent:"center" }} onClick={() => setShowWsReportModal(false)}>
+                              <div style={{ background:"#0f1e35", border:"1px solid rgba(255,255,255,0.1)", borderRadius:16, padding:24, width:480, maxHeight:"88vh", overflowY:"auto" }} onClick={e => e.stopPropagation()}>
+                                <div style={{ color:"white", fontSize:16, fontWeight:500 }}>{selectedTemplate?.title || "Nuevo reporte"}</div>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2, marginBottom:20 }}>Generado por Pupi AI</div>
+
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:12 }}>Período</div>
+                                <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:wsReportPeriod === "Personalizado" ? 12 : 0 }}>
+                                  {["Esta semana", "Este mes", "Último trimestre", "Personalizado"].map(period => (
+                                    <button key={period} onClick={() => setWsReportPeriod(period)} style={{ padding:"6px 12px", fontSize:12, borderRadius:6, border:`1px solid ${wsReportPeriod === period ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`, background:wsReportPeriod === period ? "rgba(37,99,235,0.1)" : "transparent", color:wsReportPeriod === period ? "#2563EB" : "rgba(255,255,255,0.4)", cursor:"pointer", transition:"all 0.15s" }}>{period}</button>
+                                  ))}
+                                </div>
+                                {wsReportPeriod === "Personalizado" && (
+                                  <div style={{ display:"flex", gap:12, marginTop:10 }}>
+                                    <input type="date" value={wsReportFrom} onChange={e => setWsReportFrom(e.target.value)} style={{ flex:1, padding:"7px 10px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:8, color:"white", fontSize:12, outline:"none", colorScheme:"dark" }} />
+                                    <input type="date" value={wsReportTo} onChange={e => setWsReportTo(e.target.value)} style={{ flex:1, padding:"7px 10px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:8, color:"white", fontSize:12, outline:"none", colorScheme:"dark" }} />
+                                  </div>
+                                )}
+
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:12, marginTop:20 }}>Incluir</div>
+                                {selectedIncludeOptions.map(label => (
+                                  <div key={label} onClick={() => setWsReportChecks(prev => ({ ...prev, [label]: !(prev[label] ?? true) }))} style={{ display:"flex", alignItems:"center", gap:10, padding:"7px 0", borderBottom:"1px solid rgba(255,255,255,0.04)", cursor:"pointer" }}>
+                                    <div style={{ width:16, height:16, borderRadius:4, border:`1px solid ${(wsReportChecks[label] ?? true) ? "#2563EB" : "rgba(255,255,255,0.2)"}`, background:(wsReportChecks[label] ?? true) ? "#2563EB" : "transparent", display:"flex", alignItems:"center", justifyContent:"center", color:"white", fontSize:10 }}>✓</div>
+                                    <span style={{ color:"rgba(255,255,255,0.65)", fontSize:13 }}>✓ {label}</span>
+                                  </div>
+                                ))}
+
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:12, marginTop:20 }}>Formato</div>
+                                <div style={{ display:"flex", gap:8 }}>
+                                  {["PDF", "Excel", "PowerPoint"].map(format => (
+                                    <button key={format} onClick={() => setWsReportFormat(format)} style={{ flex:1, padding:"8px 12px", fontSize:12, borderRadius:8, border:`1px solid ${wsReportFormat === format ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`, background:wsReportFormat === format ? "rgba(37,99,235,0.1)" : "rgba(255,255,255,0.02)", color:wsReportFormat === format ? "#2563EB" : "rgba(255,255,255,0.45)", cursor:"pointer" }}>{format}</button>
+                                  ))}
+                                </div>
+
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:8, marginTop:20 }}>Destinatario</div>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginBottom:5 }}>Título del reporte</div>
+                                <input type="text" value={wsReportTitle} onChange={e => setWsReportTitle(e.target.value)} placeholder={"Ej: Reporte ejecutivo\nMayo 2026"} style={{ width:"100%", padding:"8px 12px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:8, color:"white", fontSize:13, outline:"none", boxSizing:"border-box" }} />
+                                <div style={{ display:"flex", alignItems:"center", gap:12, marginTop:14 }}>
+                                  <Toggle on={wsReportBrand} onToggle={() => setWsReportBrand(v => !v)} />
+                                  <span style={{ color:"rgba(255,255,255,0.6)", fontSize:13 }}>Incluir marca Pupi AI</span>
+                                </div>
+
+                                <div style={{ display:"flex", justifyContent:"flex-end", gap:10, marginTop:24 }}>
+                                  <button onClick={() => setShowWsReportModal(false)} style={{ padding:"8px 16px", fontSize:13, background:"none", border:"none", color:"rgba(255,255,255,0.4)", cursor:"pointer" }}>Cancelar</button>
+                                  <button
+                                    onClick={() => {
+                                      if (wsReportGenState !== "idle") return
+                                      setWsReportGenState("loading")
+                                      setTimeout(() => {
+                                        setWsReportGenState("done")
+                                        const base = selectedTemplate || WS_REPORT_TEMPLATES[4]
+                                        setWsGeneratedReports(prev => [{
+                                          id: Date.now(),
+                                          icon: base.icon,
+                                          color: base.color,
+                                          bg: base.bg,
+                                          name: wsReportTitle.trim() || `${base.title} — Mayo 2026`,
+                                          generated: "Generado el 25 Mayo · Por Pupi AI",
+                                          period: wsReportPeriod === "Personalizado" ? "Personalizado" : wsReportPeriod,
+                                          format: wsReportFormat,
+                                          size: wsReportFormat === "Excel" ? "410 KB" : "296 KB",
+                                        }, ...prev])
+                                        setTimeout(() => setShowWsReportModal(false), 1000)
+                                      }, 2000)
+                                    }}
+                                    style={{ padding:"8px 16px", fontSize:13, background:wsReportGenState === "done" ? "#22c55e" : "#2563EB", border:"none", borderRadius:8, color:"white", cursor:"pointer", fontWeight:500, minWidth:148, display:"flex", justifyContent:"center", alignItems:"center", gap:6, transition:"background 0.3s" }}
+                                  >
+                                    {wsReportGenState === "idle" && "Generar reporte"}
+                                    {wsReportGenState === "loading" && <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation:"spin 1s linear infinite" }}><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>Generando...</>}
+                                    {wsReportGenState === "done" && "✓ Reporte listo"}
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Settings view */}
+                      {wsView === "settings" && (() => {
+                        const markDirty = () => setWsSettingsDirty(true)
+                        const settingsInput: React.CSSProperties = { background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:8, padding:"8px 12px", color:"white", fontSize:13, width:"100%", outline:"none", boxSizing:"border-box" }
+                        const settingsLabel: React.CSSProperties = { color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:6, display:"block" }
+                        const sectionLabel: React.CSSProperties = { color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:16 }
+                        const SETTINGS_TABS: { key: WsSettingsTab; label: string }[] = [
+                          { key:"roles", label:"Roles y permisos" },
+                          { key:"empresa", label:"Empresa" },
+                          { key:"notificaciones", label:"Notificaciones" },
+                          { key:"integraciones", label:"Integraciones" },
+                        ]
+                        const ROLES = [
+                          { id:"dueno", name:"Dueño", count:1, icon:"crown" as const, color:"#eab308", bg:"rgba(234,179,8,0.15)" },
+                          { id:"gerente", name:"Gerente", count:0, icon:"briefcase" as const, color:"#2563EB", bg:"rgba(37,99,235,0.15)" },
+                          { id:"vendedor", name:"Vendedor", count:3, icon:"trending" as const, color:"#22c55e", bg:"rgba(34,197,94,0.15)" },
+                          { id:"empleado", name:"Empleado", count:5, icon:"user" as const, color:"rgba(255,255,255,0.4)", bg:"rgba(255,255,255,0.08)" },
+                        ]
+                        const USERS_BY_ROLE: Record<string, { name: string; email: string }[]> = {
+                          dueno: [{ name:"Nacho", email:"nacho@empresa.com" }],
+                          gerente: [],
+                          vendedor: [
+                            { name:"Juan Pérez", email:"jp@empresa.com" },
+                            { name:"Carlos Acosta", email:"ca@empresa.com" },
+                            { name:"María Ruiz", email:"mr@empresa.com" },
+                          ],
+                          empleado: [
+                            { name:"Ana González", email:"ana@empresa.com" },
+                            { name:"Pedro Martínez", email:"pedro@empresa.com" },
+                            { name:"Laura Sánchez", email:"laura@empresa.com" },
+                            { name:"Diego Torres", email:"diego@empresa.com" },
+                            { name:"Sofía Reyes", email:"sofia@empresa.com" },
+                          ],
+                        }
+                        const MODAL_MODULES: { key: WsPermModule; label: string; icon: React.ReactNode }[] = [
+                          { key:"crm", label:"CRM", icon:<Users size={14} style={{ color:"#2563EB" }} /> },
+                          { key:"ventas", label:"Ventas", icon:<TrendingUp size={14} style={{ color:"#22c55e" }} /> },
+                          { key:"mktg", label:"Marketing", icon:<Megaphone size={14} style={{ color:"#a855f7" }} /> },
+                          { key:"rrhh", label:"RRHH", icon:<UserCheck size={14} style={{ color:"#f97316" }} /> },
+                          { key:"cont", label:"Contabilidad", icon:<Calculator size={14} style={{ color:"#eab308" }} /> },
+                          { key:"config", label:"Configuración", icon:<LayoutDashboard size={14} style={{ color:"rgba(255,255,255,0.5)" }} /> },
+                        ]
+                        const INTEGRATIONS = [
+                          { id:"whatsapp", letter:"W", color:"#22c55e", bg:"rgba(34,197,94,0.15)", name:"WhatsApp Business", desc:"Envío de notificaciones y alertas" },
+                          { id:"google", letter:"G", color:"#2563EB", bg:"rgba(37,99,235,0.15)", name:"Google Workspace", desc:"Sincronización de calendario y email" },
+                          { id:"mercadopago", letter:"M", color:"#60a5fa", bg:"rgba(96,165,250,0.15)", name:"Mercado Pago", desc:"Registro automático de pagos" },
+                          { id:"slack", letter:"S", color:"#a855f7", bg:"rgba(168,85,247,0.15)", name:"Slack", desc:"Alertas y notificaciones al equipo" },
+                          { id:"sheets", letter:"G", color:"#22c55e", bg:"rgba(34,197,94,0.15)", name:"Google Sheets", desc:"Exportación automática de datos" },
+                          { id:"zapier", letter:"Z", color:"#f97316", bg:"rgba(249,115,22,0.15)", name:"Zapier", desc:"Conectá Pupi con miles de apps" },
+                        ]
+                        const BRAND_COLORS = ["#2563EB", "#7c3aed", "#db2777", "#059669", "#d97706", "#dc2626"]
+                        const permDot = (level: WsPermLevel) => (
+                          <div style={{
+                            width:20, height:20, borderRadius:"50%", margin:"0 auto",
+                            background: level === "full" ? "#22c55e" : level === "partial" ? "#eab308" : "transparent",
+                            border: level === "none" ? "1px solid rgba(255,255,255,0.08)" : "none",
+                          }} />
+                        )
+                        const RoleIcon = ({ type, color, bg }: { type: string; color: string; bg: string }) => (
+                          <div style={{ width:36, height:36, borderRadius:"50%", background:bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                            {type === "crown" && <Crown size={16} style={{ color }} />}
+                            {type === "briefcase" && <Briefcase size={16} style={{ color }} />}
+                            {type === "trending" && <TrendingUp size={16} style={{ color }} />}
+                            {type === "user" && <User size={16} style={{ color }} />}
+                          </div>
+                        )
+                        const openPermModal = (roleId: string) => {
+                          const perms = wsRolePerms[roleId] || WS_DEFAULT_ROLE_PERMS.dueno
+                          setWsPermModalRole(roleId)
+                          setWsDraftPerms({ ...perms })
+                          const subs: Record<string, boolean> = {}
+                          Object.entries(wsPartialSubChecks).forEach(([mod, opts]) => {
+                            Object.entries(opts).forEach(([k, v]) => { subs[`${mod}:${k}`] = v })
+                          })
+                          setWsDraftPartialSubs(subs)
+                          setShowWsPermModal(true)
+                        }
+                        const permPill = (label: string, active: boolean, color: string, onClick: () => void) => (
+                          <button onClick={onClick} style={{
+                            padding:"4px 10px", fontSize:11, borderRadius:6, cursor:"pointer",
+                            background: active ? `${color}22` : "rgba(255,255,255,0.05)",
+                            color: active ? color : "rgba(255,255,255,0.4)",
+                            border: active ? `1px solid ${color}55` : "1px solid transparent",
+                          }}>{label}</button>
+                        )
+                        const editingRole = ROLES.find(r => r.id === wsPermModalRole)
+                        return (
+                          <div style={{ flex:1, overflowY:"auto", padding:24 }}>
+                            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
+                              <div>
+                                <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Configuración</div>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:3 }}>Roles, permisos y preferencias</div>
+                              </div>
+                              <button
+                                disabled={!wsSettingsDirty}
+                                onClick={() => setWsSettingsDirty(false)}
+                                style={{
+                                  padding:"7px 14px", fontSize:13, fontWeight:500, border:"none", borderRadius:8, cursor: wsSettingsDirty ? "pointer" : "not-allowed",
+                                  background:"#2563EB", color:"white", opacity: wsSettingsDirty ? 1 : 0.5, transition:"opacity 0.15s",
+                                }}
+                              >Guardar cambios</button>
+                            </div>
+
+                            <div style={{ display:"flex", gap:0, borderBottom:"1px solid rgba(255,255,255,0.06)", marginBottom:24 }}>
+                              {SETTINGS_TABS.map(tab => (
+                                <button key={tab.key} onClick={() => setWsSettingsTab(tab.key)} style={{
+                                  padding:"12px 16px", fontSize:13, background:"none", border:"none", cursor:"pointer",
+                                  color: wsSettingsTab === tab.key ? "white" : "rgba(255,255,255,0.35)",
+                                  borderBottom:`2px solid ${wsSettingsTab === tab.key ? "#2563EB" : "transparent"}`,
+                                  marginBottom:-1, transition:"color 0.15s, border-color 0.15s", whiteSpace:"nowrap" as const,
+                                }}>{tab.label}</button>
+                              ))}
+                            </div>
+
+                            {wsSettingsTab === "roles" && (
+                              <div>
+                                <div style={sectionLabel}>ROLES DEL SISTEMA</div>
+                                {ROLES.map(role => (
+                                  <div key={role.id} style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:12, padding:"18px 20px", marginBottom:10 }}>
+                                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                                      <div style={{ display:"flex", alignItems:"center" }}>
+                                        <RoleIcon type={role.icon} color={role.color} bg={role.bg} />
+                                        <span style={{ color:"white", fontSize:14, fontWeight:500, marginLeft:10 }}>{role.name}</span>
+                                        <span style={{ marginLeft:10, background:"rgba(255,255,255,0.08)", color:"rgba(255,255,255,0.4)", borderRadius:20, padding:"2px 8px", fontSize:11 }}>{role.count} {role.count === 1 ? "usuario" : "usuarios"}</span>
+                                      </div>
+                                      <button onClick={() => openPermModal(role.id)} style={{ background:"none", border:"none", color:"#2563EB", fontSize:12, cursor:"pointer" }}>Editar permisos</button>
+                                    </div>
+                                    <div style={{ marginTop:14 }}>
+                                      <div style={{ display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:6 }}>
+                                        {WS_PERM_MODULES.map(m => (
+                                          <div key={m.key} style={{ color:"rgba(255,255,255,0.3)", fontSize:10, textAlign:"center", marginBottom:4 }}>{m.label}</div>
+                                        ))}
+                                        {WS_PERM_MODULES.map(m => (
+                                          <div key={`dot-${m.key}`}>{permDot((wsRolePerms[role.id] || WS_DEFAULT_ROLE_PERMS.dueno)[m.key])}</div>
+                                        ))}
+                                      </div>
+                                      <div style={{ display:"flex", gap:12, marginTop:10 }}>
+                                        <span style={{ color:"#22c55e", fontSize:10 }}>● Acceso completo</span>
+                                        <span style={{ color:"#eab308", fontSize:10 }}>● Acceso parcial</span>
+                                        <span style={{ color:"rgba(255,255,255,0.3)", fontSize:10 }}>○ Sin acceso</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+
+                                <div style={{ ...sectionLabel, marginTop:24 }}>USUARIOS POR ROL</div>
+                                {ROLES.map(role => {
+                                  const users = USERS_BY_ROLE[role.id] || []
+                                  const expanded = wsRoleExpanded[role.id] ?? false
+                                  return (
+                                    <div key={`grp-${role.id}`} style={{ marginBottom:6 }}>
+                                      <div
+                                        onClick={() => { setWsRoleExpanded(prev => ({ ...prev, [role.id]: !expanded })); markDirty() }}
+                                        style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 16px", background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, cursor:"pointer" }}
+                                      >
+                                        <span style={{ color:"white", fontSize:13, fontWeight:500 }}>{role.name}</span>
+                                        <span style={{ color:"rgba(255,255,255,0.4)", fontSize:12 }}>{users.length} {expanded ? "▲" : "▼"}</span>
+                                      </div>
+                                      {expanded && (
+                                        <div style={{ borderLeft:"1px solid rgba(255,255,255,0.06)", marginLeft:8, marginTop:4 }}>
+                                          {users.length === 0 ? (
+                                            <div style={{ padding:"12px 16px", display:"flex", alignItems:"center", gap:8 }}>
+                                              <span style={{ color:"rgba(255,255,255,0.25)", fontSize:12, fontStyle:"italic" }}>Sin gerentes asignados</span>
+                                              {role.id === "gerente" && <button onClick={markDirty} style={{ background:"none", border:"none", color:"#2563EB", fontSize:11, cursor:"pointer" }}>+ Asignar gerente</button>}
+                                            </div>
+                                          ) : users.map(u => (
+                                            <div key={u.email} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 16px", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+                                              <div style={{ width:28, height:28, borderRadius:"50%", background:"rgba(37,99,235,0.2)", color:"#2563EB", fontSize:11, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{getInitials(u.name)}</div>
+                                              <div style={{ flex:1, minWidth:0 }}>
+                                                <div style={{ color:"white", fontSize:13 }}>{u.name}</div>
+                                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11 }}>{u.email}</div>
+                                              </div>
+                                              <button onClick={markDirty} style={{ background:"none", border:"none", color:"#2563EB", fontSize:11, cursor:"pointer", marginLeft:"auto", flexShrink:0 }}>Cambiar rol</button>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )}
+
+                            {wsSettingsTab === "empresa" && (
+                              <div style={{ display:"flex", gap:32, maxWidth:720 }}>
+                                <div style={{ flex:1 }}>
+                                  {[
+                                    { label:"Nombre de la empresa", el:<input style={settingsInput} value={wsEmpresaNombre} onChange={e => { setWsEmpresaNombre(e.target.value); markDirty() }} /> },
+                                    { label:"Rubro / Industria", el:<input style={settingsInput} value={wsEmpresaRubro} onChange={e => { setWsEmpresaRubro(e.target.value); markDirty() }} /> },
+                                    { label:"Años en el mercado", el:<input type="number" style={settingsInput} value={wsEmpresaAnios} onChange={e => { setWsEmpresaAnios(e.target.value); markDirty() }} /> },
+                                    { label:"Cantidad de empleados", el:<input type="number" style={settingsInput} value={wsEmpresaEmpleados} onChange={e => { setWsEmpresaEmpleados(e.target.value); markDirty() }} /> },
+                                    { label:"País", el:(
+                                      <select style={{ ...settingsInput, appearance:"none" as const }} value={wsEmpresaPais} onChange={e => { setWsEmpresaPais(e.target.value); markDirty() }}>
+                                        <option value="Argentina" style={{ background:"#0D0D14" }}>Argentina</option>
+                                        <option value="Chile" style={{ background:"#0D0D14" }}>Chile</option>
+                                        <option value="Uruguay" style={{ background:"#0D0D14" }}>Uruguay</option>
+                                      </select>
+                                    )},
+                                    { label:"Ciudad", el:<input style={settingsInput} value={wsEmpresaCiudad} onChange={e => { setWsEmpresaCiudad(e.target.value); markDirty() }} /> },
+                                    { label:"Sitio web (opcional)", el:<input style={settingsInput} value={wsEmpresaWeb} onChange={e => { setWsEmpresaWeb(e.target.value); markDirty() }} /> },
+                                    { label:"Descripción breve", el:<textarea style={{ ...settingsInput, minHeight:80, resize:"vertical" }} value={wsEmpresaDesc} onChange={e => { setWsEmpresaDesc(e.target.value); markDirty() }} /> },
+                                  ].map(f => (
+                                    <div key={f.label} style={{ marginBottom:14 }}>
+                                      <label style={settingsLabel}>{f.label}</label>
+                                      {f.el}
+                                    </div>
+                                  ))}
+                                </div>
+                                <div style={{ width:200, flexShrink:0 }}>
+                                  <label style={settingsLabel}>Logo</label>
+                                  <div onClick={markDirty} style={{ width:80, height:80, borderRadius:"50%", background:"rgba(255,255,255,0.05)", border:"1px dashed rgba(255,255,255,0.1)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", cursor:"pointer", marginBottom:24 }}>
+                                    <Camera size={24} style={{ color:"rgba(255,255,255,0.2)" }} />
+                                    <span style={{ color:"rgba(255,255,255,0.3)", fontSize:11, marginTop:6 }}>Subir logo</span>
+                                  </div>
+                                  <label style={settingsLabel}>Color de marca</label>
+                                  <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+                                    {BRAND_COLORS.map(c => (
+                                      <button key={c} onClick={() => { setWsBrandColor(c); markDirty() }} style={{
+                                        width:24, height:24, borderRadius:"50%", background:c, border:"none", cursor:"pointer",
+                                        outline: wsBrandColor === c ? "2px solid white" : "none", outlineOffset:2,
+                                      }} />
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {wsSettingsTab === "notificaciones" && (
+                              <div style={{ maxWidth:560 }}>
+                                <div style={sectionLabel}>ALERTAS EN TIEMPO REAL</div>
+                                {([
+                                  { key:"ventasCerradas", label:"Ventas cerradas", desc:"Aviso cuando se cierra una venta" },
+                                  { key:"nuevasOportunidades", label:"Nuevas oportunidades", desc:"Cuando se crea una oportunidad en el pipeline" },
+                                  { key:"clientesRiesgo", label:"Clientes en riesgo", desc:"Cliente sin contacto según su ciclo" },
+                                  { key:"alertasFinancieras", label:"Alertas financieras", desc:"Gastos inusuales o vencimientos" },
+                                  { key:"estadoEquipo", label:"Estado del equipo", desc:"Cambios en clima laboral o alertas RRHH" },
+                                  { key:"campanasBajo", label:"Campañas con bajo rendimiento", desc:"ROI negativo o bajo en marketing" },
+                                  { key:"metasRiesgo", label:"Metas en riesgo", desc:"Cuando una meta semanal está en peligro" },
+                                  { key:"resumenDiario", label:"Resumen diario automático", desc:"Resumen de Pupi AI cada mañana" },
+                                ] as const).map(row => (
+                                  <div key={row.key} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+                                    <div>
+                                      <div style={{ color:"white", fontSize:13 }}>{row.label}</div>
+                                      <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>{row.desc}</div>
+                                    </div>
+                                    <Toggle on={wsNotifAlerts[row.key]} onToggle={() => { setWsNotifAlerts(prev => ({ ...prev, [row.key]: !prev[row.key] })); markDirty() }} />
+                                  </div>
+                                ))}
+                                <div style={{ ...sectionLabel, marginTop:24 }}>FRECUENCIA DE RESÚMENES</div>
+                                {([
+                                  { key:"diario" as const, label:"Resumen diario", desc:"Cada mañana a las 8:00" },
+                                  { key:"semanal" as const, label:"Resumen semanal", desc:"Todos los lunes" },
+                                  { key:"mensual" as const, label:"Resumen mensual", desc:"Primer día del mes" },
+                                ]).map(row => (
+                                  <div key={row.key} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+                                    <div>
+                                      <div style={{ color:"white", fontSize:13 }}>{row.label}</div>
+                                      <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>{row.desc}</div>
+                                    </div>
+                                    <Toggle on={wsNotifFreq[row.key]} onToggle={() => { setWsNotifFreq(prev => ({ ...prev, [row.key]: !prev[row.key] })); markDirty() }} />
+                                  </div>
+                                ))}
+                                <div style={{ ...sectionLabel, marginTop:24 }}>CANALES</div>
+                                {([
+                                  { key:"pupi" as const, label:"Notificaciones en Pupi", desc:"Dentro de la plataforma" },
+                                  { key:"email" as const, label:"Email", desc:"A tu correo registrado" },
+                                  { key:"whatsapp" as const, label:"WhatsApp", desc:"Alertas por mensaje" },
+                                ]).map(row => (
+                                  <div key={row.key}>
+                                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+                                      <div>
+                                        <div style={{ color:"white", fontSize:13 }}>{row.label}</div>
+                                        <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>{row.desc}</div>
+                                      </div>
+                                      <Toggle on={wsNotifChannels[row.key]} onToggle={() => { setWsNotifChannels(prev => ({ ...prev, [row.key]: !prev[row.key] })); markDirty() }} />
+                                    </div>
+                                    {row.key === "whatsapp" && wsNotifChannels.whatsapp && (
+                                      <button onClick={markDirty} style={{ background:"none", border:"none", color:"#2563EB", fontSize:11, cursor:"pointer", marginBottom:8, paddingLeft:0 }}>+ Configurar número</button>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {wsSettingsTab === "integraciones" && (
+                              <div style={{ maxWidth:640 }}>
+                                <div style={sectionLabel}>INTEGRACIONES DISPONIBLES</div>
+                                {INTEGRATIONS.map(integ => {
+                                  const connected = wsIntegrations[integ.id]
+                                  return (
+                                    <div key={integ.id} style={{ display:"flex", alignItems:"center", gap:14, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:16, marginBottom:8 }}>
+                                      <div style={{ width:40, height:40, borderRadius:"50%", background:integ.bg, color:integ.color, fontSize:16, fontWeight:600, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{integ.letter}</div>
+                                      <div style={{ flex:1, minWidth:0 }}>
+                                        <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{integ.name}</div>
+                                        <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12, marginTop:2 }}>{integ.desc}</div>
+                                      </div>
+                                      {connected ? (
+                                        <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:4, flexShrink:0 }}>
+                                          <span style={{ color:"#22c55e", fontSize:12 }}>✓ Conectado</span>
+                                          <button onClick={() => { setWsIntegrations(prev => ({ ...prev, [integ.id]: false })); markDirty() }} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.3)", fontSize:11, cursor:"pointer" }}>Desconectar</button>
+                                        </div>
+                                      ) : (
+                                        <button onClick={() => { setWsIntegrations(prev => ({ ...prev, [integ.id]: true })); markDirty() }} style={{ border:"1px solid rgba(37,99,235,0.3)", background:"transparent", color:"#2563EB", fontSize:12, borderRadius:6, padding:"5px 12px", cursor:"pointer", flexShrink:0 }}>Conectar →</button>
+                                      )}
+                                    </div>
+                                  )
+                                })}
+                                <div style={{ color:"rgba(255,255,255,0.2)", fontSize:12, textAlign:"center", marginTop:16 }}>Más integraciones próximamente</div>
+                              </div>
+                            )}
+
+                            {showWsPermModal && editingRole && (
+                              <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.65)", zIndex:300, display:"flex", alignItems:"center", justifyContent:"center" }} onClick={() => setShowWsPermModal(false)}>
+                                <div style={{ background:"#0f1e35", border:"1px solid rgba(255,255,255,0.1)", borderRadius:16, padding:24, width:520, maxHeight:"88vh", overflowY:"auto" }} onClick={e => e.stopPropagation()}>
+                                  <div style={{ color:"white", fontSize:16, fontWeight:500, marginBottom:20 }}>Permisos — {editingRole.name}</div>
+                                  {MODAL_MODULES.map(mod => {
+                                    const level = wsDraftPerms[mod.key]
+                                    const setLevel = (l: WsPermLevel) => {
+                                      setWsDraftPerms(prev => ({ ...prev, [mod.key]: l }))
+                                      markDirty()
+                                    }
+                                    const subOpts = WS_PARTIAL_SUB_OPTS[mod.key]
+                                    return (
+                                      <div key={mod.key} style={{ borderBottom:"1px solid rgba(255,255,255,0.06)", padding:"14px 0" }}>
+                                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                                          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                                            {mod.icon}
+                                            <span style={{ color:"white", fontSize:13 }}>{mod.label}</span>
+                                          </div>
+                                          <div style={{ display:"flex", gap:6 }}>
+                                            {permPill("Sin acceso", level === "none", "rgba(255,255,255,0.3)", () => setLevel("none"))}
+                                            {permPill("Parcial", level === "partial", "#eab308", () => setLevel("partial"))}
+                                            {permPill("Completo", level === "full", "#22c55e", () => setLevel("full"))}
+                                          </div>
+                                        </div>
+                                        {level === "partial" && subOpts && (
+                                          <div style={{ marginTop:10, paddingLeft:22 }}>
+                                            {subOpts.map(opt => {
+                                              const ck = `${mod.key}:${opt}`
+                                              return (
+                                                <label key={opt} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, cursor:"pointer" }}>
+                                                  <input
+                                                    type="checkbox"
+                                                    checked={wsDraftPartialSubs[ck] ?? false}
+                                                    onChange={() => {
+                                                      setWsDraftPartialSubs(prev => ({ ...prev, [ck]: !prev[ck] }))
+                                                      markDirty()
+                                                    }}
+                                                    style={{ accentColor:"#2563EB" }}
+                                                  />
+                                                  <span style={{ color:"rgba(255,255,255,0.6)", fontSize:12 }}>{opt}</span>
+                                                </label>
+                                              )
+                                            })}
+                                          </div>
+                                        )}
+                                      </div>
+                                    )
+                                  })}
+                                  <div style={{ display:"flex", justifyContent:"space-between", marginTop:20 }}>
+                                    <button onClick={() => setShowWsPermModal(false)} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.4)", fontSize:13, cursor:"pointer" }}>Cancelar</button>
+                                    <button
+                                      onClick={() => {
+                                        if (wsPermModalRole) {
+                                          setWsRolePerms(prev => ({ ...prev, [wsPermModalRole]: { ...wsDraftPerms } }))
+                                        }
+                                        setShowWsPermModal(false)
+                                        markDirty()
+                                      }}
+                                      style={{ padding:"8px 16px", fontSize:13, background:"#2563EB", color:"white", border:"none", borderRadius:8, cursor:"pointer", fontWeight:500 }}
+                                    >Guardar permisos</button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })()}
+
+
+                      {wsView === "onboarding" && (() => {
+                        const onbInput: React.CSSProperties = { background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:8, padding:"8px 12px", color:"white", fontSize:13, width:"100%", outline:"none", boxSizing:"border-box" }
+                        const onbField = (label: string, child: React.ReactNode) => (
+                          <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                            <span style={{ color:"rgba(255,255,255,0.4)", fontSize:11 }}>{label}</span>
+                            {child}
+                          </div>
+                        )
+                        const stepNum = wsOnbStage === "form" ? 1 : wsOnbStage === "upload" ? 2 : 3
+                        const onbSteps = ["Información", "Archivos históricos", "Diagnóstico inicial"]
+                        const painPoints = ["Pierdo clientes sin darme cuenta","No sé qué hace mi equipo","La contabilidad es un caos","Mis vendedores no tienen seguimiento","No sé qué campañas funcionan","Tomo decisiones sin datos","Demasiado trabajo manual","No tengo visibilidad del negocio"]
+                        const goals = ["Aumentar ventas","Reducir costos","Mejorar el equipo","Ordenar la contabilidad","Crecer con marketing","Automatizar procesos"]
+                        const tools = ["Excel / Google Sheets","WhatsApp","Email","Otro CRM","Software contable","Papel y lápiz","Nada / memoria","Otro"]
+                        const rubros = ["Comercio / Retail","Distribución / Mayorista","Servicios profesionales","Tecnología","Construcción","Gastronomía","Salud","Educación","Manufactura","Otro"]
+                        const factOpts = ["Menos de $10.000 USD","$10.000 - $50.000 USD","$50.000 - $200.000 USD","Más de $200.000 USD","Prefiero no decir"]
+                        const freqOpts = ["Diaria","Semanal","Quincenal","Mensual","Trimestral","Variable"]
+                        const togglePill = (label: string, map: Record<string, boolean>, setMap: React.Dispatch<React.SetStateAction<Record<string, boolean>>>, sel: { bg: string; color: string; border: string }) => {
+                          const on = !!map[label]
+                          return (
+                            <span key={label} onClick={() => setMap(prev => ({ ...prev, [label]: !prev[label] }))} style={{ borderRadius:8, padding:"8px 14px", fontSize:12, cursor:"pointer", background:on ? sel.bg : "rgba(255,255,255,0.04)", color:on ? sel.color : "rgba(255,255,255,0.4)", border:`1px solid ${on ? sel.border : "rgba(255,255,255,0.08)"}` }}>{label}</span>
+                          )
+                        }
+                        const UPLOAD_ZONES = [
+                          { id:"users", icon:Users, color:"#2563EB", required:true, title:"Lista de clientes", desc:"Exportá tu base de clientes existente", formats:"Excel, CSV · Máx 10MB" },
+                          { id:"sales", icon:TrendingUp, color:"#22c55e", required:true, title:"Historial de ventas", desc:"Ventas o transacciones anteriores", formats:"Excel, CSV · Máx 10MB" },
+                          { id:"payroll", icon:UserCheck, color:"#f97316", required:false, title:"Nómina de empleados", desc:"Lista del equipo y sus datos", formats:"Excel, CSV, PDF · Máx 5MB" },
+                          { id:"financial", icon:Calculator, color:"#eab308", required:false, title:"Estados financieros", desc:"Balance, P&L o extractos bancarios", formats:"Excel, PDF · Máx 10MB" },
+                          { id:"campaigns", icon:Megaphone, color:"#a855f7", required:false, title:"Campañas anteriores", desc:"Resultados de marketing previos", formats:"Excel, CSV · Máx 5MB" },
+                          { id:"other", icon:FileText, color:"rgba(255,255,255,0.4)", required:false, title:"Otros documentos", desc:"Cualquier info relevante del negocio", formats:"PDF, Word, Excel · Máx 20MB" },
+                        ]
+                        const startAnalysis = () => {
+                          setWsOnboardingProcessing(true)
+                          setWsOnbProgress(0)
+                          setWsOnbProcSteps([])
+                          const procMsgs = ["✓ Importando clientes...","✓ Procesando historial de ventas...","✓ Analizando movimientos financieros...","✓ Detectando patrones...","⟳ Generando diagnóstico..."]
+                          const start = Date.now()
+                          const progressTimer = setInterval(() => {
+                            const elapsed = Date.now() - start
+                            setWsOnbProgress(Math.min(100, (elapsed / 3000) * 100))
+                          }, 40)
+                          procMsgs.forEach((msg, i) => {
+                            setTimeout(() => setWsOnbProcSteps(prev => [...prev, msg]), i * 600)
+                          })
+                          setTimeout(() => {
+                            clearInterval(progressTimer)
+                            setWsOnbProgress(100)
+                            setWsOnboardingProcessing(false)
+                            setWsOnbStage("diagnosis")
+                          }, 3200)
+                        }
+                        const aiCard: React.CSSProperties = { background:"rgba(37,99,235,0.06)", border:"1px solid rgba(37,99,235,0.15)", borderRadius:8, padding:"12px 14px", marginBottom:8 }
+                        const prioColor = (p: string) => p === "Urgente" ? "#ef4444" : p === "Alta" ? "#f97316" : "#eab308"
+                        return (
+                          <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", position:"relative" }}>
+                            <div style={{ flex:1, overflowY:"auto", padding:24 }}>
+                              <div style={{ display:"flex", alignItems:"flex-start", marginBottom:32 }}>
+                                {onbSteps.map((label, idx) => {
+                                  const n = idx + 1
+                                  const isActive = stepNum === n
+                                  const isDone = stepNum > n
+                                  return (
+                                    <div key={n} style={{ display:"flex", alignItems:"flex-start", flex:1 }}>
+                                      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:6, flexShrink:0 }}>
+                                        <div style={{ width:20, height:20, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:600, background:isActive?"#2563EB":isDone?"rgba(37,99,235,0.2)":"rgba(255,255,255,0.06)", color:isActive?"white":isDone?"#2563EB":"rgba(255,255,255,0.3)" }}>{n}</div>
+                                        <div style={{ fontSize:11, color:isActive?"white":"rgba(255,255,255,0.3)", whiteSpace:"nowrap" }}>{n}. {label}</div>
+                                      </div>
+                                      {idx < onbSteps.length - 1 && <div style={{ flex:1, height:1, background:"rgba(255,255,255,0.08)", marginTop:10, marginLeft:8, marginRight:8 }} />}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+
+                              {wsOnbStage === "form" && (
+                                <>
+                                  <div style={{ color:"white", fontSize:18, fontWeight:500, marginBottom:4 }}>Contanos sobre tu empresa</div>
+                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:13, marginBottom:28 }}>Esta información permite a Pupi entender tu negocio desde el primer día</div>
+                                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24 }}>
+                                    <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+                                      <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Tu negocio</div>
+                                      {onbField("Nombre de la empresa", <input style={onbInput} placeholder="Ej: Distribuidora Norte" value={wsOnbEmpresa} onChange={e=>setWsOnbEmpresa(e.target.value)} />)}
+                                      {onbField("Rubro", <select value={wsOnbRubro} onChange={e=>setWsOnbRubro(e.target.value)} style={{ ...onbInput, appearance:"none" as const }}>{["Comercio / Retail","Distribución / Mayorista","Servicios profesionales","Tecnología","Construcción","Gastronomía","Salud","Educación","Manufactura","Otro"].map(o=><option key={o} value={o}>{o}</option>)}</select>)}
+                                      {onbField("Años en el mercado", <input type="number" style={onbInput} placeholder="Ej: 5" value={wsOnbAnios} onChange={e=>setWsOnbAnios(e.target.value)} />)}
+                                      {onbField("Facturación mensual aprox", <select value={wsOnbFacturacion} onChange={e=>setWsOnbFacturacion(e.target.value)} style={{ ...onbInput, appearance:"none" as const }}>{["Menos de $10.000 USD","$10.000 - $50.000 USD","$50.000 - $200.000 USD","Más de $200.000 USD","Prefiero no decir"].map(o=><option key={o}>{o}</option>)}</select>)}
+                                      {onbField("Descripción del negocio", <textarea style={{ ...onbInput, minHeight:80, resize:"vertical" }} placeholder="Describí brevemente qué hace tu empresa, a quién le vendés y cómo trabajás..." value={wsOnbDescNegocio} onChange={e=>setWsOnbDescNegocio(e.target.value)} />)}
+                                      <div style={{ color:"white", fontSize:13, fontWeight:500, marginTop:8, marginBottom:4 }}>Tu equipo</div>
+                                      {onbField("Cantidad de empleados", <input type="number" style={onbInput} placeholder="Ej: 8" value={wsOnbEmpleados} onChange={e=>setWsOnbEmpleados(e.target.value)} />)}
+                                      {onbField("Cantidad de vendedores", <input type="number" style={onbInput} placeholder="Ej: 3" value={wsOnbVendedores} onChange={e=>setWsOnbVendedores(e.target.value)} />)}
+                                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                                        <span style={{ color:"rgba(255,255,255,0.4)", fontSize:11 }}>¿Tenés sucursales?</span>
+                                        <Toggle on={wsOnbSucursales} onToggle={()=>setWsOnbSucursales(v=>!v)} />
+                                      </div>
+                                      {wsOnbSucursales && onbField("¿Cuántas?", <input type="number" style={onbInput} placeholder="Ej: 2" value={wsOnbSucursalesCount} onChange={e=>setWsOnbSucursalesCount(e.target.value)} />)}
+                                    </div>
+                                    <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+                                      <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Tus clientes</div>
+                                      {onbField("Perfil del cliente típico", <select value={wsOnbPerfilCliente} onChange={e=>setWsOnbPerfilCliente(e.target.value)} style={{ ...onbInput, appearance:"none" as const }}>{["Empresas (B2B)","Consumidor final (B2C)","Ambos"].map(o=><option key={o}>{o}</option>)}</select>)}
+                                      {onbField("Ticket promedio", <div style={{ position:"relative" }}><span style={{ position:"absolute", left:12, top:9, color:"rgba(255,255,255,0.3)", fontSize:13 }}>$</span><input type="number" style={{ ...onbInput, paddingLeft:24 }} placeholder="0" value={wsOnbTicket} onChange={e=>setWsOnbTicket(e.target.value)} /></div>)}
+                                      {onbField("Frecuencia de compra promedio", <select value={wsOnbFrecuencia} onChange={e=>setWsOnbFrecuencia(e.target.value)} style={{ ...onbInput, appearance:"none" as const }}>{["Diaria","Semanal","Quincenal","Mensual","Trimestral","Variable"].map(o=><option key={o}>{o}</option>)}</select>)}
+                                      {onbField("Zona geográfica", <input style={onbInput} placeholder="Ej: Montevideo, todo Uruguay, América Latina" value={wsOnbZona} onChange={e=>setWsOnbZona(e.target.value)} />)}
+                                      <div style={{ color:"white", fontSize:13, fontWeight:500, marginTop:8 }}>Tus dolores actuales</div>
+                                      <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:4 }}>Seleccioná los que apliquen</div>
+                                      <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>{painPoints.map(p=>togglePill(p,wsOnbPainPoints,setWsOnbPainPoints,{ bg:"rgba(239,68,68,0.1)", color:"#ef4444", border:"rgba(239,68,68,0.3)" }))}</div>
+                                      <div style={{ color:"white", fontSize:13, fontWeight:500, marginTop:8 }}>Tus objetivos</div>
+                                      <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:4 }}>¿Qué querés lograr en 6 meses?</div>
+                                      <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>{goals.map(g=>togglePill(g,wsOnbGoals,setWsOnbGoals,{ bg:"rgba(34,197,94,0.1)", color:"#22c55e", border:"rgba(34,197,94,0.3)" }))}</div>
+                                      <div style={{ color:"white", fontSize:13, fontWeight:500, marginTop:8 }}>Herramientas actuales</div>
+                                      <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:4 }}>¿Qué usás hoy para gestionar?</div>
+                                      <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>{tools.map(t=>togglePill(t,wsOnbTools,setWsOnbTools,{ bg:"rgba(37,99,235,0.1)", color:"#2563EB", border:"rgba(37,99,235,0.3)" }))}</div>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+
+                              {wsOnbStage === "upload" && (
+                                <>
+                                  <div style={{ color:"white", fontSize:18, fontWeight:500, marginBottom:4 }}>Cargá tu historial</div>
+                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:13, marginBottom:28 }}>Pupi analizará todo lo que tenés y lo convertirá en insights desde el día uno</div>
+                                  {UPLOAD_ZONES.map(z => {
+                                    const Icon = z.icon
+                                    const file = wsOnbUploads[z.id]
+                                    return (
+                                      <div key={z.id} style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:12, padding:18, marginBottom:10, display:"flex", alignItems:"center", gap:16 }}>
+                                        <div style={{ width:44, height:44, borderRadius:"50%", background:z.color+"22", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}><Icon size={20} style={{ color:z.color }} /></div>
+                                        <div style={{ flex:1, minWidth:0 }}>
+                                          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                                            <span style={{ color:"white", fontSize:13, fontWeight:500 }}>{z.title}</span>
+                                            {!z.required && <span style={{ color:"rgba(255,255,255,0.3)", fontSize:10, border:"1px solid rgba(255,255,255,0.1)", borderRadius:20, padding:"1px 6px" }}>Opcional</span>}
+                                          </div>
+                                          <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12, marginTop:2 }}>{z.desc}</div>
+                                          <div style={{ color:"rgba(255,255,255,0.2)", fontSize:10, marginTop:2 }}>{z.formats}</div>
+                                        </div>
+                                        {file ? (
+                                          <div style={{ display:"flex", alignItems:"center", gap:10, flexShrink:0 }}>
+                                            <div style={{ textAlign:"right" }}>
+                                              <div style={{ color:"white", fontSize:12 }}>{file.name}</div>
+                                              <div style={{ color:"rgba(255,255,255,0.3)", fontSize:10 }}>{file.size}</div>
+                                            </div>
+                                            <button onClick={()=>setWsOnbUploads(prev=>({...prev,[z.id]:null}))} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.4)", cursor:"pointer", fontSize:14 }}>✕</button>
+                                          </div>
+                                        ) : (
+                                          <button onClick={()=>setWsOnbUploads(prev=>({...prev,[z.id]:{ name:`${z.id}.csv`, size:"1.2 MB" }}))} style={{ border:"1px solid rgba(255,255,255,0.1)", color:"rgba(255,255,255,0.5)", fontSize:12, borderRadius:6, padding:"6px 14px", background:"none", cursor:"pointer", flexShrink:0 }}>Subir archivo</button>
+                                        )}
+                                      </div>
+                                    )
+                                  })}
+                                  <div style={{ marginTop:20, background:"rgba(37,99,235,0.06)", border:"1px solid rgba(37,99,235,0.15)", borderRadius:10, padding:16, display:"flex", gap:12 }}>
+                                    <Brain size={20} style={{ color:"#2563EB", flexShrink:0 }} />
+                                    <div style={{ color:"rgba(255,255,255,0.6)", fontSize:12, lineHeight:1.6 }}>Pupi procesará todos los archivos automáticamente. Detectará patrones, importará clientes, categorizará movimientos y preparará un diagnóstico personalizado de tu negocio. Esto puede tardar 1-2 minutos.</div>
+                                  </div>
+                                </>
+                              )}
+
+                              {wsOnbStage === "diagnosis" && (
+                                <>
+                                  <div style={{ color:"#2563EB", fontSize:18, fontWeight:500, marginBottom:4 }}>✦ Diagnóstico inicial de Pupi</div>
+                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:13, marginBottom:28 }}>Basado en todo lo que cargaste — actualizado en tiempo real</div>
+                                  <div style={{ background:"rgba(37,99,235,0.06)", border:"1px solid rgba(37,99,235,0.15)", borderRadius:14, padding:22, marginBottom:24 }}>
+                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", marginBottom:12 }}>RESUMEN DE TU NEGOCIO</div>
+                                    <div style={{ color:"white", fontSize:14, lineHeight:1.8 }}>Distribuidora Norte es una empresa con 5 años en el mercado en el sector de distribución mayorista. Cuenta con 8 empleados y 3 vendedores. Tu base tiene 284 clientes con un ticket promedio de $4.200 y frecuencia de compra mensual. Las ventas muestran estacionalidad en mayo y noviembre.</div>
+                                    <div style={{ display:"flex", borderTop:"1px solid rgba(255,255,255,0.06)", marginTop:16, paddingTop:16 }}>
+                                      {[{v:"284",l:"CLIENTES"},{v:"$4.200",l:"TICKET PROM"},{v:"8",l:"EMPLEADOS"},{v:"5 años",l:"TRAYECTORIA"}].map((s,i,a)=>(
+                                        <div key={s.l} style={{ flex:1, textAlign:"center", borderRight:i<a.length-1?"1px solid rgba(255,255,255,0.06)":"none" }}>
+                                          <div style={{ color:"white", fontSize:20, fontWeight:600 }}>{s.v}</div>
+                                          <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", marginTop:4 }}>{s.l}</div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  <div style={{ marginBottom:24 }}>
+                                    <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Hallazgos principales</div>
+                                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+                                      {[
+                                        { icon:TrendingUp, color:"#22c55e", title:"Pico de ventas en mayo y noviembre", detail:"Tus mejores meses concentran el 42% de las ventas anuales. Podés prepararte con anticipación.", badge:"Oportunidad", bColor:"#22c55e" },
+                                        { icon:AlertTriangle, color:"#ef4444", title:"32 clientes sin contacto +30 días", detail:"El 11% de tu base está en riesgo de abandono. Requieren contacto esta semana.", badge:"Atención urgente", bColor:"#ef4444" },
+                                        { icon:Users, color:"#2563EB", title:"3 vendedores con rendimiento dispar", detail:"JP duplica en ventas a CA. Hay oportunidad de mejorar el proceso de seguimiento.", badge:"Alto impacto", bColor:"#2563EB" },
+                                        { icon:Calculator, color:"#eab308", title:"Flujo de caja vulnerable en julio", detail:"Históricamente julio cae 57%. Con el ritmo actual, hay riesgo de déficit de $17.000.", badge:"Atención", bColor:"#eab308" },
+                                      ].map(f => {
+                                        const FIcon = f.icon
+                                        return (
+                                          <div key={f.title} style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:16 }}>
+                                            <FIcon size={16} style={{ color:f.color }} />
+                                            <div style={{ color:"white", fontSize:13, fontWeight:500, marginTop:8 }}>{f.title}</div>
+                                            <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.5, marginTop:6 }}>{f.detail}</div>
+                                            <span style={{ display:"inline-block", marginTop:10, background:f.bColor+"22", color:f.bColor, border:`1px solid ${f.bColor}44`, borderRadius:20, padding:"2px 8px", fontSize:10 }}>{f.badge}</span>
+                                          </div>
+                                        )
+                                      })}
+                                    </div>
+                                  </div>
+                                  <div style={{ marginBottom:24 }}>
+                                    <div style={{ color:"#2563EB", fontSize:11, textTransform:"uppercase", marginBottom:12 }}>✦ Primeras recomendaciones</div>
+                                    {[
+                                      { priority:"Urgente", title:"Contactar 32 clientes en riesgo", body:"Llamar esta semana a los clientes sin contacto en +30 días. Históricamente se recupera el 40%.", impact:"Impacto estimado: +$12.600/mes" },
+                                      { priority:"Alta", title:"Implementar seguimiento post-venta", body:"JP cierra 3x más que CA. Documentar su proceso y replicarlo en el equipo.", impact:"Impacto estimado: +$18.000/mes" },
+                                      { priority:"Alta", title:"Preparar campaña para noviembre", body:"Tu segundo pico está en 6 meses. Empezar ahora garantiza mejor ROI.", impact:"Impacto estimado: +$22.000 ese mes" },
+                                      { priority:"Media", title:"Crear reserva para julio", body:"Apartar $17.000 en mayo y junio para cubrir el mes bajo sin estrés.", impact:"Riesgo reducido: 85%" },
+                                      { priority:"Media", title:"Unificar gestión en Pupi", body:"Tu equipo usa WhatsApp y Excel. Migrar todo a Pupi en 2 semanas.", impact:"Eficiencia: +40% tiempo del equipo" },
+                                    ].map(r => (
+                                      <div key={r.title} style={aiCard}>
+                                        <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
+                                          <span style={{ background:prioColor(r.priority)+"22", color:prioColor(r.priority), fontSize:10, borderRadius:20, padding:"1px 8px" }}>{r.priority}</span>
+                                          <span style={{ color:"white", fontSize:13, fontWeight:500 }}>{r.title}</span>
+                                        </div>
+                                        <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.5 }}>{r.body}</div>
+                                        <div style={{ color:"#22c55e", fontSize:11, marginTop:6 }}>{r.impact}</div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <div style={{ marginBottom:24 }}>
+                                    <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>KPIs establecidos como base</div>
+                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Pupi medirá tu progreso contra estos números</div>
+                                    <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10 }}>
+                                      {[{v:"$88.200",n:"VENTAS MENSUALES"},{v:"284",n:"CLIENTES ACTIVOS"},{v:"68%",n:"TASA DE CIERRE"},{v:"7.8/10",n:"CLIMA LABORAL"},{v:"35.6%",n:"MARGEN NETO"},{v:"$4.200",n:"TICKET PROMEDIO"}].map(k=>(
+                                        <div key={k.n} style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, padding:14, textAlign:"center" }}>
+                                          <div style={{ color:"white", fontSize:18, fontWeight:600 }}>{k.v}</div>
+                                          <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", marginTop:6 }}>{k.n}</div>
+                                          <div style={{ color:"rgba(255,255,255,0.2)", fontSize:10, marginTop:2 }}>Baseline hoy</div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  <div style={{ background:"rgba(37,99,235,0.08)", border:"1px solid rgba(37,99,235,0.2)", borderRadius:14, padding:24, textAlign:"center", marginTop:8 }}>
+                                    <div style={{ color:"white", fontSize:18, fontWeight:500 }}>🎉 ¡Tu empresa está lista en Pupi!</div>
+                                    <div style={{ color:"rgba(255,255,255,0.5)", fontSize:13, marginTop:8, lineHeight:1.6 }}>Todo está configurado y analizado. Pupi ya conoce tu negocio y está listo para ayudarte.</div>
+                                    <button onClick={()=>{ closePanel(); setWsView("home") }} style={{ marginTop:20, background:"#2563EB", color:"white", border:"none", borderRadius:10, padding:"12px 32px", fontSize:14, fontWeight:500, cursor:"pointer" }}>Ir al dashboard →</button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                            {wsOnbStage !== "diagnosis" && !wsOnboardingProcessing && (
+                              <div style={{ flexShrink:0, background:"#0D0D14", borderTop:"1px solid rgba(255,255,255,0.06)", padding:"16px 24px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                                <div style={{ display:"flex", alignItems:"center", gap:16 }}>
+                                  {wsOnbStage === "upload" && <button onClick={()=>setWsOnbStage("form")} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.4)", fontSize:13, cursor:"pointer" }}>← Volver</button>}
+                                  <span style={{ color:"rgba(255,255,255,0.3)", fontSize:12 }}>Paso {stepNum} de 3</span>
+                                </div>
+                                {wsOnbStage === "form" ? (
+                                  <button onClick={()=>setWsOnbStage("upload")} style={{ background:"#2563EB", color:"white", border:"none", borderRadius:8, padding:"9px 20px", fontSize:13, fontWeight:500, cursor:"pointer" }}>Siguiente →</button>
+                                ) : (
+                                  <button onClick={startAnalysis} style={{ background:"#2563EB", color:"white", border:"none", borderRadius:8, padding:"9px 20px", fontSize:13, fontWeight:500, cursor:"pointer" }}>Analizar con Pupi →</button>
+                                )}
+                              </div>
+                            )}
+                            {wsOnboardingProcessing && (
+                              <div style={{ position:"absolute", inset:0, background:"rgba(10,10,20,0.95)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:16, zIndex:10 }}>
+                                <style>{`@keyframes onbPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.05);opacity:0.85} }`}</style>
+                                <div style={{ width:64, height:64, borderRadius:"50%", background:"#2563EB", display:"flex", alignItems:"center", justifyContent:"center", animation:"onbPulse 1.5s ease-in-out infinite" }}>
+                                  <Brain size={28} color="white" />
+                                </div>
+                                <div style={{ color:"white", fontSize:16, fontWeight:500 }}>Pupi está analizando tu empresa...</div>
+                                <div style={{ width:"100%", maxWidth:400, height:4, background:"rgba(255,255,255,0.08)", borderRadius:2, overflow:"hidden" }}>
+                                  <div style={{ height:"100%", background:"#2563EB", width:`${wsOnbProgress}%`, transition:"width 0.1s linear" }} />
+                                </div>
+                                <div style={{ display:"flex", flexDirection:"column", gap:8, minHeight:120 }}>
+                                  {wsOnbProcSteps.map((s,i)=>(
+                                    <div key={i} style={{ color:s.startsWith("✓")?"#22c55e":"rgba(255,255,255,0.6)", fontSize:13 }}>{s}</div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })()}
+
+                      {wsView === "memory" && (() => {
+                        const goUpload = () => { setWsView("onboarding"); setWsOnbStage("upload") }
+                        const badgeStyle = (status: string) => {
+                          const c = status === "Completo" ? "#22c55e" : status === "Parcial" ? "#eab308" : "rgba(255,255,255,0.3)"
+                          return { color:c, fontSize:10, borderRadius:20, padding:"1px 6px", border:`1px solid ${c}44`, flexShrink:0 as const }
+                        }
+                        const KNOWLEDGE = [
+                          { icon:Users, color:"#2563EB", area:"Clientes", status:"Completo", detail:"284 clientes, historial de compras, temperaturas, segmentación y patrones de comportamiento", count:"1.847 datos registrados", empty:false },
+                          { icon:TrendingUp, color:"#22c55e", area:"Ventas", status:"Completo", detail:"Pipeline, historial de cierres, rendimiento por vendedor y estacionalidad detectada", count:"643 datos registrados", empty:false },
+                          { icon:Megaphone, color:"#a855f7", area:"Marketing", status:"Parcial", detail:"6 campañas, ROI por canal e insights de segmento. Falta historial anterior al onboarding", count:"284 datos registrados", empty:false },
+                          { icon:UserCheck, color:"#f97316", area:"Equipo", status:"Completo", detail:"8 empleados, desempeño, clima laboral, satisfacción y patrones de productividad", count:"412 datos registrados", empty:false },
+                          { icon:Calculator, color:"#eab308", area:"Finanzas", status:"Parcial", detail:"5 meses de movimientos, márgenes y proyecciones. Falta historial de años anteriores", count:"529 datos registrados", empty:false },
+                          { icon:BarChart2, color:"rgba(255,255,255,0.4)", area:"Mercado", status:"Vacío", detail:"Sin investigaciones de mercado cargadas todavía. Subí estudios para completar este módulo", count:"0 datos registrados", empty:true },
+                        ]
+                        const PATTERNS = [
+                          { icon:TrendingUp, color:"#22c55e", desc:"Pico de ventas en mayo y noviembre", source:"Aprendido de: 5 meses de datos", conf:"Alta confianza", confColor:"#22c55e" },
+                          { icon:Clock, color:"#2563EB", desc:"JP cierra más los martes y miércoles", source:"Aprendido de: 47 cierres registrados", conf:"Alta confianza", confColor:"#22c55e" },
+                          { icon:Users, color:"#ef4444", desc:"Clientes sin contacto +30 días tienen 68% más riesgo de abandono", source:"Aprendido de: comportamiento 284 clientes", conf:"Alta confianza", confColor:"#22c55e" },
+                          { icon:Heart, color:"#f97316", desc:"Satisfacción del equipo correlaciona con productividad — 54% más rendimiento", source:"Aprendido de: 8 semanas de pulsos", conf:"Media confianza", confColor:"#eab308" },
+                          { icon:Calculator, color:"#eab308", desc:"Julio y agosto son meses de déficit", source:"Aprendido de: historial financiero", conf:"Alta confianza", confColor:"#22c55e" },
+                          { icon:TrendingDown, color:"#a855f7", desc:"WhatsApp tiene ROI negativo como canal", source:"Aprendido de: 1 campaña — poca data", conf:"Media confianza", confColor:"#eab308" },
+                          { icon:User, color:"#22c55e", desc:"MR convierte mejor clientes nuevos", source:"Aprendido de: 38 primeros contactos", conf:"Alta confianza", confColor:"#22c55e" },
+                          { icon:Target, color:"#2563EB", desc:"Producto C tiene mejor margen (68%)", source:"Aprendido de: 5 meses de ventas", conf:"Alta confianza", confColor:"#22c55e" },
+                        ]
+                        const MONITORING = [
+                          { title:"Temperatura de 284 clientes", freq:"Frecuencia: cada 6 horas", last:"Hace 2 horas" },
+                          { title:"Pipeline de ventas — 5 oportunidades", freq:"Frecuencia: en tiempo real", last:"Hace 5 min" },
+                          { title:"Clima laboral del equipo", freq:"Frecuencia: diaria", last:"Hace 8 horas" },
+                          { title:"Flujo de caja y anomalías", freq:"Frecuencia: cada 24 horas", last:"Hace 1 hora" },
+                          { title:"Rendimiento de campañas activas", freq:"Frecuencia: cada 12 horas", last:"Hace 3 horas" },
+                          { title:"Metas de vendedores", freq:"Frecuencia: diaria", last:"Hace 8 horas" },
+                        ]
+                        const IMPROVE = [
+                          { icon:BarChart2, color:"rgba(255,255,255,0.4)", title:"Subir investigaciones de mercado", desc:"El módulo de Mercado está vacío. Subí estudios para completarlo.", btn:"Subir archivos →" },
+                          { icon:Calculator, color:"#eab308", title:"Cargar historial financiero anterior", desc:"Solo tenemos 5 meses. Subí años anteriores para mejorar las proyecciones.", btn:"Cargar historial →" },
+                          { icon:Megaphone, color:"#a855f7", title:"Agregar campañas anteriores", desc:"Marketing tiene datos parciales. Subí campañas previas al onboarding.", btn:"Agregar campañas →" },
+                        ]
+                        return (
+                          <div style={{ flex:1, overflowY:"auto", padding:24 }}>
+                            <style>{`@keyframes memPulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 50%{opacity:0.7;box-shadow:0 0 0 4px rgba(34,197,94,0)} }`}</style>
+                            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
+                              <div>
+                                <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Memoria empresarial</div>
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2 }}>Lo que Pupi conoce y aprende sobre tu empresa</div>
+                              </div>
+                              <span style={{ background:"rgba(255,255,255,0.08)", color:"rgba(255,255,255,0.35)", fontSize:11, borderRadius:20, padding:"4px 12px" }}>Actualizado hace 2 horas</span>
+                            </div>
+                            <div style={{ background:"rgba(37,99,235,0.06)", border:"1px solid rgba(37,99,235,0.15)", borderRadius:14, padding:20, marginBottom:24, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                              <div>
+                                <div style={{ color:"#2563EB", fontSize:11, textTransform:"uppercase", marginBottom:8 }}>✦ Salud de la memoria</div>
+                                <div>
+                                  <span style={{ color:"white", fontSize:36, fontWeight:600 }}>92%</span>
+                                  <span style={{ color:"rgba(255,255,255,0.4)", fontSize:13, marginLeft:8 }}>completada</span>
+                                </div>
+                                <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, marginTop:8 }}>Pupi tiene suficiente información para generar insights precisos</div>
+                              </div>
+                              <div style={{ width:80, height:80, borderRadius:"50%", background:"conic-gradient(#2563EB 0deg 331deg, rgba(255,255,255,0.06) 331deg)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                                <div style={{ width:60, height:60, borderRadius:"50%", background:"#0D0D14", display:"flex", alignItems:"center", justifyContent:"center", color:"white", fontSize:13, fontWeight:500 }}>92%</div>
+                              </div>
+                            </div>
+                            <div style={{ marginBottom:24 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Qué sabe Pupi sobre tu empresa</div>
+                              <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10 }}>
+                                {KNOWLEDGE.map(k => {
+                                  const KIcon = k.icon
+                                  return (
+                                    <div key={k.area} style={{ background:k.empty?"rgba(255,255,255,0.01)":"rgba(255,255,255,0.03)", border:k.empty?"1px dashed rgba(255,255,255,0.08)":"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:16 }}>
+                                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:8 }}>
+                                        <div style={{ display:"flex", alignItems:"center", minWidth:0 }}>
+                                          <KIcon size={14} style={{ color:k.color, flexShrink:0 }} />
+                                          <span style={{ color:"white", fontSize:12, fontWeight:500, marginLeft:8 }}>{k.area}</span>
+                                        </div>
+                                        <span style={badgeStyle(k.status)}>{k.status}</span>
+                                      </div>
+                                      <div style={{ color:"rgba(255,255,255,0.45)", fontSize:11, lineHeight:1.5, marginTop:8 }}>{k.detail}</div>
+                                      <div style={{ color:"rgba(255,255,255,0.25)", fontSize:10, marginTop:8 }}>{k.count}</div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                            <div style={{ marginBottom:24 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>✦ Patrones que Pupi aprendió</div>
+                              {PATTERNS.map(p => {
+                                const PIcon = p.icon
+                                return (
+                                  <div key={p.desc} style={{ display:"flex", gap:12, padding:"12px 16px", background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, marginBottom:6, alignItems:"center" }}>
+                                    <PIcon size={14} style={{ color:p.color, flexShrink:0 }} />
+                                    <div style={{ flex:1, minWidth:0 }}>
+                                      <div style={{ color:"white", fontSize:13 }}>{p.desc}</div>
+                                      <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>{p.source}</div>
+                                    </div>
+                                    <span style={{ color:p.confColor, fontSize:10, borderRadius:20, padding:"2px 8px", border:`1px solid ${p.confColor}44`, flexShrink:0 }}>{p.conf}</span>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                            <div style={{ marginBottom:24 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Qué está monitoreando ahora</div>
+                              {MONITORING.map(m => (
+                                <div key={m.title} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 14px", background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, marginBottom:6 }}>
+                                  <div style={{ width:8, height:8, borderRadius:"50%", background:"#22c55e", flexShrink:0, animation:"memPulse 2s infinite" }} />
+                                  <div style={{ flex:1, minWidth:0 }}>
+                                    <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{m.title}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>{m.freq}</div>
+                                  </div>
+                                  <span style={{ color:"rgba(255,255,255,0.25)", fontSize:10, flexShrink:0 }}>{m.last}</span>
+                                </div>
+                              ))}
+                            </div>
+                            <div style={{ marginBottom:0 }}>
+                              <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Mejorá la memoria de Pupi</div>
+                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Más datos = mejores insights</div>
+                              {IMPROVE.map(im => {
+                                const IIcon = im.icon
+                                return (
+                                  <div key={im.title} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:16, marginBottom:8, gap:16 }}>
+                                    <div style={{ display:"flex", gap:12, alignItems:"flex-start", flex:1, minWidth:0 }}>
+                                      <IIcon size={16} style={{ color:im.color, flexShrink:0, marginTop:2 }} />
+                                      <div>
+                                        <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{im.title}</div>
+                                        <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12, marginTop:4, lineHeight:1.5 }}>{im.desc}</div>
+                                      </div>
+                                    </div>
+                                    <button onClick={goUpload} style={{ border:"1px solid rgba(255,255,255,0.1)", background:"none", color:"rgba(255,255,255,0.5)", fontSize:12, borderRadius:6, padding:"6px 14px", cursor:"pointer", flexShrink:0, whiteSpace:"nowrap" }}>{im.btn}</button>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )
+                      })()}
+
                       {/* Placeholder for other ws views */}
-                      {wsView !== "home" && wsView !== "history" && (
+                      {wsView !== "home" && wsView !== "history" && wsView !== "reports" && wsView !== "settings" && wsView !== "onboarding" && wsView !== "memory" && (
                         <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:12 }}>
                           <span style={{ color:"rgba(255,255,255,0.15)", fontSize:13 }}>{WS_NAV.find(n=>n.key===wsView)?.label}</span>
                           <span style={{ color:"rgba(255,255,255,0.1)", fontSize:11 }}>Próximamente</span>
