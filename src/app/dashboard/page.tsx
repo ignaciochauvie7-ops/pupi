@@ -22,7 +22,17 @@ import {
   TrendingDown,
   Target,
   Mic,
+  RefreshCw,
+  MessageCircle,
 } from "lucide-react"
+import { supabase } from '@/lib/supabase'
+import {
+  APIProvider,
+  Map,
+  AdvancedMarker,
+  InfoWindow,
+  useMap,
+} from "@vis.gl/react-google-maps"
 
 // Web Speech API (Chrome) — minimal types to avoid DOM lib coupling
 interface SpeechRecognitionResultLike { readonly 0: { transcript: string }; isFinal: boolean }
@@ -155,25 +165,71 @@ const STATIC_NODE_POSITIONS = timelineData.map((item, index) => {
 type Temp = "Todos" | "Caliente" | "Tibio" | "Frío"
 
 interface Client {
-  id: number
+  id: number | string
   name: string
   company: string
   temp: "Caliente" | "Tibio" | "Frío"
   lastContact: string
   ticket: string
   seller: string
+  email?: string
+  phone?: string
+  tags?: string[]
+  avatar?: string
+  lat?: number
+  lng?: number
 }
 
-const CRM_CLIENTS: Client[] = [
-  { id: 1, name: "María González",  company: "Distribuidora Norte", temp: "Caliente", lastContact: "Hace 2 días",  ticket: "$4.200",  seller: "MR" },
-  { id: 2, name: "Carlos Mendoza",  company: "Tech Solutions",      temp: "Tibio",    lastContact: "Hace 8 días",  ticket: "$12.800", seller: "JP" },
-  { id: 3, name: "Ana Rodríguez",   company: "Sin empresa",         temp: "Frío",     lastContact: "Hace 31 días", ticket: "$890",    seller: "MR" },
-  { id: 4, name: "Luis Herrera",    company: "Grupo Herrera SA",    temp: "Caliente", lastContact: "Hace 1 día",   ticket: "$28.500", seller: "CA" },
-  { id: 5, name: "Sofía Martínez",  company: "Retail Express",      temp: "Tibio",    lastContact: "Hace 12 días", ticket: "$3.100",  seller: "JP" },
-  { id: 6, name: "Diego López",     company: "Importadora DL",      temp: "Caliente", lastContact: "Hace 3 días",  ticket: "$9.750",  seller: "CA" },
-  { id: 7, name: "Valentina Cruz",  company: "Sin empresa",         temp: "Frío",     lastContact: "Hace 45 días", ticket: "$560",    seller: "MR" },
-  { id: 8, name: "Martín Pérez",    company: "Constructora MP",     temp: "Tibio",    lastContact: "Hace 7 días",  ticket: "$15.200", seller: "JP" },
+const defaultClientsData: Client[] = [
+  { id: 1, name: "María González",  company: "Distribuidora Norte", temp: "Caliente", lastContact: "Hace 2 días",  ticket: "$4.200",  seller: "MR", lat: -34.9011, lng: -56.1645 },
+  { id: 2, name: "Carlos Mendoza",  company: "Tech Solutions",      temp: "Tibio",    lastContact: "Hace 8 días",  ticket: "$12.800", seller: "JP", lat: -34.8167, lng: -56.2000 },
+  { id: 3, name: "Ana Rodríguez",   company: "Sin empresa",         temp: "Frío",     lastContact: "Hace 31 días", ticket: "$890",    seller: "MR", lat: -33.5000, lng: -56.3833 },
+  { id: 4, name: "Luis Herrera",    company: "Grupo Herrera SA",    temp: "Caliente", lastContact: "Hace 1 día",   ticket: "$28.500", seller: "CA", lat: -34.9011, lng: -56.2000 },
+  { id: 5, name: "Sofía Martínez",  company: "Retail Express",      temp: "Tibio",    lastContact: "Hace 12 días", ticket: "$3.100",  seller: "JP", lat: -31.3833, lng: -57.9667 },
+  { id: 6, name: "Diego López",     company: "Importadora DL",      temp: "Caliente", lastContact: "Hace 3 días",  ticket: "$9.750",  seller: "CA", lat: -34.9500, lng: -56.1000 },
+  { id: 7, name: "Valentina Cruz",  company: "Sin empresa",         temp: "Frío",     lastContact: "Hace 45 días", ticket: "$560",    seller: "MR", lat: -34.7500, lng: -56.3000 },
+  { id: 8, name: "Martín Pérez",    company: "Constructora MP",     temp: "Tibio",    lastContact: "Hace 7 días",  ticket: "$15.200", seller: "JP", lat: -34.8500, lng: -56.1500 },
 ]
+
+const CRM_MAP_DARK_STYLES: google.maps.MapTypeStyle[] = [
+  { elementType: "geometry", stylers: [{ color: "#0a0a0f" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#ffffff" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#0a0a0f" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#1a1a2e" }] },
+  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#212121" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#050510" }] },
+  { featureType: "poi", stylers: [{ visibility: "off" }] },
+  { featureType: "transit", stylers: [{ visibility: "off" }] },
+]
+
+const CRM_MAP_PIN_STYLES: Record<"Caliente" | "Tibio" | "Frío", { border: string; background: string }> = {
+  Caliente: { border: "rgba(239,68,68,0.8)", background: "rgba(239,68,68,0.2)" },
+  Tibio:    { border: "rgba(234,179,8,0.8)",  background: "rgba(234,179,8,0.2)" },
+  Frío:     { border: "rgba(37,99,235,0.8)",  background: "rgba(37,99,235,0.2)" },
+}
+
+function CrmMapZoomControls() {
+  const map = useMap()
+  const btnStyle: React.CSSProperties = {
+    width: 32,
+    height: 32,
+    background: "rgba(10,10,20,0.8)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 6,
+    color: "white",
+    fontSize: 16,
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }
+  return (
+    <div style={{ position: "absolute", bottom: 16, right: 16, display: "flex", flexDirection: "column", gap: 4, zIndex: 2, pointerEvents: "auto" }}>
+      <button type="button" style={btnStyle} onClick={() => map?.setZoom((map.getZoom() ?? 6) + 1)}>+</button>
+      <button type="button" style={btnStyle} onClick={() => map?.setZoom((map.getZoom() ?? 6) - 1)}>−</button>
+    </div>
+  )
+}
 
 const TEMP_STYLES: Record<"Caliente" | "Tibio" | "Frío", { bg: string; color: string; emoji: string }> = {
   Caliente: { bg: "rgba(239,68,68,0.15)",   color: "#ef4444",  emoji: "🔴" },
@@ -271,9 +327,9 @@ export default function DashboardPage() {
   const [chatInput, setChatInput] = useState("")
   const [showMicTooltip, setShowMicTooltip] = useState(false)
   const [hoveredNodeId, setHoveredNodeId] = useState<number | null>(null)
-  const [crmClients, setCrmClients] = useState<Client[]>(CRM_CLIENTS)
+  const [crmClients, setCrmClients] = useState<Client[]>(defaultClientsData)
   const [crmView, setCrmView] = useState<"list" | "detail" | "new" | "import" | "duplicates" | "map">("list")
-  const [mapPinHover, setMapPinHover] = useState<number | null>(null)
+  const [mapPinHover, setMapPinHover] = useState<number | string | null>(null)
   const [showDupBanner, setShowDupBanner] = useState(true)
   const [ventasView, setVentasView] = useState<"pipeline" | "detail" | "new" | "forecast" | "risk" | "sellers" | "products" | "ranking">("pipeline")
   const [showRiskBanner, setShowRiskBanner] = useState(true)
@@ -283,6 +339,7 @@ export default function DashboardPage() {
   const [mktStatusFilter, setMktStatusFilter] = useState("Todas")
   const [mktChannelFilter, setMktChannelFilter] = useState("Todos")
   const [mktPeriodFilter, setMktPeriodFilter] = useState("Este mes")
+  const [mktLocalCampaigns, setMktLocalCampaigns] = useState<any[]>([])
   const [resSearch, setResSearch] = useState("")
   const [resTipoFilter, setResTipoFilter] = useState("Todos")
   const [resStatusFilter, setResStatusFilter] = useState("Todos")
@@ -296,7 +353,7 @@ export default function DashboardPage() {
   const [rrhhStatusFilter, setRrhhStatusFilter] = useState("Todos")
   const [rrhhAreaFilter, setRrhhAreaFilter] = useState("Todas")
   const [rrhhAlertFilter, setRrhhAlertFilter] = useState("Sin alertas")
-  const [rrhhSelectedEmp, setRrhhSelectedEmp] = useState<{ id: number; name: string; role: string; area: string; status: string; score: number; alert: string; seniority: string; initials: string } | null>(null)
+  const [rrhhSelectedEmp, setRrhhSelectedEmp] = useState<{ id: string; name: string; role: string; area: string; status: string; score: number; alert: string; seniority: string; initials: string } | null>(null)
   const [showRrhhAlertBanner, setShowRrhhAlertBanner] = useState(true)
   const [rrhhDetailTab, setRrhhDetailTab] = useState<"Actividad" | "Tareas" | "Evaluaciones" | "Capacitaciones" | "Documentos" | "Feedback" | "Ausencias">("Actividad")
   const [rrhhTaskFilter, setRrhhTaskFilter] = useState("Todas")
@@ -316,7 +373,15 @@ export default function DashboardPage() {
   const [newTaskPriority, setNewTaskPriority] = useState("Media")
   const [newTaskCategory, setNewTaskCategory] = useState("Ventas")
   const [newTaskDue, setNewTaskDue] = useState("")
-  const [taskMenuOpenId, setTaskMenuOpenId] = useState<number | null>(null)
+  const [taskMenuOpenId, setTaskMenuOpenId] = useState<string | null>(null)
+  const [newEmployeeName, setNewEmployeeName] = useState("")
+  const [newEmployeeRole, setNewEmployeeRole] = useState("")
+  const [newEmployeeArea, setNewEmployeeArea] = useState("")
+  const [newEmployeeEmail, setNewEmployeeEmail] = useState("")
+  const [newEmployeePhone, setNewEmployeePhone] = useState("")
+  const [newEmployeeHireDate, setNewEmployeeHireDate] = useState("")
+  const [newEmployeeSalary, setNewEmployeeSalary] = useState("")
+  const [newEmployeeContract, setNewEmployeeContract] = useState("dependency")
   const [contabNavTab, setContabNavTab] = useState<"Dashboard" | "Movimientos" | "Análisis" | "Proyecciones" | "Exportar">("Dashboard")
   const [showContabAlertBanner, setShowContabAlertBanner] = useState(true)
   const [movSearch, setMovSearch] = useState("")
@@ -324,7 +389,7 @@ export default function DashboardPage() {
   const [movCatFilter, setMovCatFilter] = useState("Todas")
   const [movPeriodoFilter, setMovPeriodoFilter] = useState("Este mes")
   const [movOrigenFilter, setMovOrigenFilter] = useState("Todos")
-  const [movMenuOpenId, setMovMenuOpenId] = useState<number | null>(null)
+  const [movMenuOpenId, setMovMenuOpenId] = useState<string | null>(null)
   const [showRegGasto, setShowRegGasto] = useState(false)
   const [showRegIngreso, setShowRegIngreso] = useState(false)
   const [regDesc, setRegDesc] = useState("")
@@ -435,7 +500,7 @@ export default function DashboardPage() {
   const [exportBrand, setExportBrand] = useState(true)
   const [exportTitle, setExportTitle] = useState("Reporte de Marketing — Mayo 2026")
   const [exportState, setExportState] = useState<"idle" | "loading" | "done">("idle")
-  const [mktSelectedCamp, setMktSelectedCamp] = useState<{ id: number; name: string; channel: string; date: string; status: string; roi: string; roiDir: string; budget: string } | null>(null)
+  const [mktSelectedCamp, setMktSelectedCamp] = useState<{ id: string; name: string; channel: string; date: string; status: string; roi: string; roiDir: string; budget: string } | null>(null)
   const [mktDetailTab, setMktDetailTab] = useState<"Resultados" | "Audiencia" | "Contenido" | "Notas">("Resultados")
   const [newCampName, setNewCampName] = useState("")
   const [newCampChannel, setNewCampChannel] = useState<string | null>(null)
@@ -520,6 +585,535 @@ export default function DashboardPage() {
   const [newCity, setNewCity] = useState("")
   const [newCountry, setNewCountry] = useState("")
 
+  const COMPANY_ID =
+    'a0000000-0000-0000-0000-000000000001'
+
+  const [realClients, setRealClients] =
+    useState(defaultClientsData)
+  const [crmLoading, setCrmLoading] =
+    useState(false)
+
+  const fetchClients = async () => {
+    setCrmLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('clients')
+        .select(`
+          id,
+          name,
+          company_name,
+          email,
+          phone,
+          temperature,
+          average_ticket,
+          purchase_frequency_days,
+          last_contact_at,
+          last_purchase_at,
+          total_purchases,
+          purchase_count,
+          tags,
+          assigned_seller_id
+        `)
+        .eq('company_id', COMPANY_ID)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      if (data && data.length > 0) {
+        const mapped = data.map(client => ({
+          id: client.id,
+          name: client.name,
+          company: client.company_name ||
+            'Sin empresa',
+          email: client.email || '',
+          phone: client.phone || '',
+          temp: client.temperature === 'hot'
+            ? 'Caliente' as const
+            : client.temperature === 'warm'
+            ? 'Tibio' as const
+            : 'Frío' as const,
+          lastContact: client.last_contact_at
+            ? `Hace ${Math.floor(
+                (Date.now() - new Date(
+                  client.last_contact_at
+                ).getTime()) / 86400000
+              )} días`
+            : 'Sin contacto',
+          ticket: `$${(
+            client.average_ticket || 0
+          ).toLocaleString()}`,
+          seller: 'MR',
+          tags: client.tags || [],
+          avatar: client.name
+            .split(' ')
+            .map((n: string) => n[0])
+            .join('')
+            .substring(0, 2)
+            .toUpperCase(),
+        }))
+        setRealClients(mapped)
+      }
+    } catch (error) {
+      console.error('Error fetching clients:', error)
+    } finally {
+      setCrmLoading(false)
+    }
+  }
+
+  const [realOpportunities, setRealOpportunities] =
+    useState<any[]>([])
+  const [ventasLoading, setVentasLoading] =
+    useState(false)
+
+  const fetchOpportunities = async () => {
+    setVentasLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('opportunities')
+        .select(`
+          id,
+          amount,
+          stage,
+          probability,
+          estimated_close_date,
+          created_at,
+          client_id,
+          seller_id,
+          clients (
+            name,
+            company_name
+          )
+        `)
+        .eq('company_id', COMPANY_ID)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      if (data && data.length > 0) {
+        const mapped = data.map(opp => ({
+          id: opp.id,
+          client: (opp.clients as any)?.name
+            || 'Cliente',
+          company: (opp.clients as any)
+            ?.company_name || 'Sin empresa',
+          amount: opp.amount,
+          stage: opp.stage === 'prospect'
+            ? 'Prospecto'
+            : opp.stage === 'proposal'
+            ? 'Propuesta'
+            : opp.stage === 'negotiation'
+            ? 'Negociación'
+            : opp.stage === 'closed_won'
+            ? 'Cerrado'
+            : 'Perdido',
+          probability: opp.probability,
+          daysToClose: opp.estimated_close_date
+            ? Math.max(0, Math.floor(
+                (new Date(opp.estimated_close_date)
+                  .getTime() - Date.now()
+                ) / 86400000
+              ))
+            : 0,
+          seller: 'JP',
+          avatar: 'JP',
+        }))
+        setRealOpportunities(mapped)
+      }
+    } catch (error) {
+      console.error('Error fetching opportunities:',
+        error)
+    } finally {
+      setVentasLoading(false)
+    }
+  }
+
+  const [realMovements, setRealMovements] =
+    useState<any[]>([])
+  const [contabilidadLoading, setContabilidadLoading] =
+    useState(false)
+
+  const fetchMovements = async () => {
+    setContabilidadLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('movements')
+        .select('*')
+        .eq('company_id', COMPANY_ID)
+        .order('date', { ascending: false })
+
+      if (error) throw error
+
+      if (data && data.length > 0) {
+        const mapped = data.map(m => ({
+          id: m.id,
+          type: m.type,
+          description: m.description,
+          amount: Number(m.amount),
+          category: m.category || 'General',
+          date: m.date,
+          origin: m.origin,
+          is_anomaly: m.is_anomaly || false,
+          displayDate: new Date(m.date)
+            .toLocaleDateString('es-UY', {
+              day: 'numeric',
+              month: 'long',
+            }),
+          displayAmount: m.type === 'income'
+            ? `+$${Number(m.amount).toLocaleString()}`
+            : `-$${Number(m.amount).toLocaleString()}`,
+        }))
+        setRealMovements(mapped)
+      }
+    } catch (error) {
+      console.error('Error fetching movements:',
+        error)
+    } finally {
+      setContabilidadLoading(false)
+    }
+  }
+
+  const [realEmployees, setRealEmployees] =
+    useState<any[]>([])
+  const [rrhhLoading, setRrhhLoading] =
+    useState(false)
+  const [realTasks, setRealTasks] =
+    useState<any[]>([])
+
+  const fetchEmployees = async () => {
+    setRrhhLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('employees')
+        .select('*')
+        .eq('company_id', COMPANY_ID)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      if (data && data.length > 0) {
+        const mapped = data.map(emp => ({
+          id: emp.id,
+          name: emp.name,
+          role: emp.role,
+          area: emp.area || 'General',
+          status: emp.status === 'active'
+            ? 'Activo'
+            : emp.status === 'leave'
+            ? 'Licencia'
+            : 'Baja',
+          performance: Number(emp.performance_score) || 0,
+          satisfaction: Number(emp.satisfaction_score) || 0,
+          salary: Number(emp.gross_salary) || 0,
+          hireDate: emp.hire_date,
+          seniority: emp.hire_date
+            ? `${Math.floor(
+                (Date.now() - new Date(emp.hire_date)
+                  .getTime()) / 31536000000
+              )} años`
+            : 'Nuevo',
+          avatar: emp.name
+            .split(' ')
+            .map((n: string) => n[0])
+            .join('')
+            .substring(0, 2)
+            .toUpperCase(),
+          ai_churn_risk: emp.ai_churn_risk,
+          ai_recommendation: emp.ai_recommendation,
+        }))
+        setRealEmployees(mapped)
+      }
+    } catch (error) {
+      console.error('Error fetching employees:',
+        error)
+    } finally {
+      setRrhhLoading(false)
+    }
+  }
+
+  const fetchTasks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('employee_tasks')
+        .select('*')
+        .eq('company_id', COMPANY_ID)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      if (data && data.length > 0) {
+        const mapped = data.map(task => ({
+          id: task.id,
+          title: task.title,
+          description: task.description,
+          priority: task.priority === 'high'
+            ? 'Alta'
+            : task.priority === 'medium'
+            ? 'Media'
+            : 'Baja',
+          status: task.status === 'completed'
+            ? 'Completada'
+            : task.status === 'in_progress'
+            ? 'En proceso'
+            : 'Pendiente',
+          dueDate: task.due_date,
+          category: task.category || 'General',
+          employee_id: task.employee_id,
+        }))
+        setRealTasks(mapped)
+      }
+    } catch (error) {
+      console.error('Error fetching tasks:', error)
+    }
+  }
+
+  const [realCampaigns, setRealCampaigns] =
+    useState<any[]>([])
+  const [marketingLoading, setMarketingLoading] =
+    useState(false)
+  const [realResearch, setRealResearch] =
+    useState<any[]>([])
+
+  const fetchCampaigns = async () => {
+    setMarketingLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select('*')
+        .eq('company_id', COMPANY_ID)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      if (data && data.length > 0) {
+        const mapped = data.map(c => ({
+          id: c.id,
+          name: c.name,
+          channel: c.channel === 'email'
+            ? 'Email'
+            : c.channel === 'social'
+            ? 'Redes sociales'
+            : c.channel === 'google'
+            ? 'Google Ads'
+            : c.channel === 'whatsapp'
+            ? 'WhatsApp'
+            : c.channel === 'event'
+            ? 'Evento'
+            : 'Otro',
+          status: c.status === 'active'
+            ? 'Activa'
+            : c.status === 'paused'
+            ? 'Pausada'
+            : c.status === 'finished'
+            ? 'Finalizada'
+            : 'Borrador',
+          budget: Number(c.budget) || 0,
+          spent: Number(c.spent) || 0,
+          metrics: c.metrics || {},
+          startDate: c.start_date,
+          endDate: c.end_date,
+          objective: c.objective,
+          segment: c.segment,
+          displayBudget: `$${(
+            Number(c.budget) || 0
+          ).toLocaleString()}`,
+        }))
+        setRealCampaigns(mapped)
+      }
+    } catch (error) {
+      console.error('Error fetching campaigns:',
+        error)
+    } finally {
+      setMarketingLoading(false)
+    }
+  }
+
+  const fetchResearch = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('research')
+        .select('*')
+        .eq('company_id', COMPANY_ID)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      if (data && data.length > 0) {
+        const mapped = data.map(r => ({
+          id: r.id,
+          title: r.title,
+          type: r.type,
+          status: r.status === 'in_progress'
+            ? 'En proceso'
+            : r.status === 'finished'
+            ? 'Finalizado'
+            : 'Archivado',
+          summary: r.summary,
+          findings: r.findings || [],
+          tags: r.tags || [],
+          files: r.files || [],
+          ai_analyzed: r.ai_analyzed || false,
+          ai_insights: r.ai_insights || {},
+          created_at: r.created_at,
+        }))
+        setRealResearch(mapped)
+      }
+    } catch (error) {
+      console.error('Error fetching research:',
+        error)
+    }
+  }
+
+  const [realNotifications, setRealNotifications] =
+    useState<any[]>([])
+  const [workspaceLoading, setWorkspaceLoading] =
+    useState(false)
+  const [chatHistory, setChatHistory] =
+    useState<any[]>([])
+  const [companyMemory, setCompanyMemory] =
+    useState<any>(null)
+  const [realReports, setRealReports] =
+    useState<any[]>([])
+
+  const fetchNotifications = async () => {
+    setWorkspaceLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('company_id', COMPANY_ID)
+        .order('created_at', { ascending: false })
+        .limit(20)
+
+      if (error) throw error
+
+      if (data && data.length > 0) {
+        const mapped = data.map(n => ({
+          id: n.id,
+          title: n.title,
+          message: n.message,
+          type: n.type,
+          module: n.module,
+          priority: n.priority,
+          read: n.read,
+          created_at: n.created_at,
+          displayTime: new Date(n.created_at)
+            .toLocaleDateString('es-UY', {
+              day: 'numeric',
+              month: 'short',
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+        }))
+        setRealNotifications(mapped)
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:',
+        error)
+    } finally {
+      setWorkspaceLoading(false)
+    }
+  }
+
+  const fetchChatHistory = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('chat_history')
+        .select('*')
+        .eq('company_id', COMPANY_ID)
+        .order('created_at', { ascending: true })
+        .limit(50)
+
+      if (error) throw error
+
+      if (data && data.length > 0) {
+        setChatHistory(data.map(m => ({
+          id: m.id,
+          role: m.role,
+          message: m.message,
+          created_at: m.created_at,
+        })))
+      }
+    } catch (error) {
+      console.error('Error fetching chat:', error)
+    }
+  }
+
+  const fetchCompanyMemory = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('company_memory')
+        .select('*')
+        .eq('company_id', COMPANY_ID)
+        .maybeSingle()
+
+      if (error) throw error
+      if (data) setCompanyMemory(data)
+    } catch (error) {
+      console.error('Error fetching memory:', error)
+    }
+  }
+
+  const fetchReports = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('reports')
+        .select('*')
+        .eq('company_id', COMPANY_ID)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      if (data) setRealReports(data)
+    } catch (error) {
+      console.error('Error fetching reports:',
+        error)
+    }
+  }
+
+  useEffect(() => {
+    fetchClients()
+    fetchOpportunities()
+    fetchMovements()
+    fetchEmployees()
+    fetchTasks()
+    fetchCampaigns()
+    fetchResearch()
+    fetchNotifications()
+    fetchChatHistory()
+    fetchCompanyMemory()
+    fetchReports()
+  }, [])
+
+  useEffect(() => {
+    if (chatHistory.length > 0) {
+      setChatMessages(chatHistory.map(m => ({
+        role: m.role as 'user' | 'assistant',
+        text: m.message,
+      })))
+    }
+  }, [chatHistory])
+
+  const unreadCount = realNotifications
+    .filter(n => !n.read).length
+
+  const [showSuccessToast, setShowSuccessToast] =
+    useState(false)
+  const [toastMessage, setToastMessage] =
+    useState('')
+
+  const showToast = (message: string) => {
+    setToastMessage(message)
+    setShowSuccessToast(true)
+    setTimeout(() =>
+      setShowSuccessToast(false), 2000)
+  }
+
+  const resolveClientId = (clientName: string): string | null => {
+    const found = realClients.find(c => c.name === clientName)
+      || crmClients.find(c => c.name === clientName)
+    if (!found) return null
+    return typeof found.id === 'string' ? found.id : null
+  }
+
   const resetNewForm = () => {
     setNewName(""); setNewCompany(""); setNewEmail(""); setNewPhone("")
     setNewLocation(""); setNewTemp("Tibio"); setNewTags(""); setNewSeller("MR")
@@ -527,20 +1121,302 @@ export default function DashboardPage() {
     setNewStreet(""); setNewCity(""); setNewCountry("")
   }
 
-  const saveNewClient = () => {
+  const saveNewClient = async () => {
     if (!newName.trim()) return
-    const client: Client = {
-      id: Date.now(),
-      name: newName.trim(),
-      company: newCompany.trim() || "Sin empresa",
-      temp: newTemp,
-      lastContact: "Hoy",
-      ticket: newTicket ? `$${newTicket}` : "$0",
-      seller: newSeller,
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .insert({
+          company_id: COMPANY_ID,
+          name: newName.trim(),
+          company_name: newCompany || null,
+          email: newEmail || null,
+          phone: newPhone || null,
+          location: newLocation || null,
+          city: newCity || null,
+          country: newCountry || null,
+          temperature: newTemp === 'Caliente'
+            ? 'hot'
+            : newTemp === 'Tibio'
+            ? 'warm'
+            : 'cold',
+          average_ticket: parseFloat(
+            newTicket || '0'
+          ),
+          purchase_frequency_days: parseInt(
+            newFrequency || '30'
+          ),
+          tags: newTags
+            ? newTags.split(',')
+              .map((t: string) => t.trim())
+            : [],
+          b2b_group: newB2B || null,
+          notes: newNotes || null,
+        })
+        .select()
+        .single()
+
+      if (error) throw error
+
+      await fetchClients()
+      resetNewForm()
+      setCrmView('list')
+      showToast('Cliente guardado')
+    } catch (error) {
+      console.error('Error saving client:', error)
     }
-    setCrmClients((prev) => [client, ...prev])
-    resetNewForm()
-    setCrmView("list")
+  }
+
+  const saveNewOpportunity = async () => {
+    try {
+      const { error } = await supabase
+        .from('opportunities')
+        .insert({
+          company_id: COMPANY_ID,
+          client_id: resolveClientId(newOppClient),
+          title: newOppDesc || newOppClient || 'Nueva oportunidad',
+          amount: parseFloat(
+            newOppAmount || '0'
+          ),
+          stage: newOppStage === 'Prospecto'
+            ? 'prospect'
+            : newOppStage === 'Propuesta'
+            ? 'proposal'
+            : newOppStage === 'Negociación'
+            ? 'negotiation'
+            : newOppStage === 'Cerrado'
+            ? 'closed_won'
+            : 'prospect',
+          probability: newOppProb,
+          estimated_close_date:
+            newOppDate || null,
+          origin: newOppOrigin || null,
+          notes: newOppNotes || null,
+        })
+
+      if (error) throw error
+
+      await fetchOpportunities()
+      setVentasView('pipeline')
+      showToast('Oportunidad creada')
+    } catch (error) {
+      console.error('Error saving opportunity:',
+        error)
+    }
+  }
+
+  const handleSaveExpense = async () => {
+    try {
+      const { error } = await supabase
+        .from('movements')
+        .insert({
+          company_id: COMPANY_ID,
+          type: 'expense',
+          description: regDesc,
+          amount: parseFloat(
+            regMonto || '0'
+          ),
+          category: regCat || 'Otros',
+          date: regFecha ||
+            new Date().toISOString().split('T')[0],
+          origin: 'manual',
+        })
+
+      if (error) throw error
+
+      await fetchMovements()
+      setShowRegGasto(false)
+      setRegDesc('')
+      setRegMonto('')
+      showToast('Movimiento registrado')
+    } catch (error) {
+      console.error('Error saving expense:', error)
+    }
+  }
+
+  const handleSaveIncome = async () => {
+    try {
+      const { error } = await supabase
+        .from('movements')
+        .insert({
+          company_id: COMPANY_ID,
+          type: 'income',
+          description: regDescIn,
+          amount: parseFloat(
+            regMontoIn || '0'
+          ),
+          category: regCatIn || 'Ventas',
+          date: regFechaIn ||
+            new Date().toISOString().split('T')[0],
+          origin: 'manual',
+        })
+
+      if (error) throw error
+
+      await fetchMovements()
+      setShowRegIngreso(false)
+      setRegDescIn('')
+      setRegMontoIn('')
+      showToast('Movimiento registrado')
+    } catch (error) {
+      console.error('Error saving income:', error)
+    }
+  }
+
+  const handleSaveNewEmployee = async () => {
+    try {
+      const { error } = await supabase
+        .from('employees')
+        .insert({
+          company_id: COMPANY_ID,
+          name: newEmployeeName,
+          role: newEmployeeRole,
+          area: newEmployeeArea || null,
+          email: newEmployeeEmail || null,
+          phone: newEmployeePhone || null,
+          hire_date: newEmployeeHireDate ||
+            new Date().toISOString().split('T')[0],
+          gross_salary: parseFloat(
+            newEmployeeSalary || '0'
+          ),
+          contract_type:
+            newEmployeeContract || 'dependency',
+          status: 'active',
+        })
+
+      if (error) throw error
+
+      await fetchEmployees()
+      setRrhhView('team')
+      showToast('Empleado guardado')
+    } catch (error) {
+      console.error('Error saving employee:', error)
+    }
+  }
+
+  const handleSaveTask = async (
+    employeeId: string
+  ) => {
+    try {
+      const { error } = await supabase
+        .from('employee_tasks')
+        .insert({
+          company_id: COMPANY_ID,
+          employee_id: employeeId,
+          title: newTaskName,
+          priority: newTaskPriority === 'Alta'
+            ? 'high'
+            : newTaskPriority === 'Media'
+            ? 'medium'
+            : 'low',
+          status: 'pending',
+          category: newTaskCategory || null,
+          due_date: newTaskDue || null,
+        })
+
+      if (error) throw error
+
+      await fetchTasks()
+      setShowAssignTaskForm(false)
+      setNewTaskName('')
+      setNewTaskDue('')
+      showToast('Tarea asignada')
+    } catch (error) {
+      console.error('Error saving task:', error)
+    }
+  }
+
+  const handleSaveNewCampaign = async () => {
+    try {
+      const channelKey = newCampChannel || 'Email'
+      const { error } = await supabase
+        .from('campaigns')
+        .insert({
+          company_id: COMPANY_ID,
+          name: newCampName || 'Nueva campaña',
+          channel: channelKey === 'Email'
+            ? 'email'
+            : channelKey === 'Redes sociales'
+            ? 'social'
+            : channelKey === 'Google Ads'
+            ? 'google'
+            : channelKey === 'WhatsApp'
+            ? 'whatsapp'
+            : channelKey === 'Evento'
+            ? 'event'
+            : 'other',
+          objective: newCampObjective || null,
+          segment: newCampSegments.length > 0
+            ? newCampSegments.join(', ')
+            : null,
+          budget: parseFloat(
+            newCampBudget || '0'
+          ),
+          status: 'active',
+          start_date: newCampStart || null,
+          end_date: newCampEnd || null,
+        })
+
+      if (error) throw error
+
+      await fetchCampaigns()
+      setNewCampName(''); setNewCampChannel(null)
+      setNewCampObjective('Generar nuevas ventas')
+      setNewCampSegments([]); setNewCampBudget('')
+      setNewCampStart(''); setNewCampEnd('')
+      setNewCampOwner('JP'); setNewCampSubject('')
+      setNewCampMessage(''); setNewCampCTA('')
+      setNewCampTargetOpen(''); setNewCampTargetClick('')
+      setNewCampTargetConv('')
+      setMktView('campaigns')
+      showToast('Campaña creada')
+    } catch (error) {
+      console.error('Error saving campaign:', error)
+    }
+  }
+
+  const handleSaveInteraction = async (
+    clientId: string
+  ) => {
+    try {
+      const { error } = await supabase
+        .from('interactions')
+        .insert({
+          company_id: COMPANY_ID,
+          client_id: clientId,
+          type: crmRegisterType === 'Llamada'
+            ? 'call'
+            : crmRegisterType === 'Visita'
+            ? 'visit'
+            : crmRegisterType === 'Email'
+            ? 'email'
+            : 'purchase',
+          description: crmRegisterNote,
+          amount: crmRegisterType === 'Compra'
+            ? parseFloat(
+                crmRegisterAmount || '0'
+              )
+            : null,
+        })
+
+      if (error) throw error
+
+      await supabase
+        .from('clients')
+        .update({
+          last_contact_at: new Date().toISOString()
+        })
+        .eq('id', clientId)
+
+      await fetchClients()
+      setCrmShowRegisterForm(false)
+      setCrmRegisterNote('')
+      setCrmRegisterAmount('')
+      showToast('Interacción registrada')
+    } catch (error) {
+      console.error('Error saving interaction:',
+        error)
+    }
   }
   const wakeRecRef = useRef<SpeechRecognitionInstance | null>(null)
   const commandRecRef = useRef<SpeechRecognitionInstance | null>(null)
@@ -572,9 +1448,9 @@ export default function DashboardPage() {
 
   const closePanel = () => {
     setPanelVisible(false)
+    setIsPaused(false)
     setTimeout(() => {
       setActiveNode(null)
-      setIsPaused(false)
     }, 250)
   }
 
@@ -778,7 +1654,7 @@ export default function DashboardPage() {
         }
       }}
     >
-      <style>{`@keyframes orbitSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      <style>{`@keyframes orbitSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       {/* Logo */}
       <div className="absolute top-6 left-8 z-20" style={{ display: "flex", alignItems: "center" }}>
         <span style={{ color: "white", fontWeight: 700 }}>Pupi</span>
@@ -1013,7 +1889,7 @@ export default function DashboardPage() {
           backgroundColor: "rgba(0,0,0,0.65)",
           zIndex: 40,
           opacity: panelVisible ? 1 : 0,
-          pointerEvents: activeNode ? "auto" : "none",
+          pointerEvents: panelVisible ? "auto" : "none",
           transition: "opacity 300ms ease-out",
         }}
       />
@@ -1038,7 +1914,7 @@ export default function DashboardPage() {
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
-          pointerEvents: activeNode ? "auto" : "none",
+          pointerEvents: panelVisible ? "auto" : "none",
         }}
       >
         {activeNode && (() => {
@@ -1531,7 +2407,15 @@ export default function DashboardPage() {
                                           />
                                         )}
                                         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                                          <button style={{ background: "#2563EB", color: "white", border: "none", borderRadius: 6, padding: "6px 14px", fontSize: 13, cursor: "pointer" }}>Guardar</button>
+                                          <button
+                                            onClick={() => {
+                                              const clientId = crmSelectedClient && typeof crmSelectedClient.id === 'string'
+                                                ? crmSelectedClient.id
+                                                : null
+                                              if (clientId) handleSaveInteraction(clientId)
+                                            }}
+                                            style={{ background: "#2563EB", color: "white", border: "none", borderRadius: 6, padding: "6px 14px", fontSize: 13, cursor: "pointer" }}
+                                          >Guardar</button>
                                           <button onClick={() => { setCrmShowRegisterForm(false); setCrmRegisterNote(""); setCrmRegisterAmount("") }} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 12, cursor: "pointer" }}>Cancelar</button>
                                         </div>
                                       </div>
@@ -1995,106 +2879,140 @@ export default function DashboardPage() {
                   ) : crmView === "map" ? (
                     // ── MAP VIEW ──
                     (() => {
-                      const PIN_POSITIONS: Record<string, { left: string; top: string }> = {
-                        "María González": { left: "25%", top: "35%" },
-                        "Carlos Mendoza":  { left: "55%", top: "25%" },
-                        "Ana Rodríguez":   { left: "70%", top: "60%" },
-                        "Luis Herrera":    { left: "35%", top: "55%" },
-                        "Sofía Martínez":  { left: "60%", top: "45%" },
-                        "Diego López":     { left: "45%", top: "30%" },
-                        "Valentina Cruz":  { left: "80%", top: "35%" },
-                        "Martín Pérez":    { left: "30%", top: "70%" },
-                      }
-                      const TEMP_PIN: Record<string, { outer: string; outerBorder: string; inner: string; pointer: string }> = {
-                        Caliente: { outer: "rgba(239,68,68,0.15)", outerBorder: "rgba(239,68,68,0.4)", inner: "rgba(239,68,68,0.3)", pointer: "#ef4444" },
-                        Tibio:    { outer: "rgba(234,179,8,0.15)",  outerBorder: "rgba(234,179,8,0.4)",  inner: "rgba(234,179,8,0.3)",  pointer: "#eab308" },
-                        Frío:     { outer: "rgba(37,99,235,0.15)",  outerBorder: "rgba(37,99,235,0.4)",  inner: "rgba(37,99,235,0.3)",  pointer: "#2563EB" },
-                      }
-                      const visibleClients = crmClients.filter(c =>
-                        (crmTempFilter === "Todos" || c.temp === crmTempFilter) && PIN_POSITIONS[c.name]
+                      const visibleClients = crmClients.filter((c) =>
+                        (crmTempFilter === "Todos" || c.temp === crmTempFilter) &&
+                        c.lat != null &&
+                        c.lng != null
                       )
-                      const countByTemp = (t: string) => crmClients.filter(c => c.temp === t).length
-                      return (
-                        <div style={{ flex: 1, position: "relative", background: "#0a0f1a", overflow: "hidden" }}>
-                          {/* Grid lines */}
-                          <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
-                            {Array.from({ length: 30 }, (_, i) => (
-                              <line key={`h${i}`} x1="0" y1={i * 40} x2="100%" y2={i * 40} stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
-                            ))}
-                            {Array.from({ length: 50 }, (_, i) => (
-                              <line key={`v${i}`} x1={i * 40} y1="0" x2={i * 40} y2="100%" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
-                            ))}
-                            {/* Fake streets */}
-                            <path d="M 0 180 Q 200 160 400 200 T 900 180" stroke="rgba(255,255,255,0.07)" strokeWidth="2" fill="none" />
-                            <path d="M 100 0 L 150 500" stroke="rgba(255,255,255,0.07)" strokeWidth="2" fill="none" />
-                            <path d="M 0 320 L 900 340" stroke="rgba(255,255,255,0.07)" strokeWidth="2" fill="none" />
-                            <path d="M 300 0 Q 320 200 280 500" stroke="rgba(255,255,255,0.07)" strokeWidth="2" fill="none" />
-                            <path d="M 500 0 L 480 500" stroke="rgba(255,255,255,0.07)" strokeWidth="2" fill="none" />
-                            <path d="M 0 420 Q 400 400 900 440" stroke="rgba(255,255,255,0.07)" strokeWidth="2" fill="none" />
-                            <path d="M 650 0 L 700 500" stroke="rgba(255,255,255,0.07)" strokeWidth="2" fill="none" />
-                          </svg>
+                      const countByTemp = (t: string) => crmClients.filter((c) => c.temp === t).length
+                      const selectedClient = mapPinHover != null
+                        ? visibleClients.find((c) => c.id === mapPinHover) ?? null
+                        : null
 
-                          {/* Client pins */}
-                          {visibleClients.map((client) => {
-                            const pos = PIN_POSITIONS[client.name]
-                            const pin = TEMP_PIN[client.temp] ?? TEMP_PIN.Frío
-                            const hovered = mapPinHover === client.id
-                            const initials = getInitials(client.name)
-                            const ts = TEMP_STYLES[client.temp as keyof typeof TEMP_STYLES]
-                            return (
-                              <div
-                                key={client.id}
-                                style={{ position: "absolute", left: pos.left, top: pos.top, transform: `translate(-50%, -100%) scale(${hovered ? 1.1 : 1})`, transition: "transform 0.15s", cursor: "pointer", zIndex: hovered ? 10 : 1 }}
-                                onMouseEnter={() => setMapPinHover(client.id)}
-                                onMouseLeave={() => setMapPinHover(null)}
-                                onClick={() => { setCrmSelectedClient(client); setCrmView("detail"); setCrmTab("Historial") }}
-                              >
-                                {/* Tooltip */}
-                                {hovered && (
-                                  <div style={{ position: "absolute", bottom: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)", background: "rgba(10,10,20,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", whiteSpace: "nowrap", pointerEvents: "none" }}>
-                                    <div style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{client.name}</div>
-                                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>{client.company}</div>
-                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginTop: 6 }}>
-                                      <span style={{ background: ts.bg, color: ts.color, fontSize: 10, borderRadius: 4, padding: "2px 6px" }}>{client.temp}</span>
-                                      <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 10 }}>{client.lastContact}</span>
+                      return (
+                        <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
+                          <div style={{ flex: 1, position: "relative", background: "#0a0f1a", overflow: "hidden" }}>
+                            {/* Temperature filter pills */}
+                            <div style={{ position: "absolute", top: 16, left: 16, right: 16, display: "flex", flexWrap: "wrap", gap: 8, zIndex: 2, pointerEvents: "auto" }}>
+                              {(["Todos", "Caliente 🔴", "Tibio 🟡", "Frío 🔵"] as const).map((label) => {
+                                const key = label.split(" ")[0] as Temp
+                                const selected = crmTempFilter === key
+                                return (
+                                  <button
+                                    key={key}
+                                    type="button"
+                                    onClick={() => { setCrmTempFilter(key); setMapPinHover(null) }}
+                                    style={{
+                                      padding: "6px 12px",
+                                      borderRadius: 20,
+                                      fontSize: 12,
+                                      border: "none",
+                                      cursor: "pointer",
+                                      background: selected ? "rgba(37,99,235,0.2)" : "rgba(10,10,20,0.8)",
+                                      color: selected ? "#2563EB" : "rgba(255,255,255,0.5)",
+                                      backdropFilter: "blur(8px)",
+                                      WebkitBackdropFilter: "blur(8px)",
+                                    }}
+                                  >
+                                    {label}
+                                  </button>
+                                )
+                              })}
+                            </div>
+
+                            <Map
+                              style={{ width: "100%", height: "100%" }}
+                              mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID}
+                              defaultCenter={{ lat: -32.5228, lng: -55.7658 }}
+                              defaultZoom={6}
+                              styles={CRM_MAP_DARK_STYLES}
+                              disableDefaultUI
+                              gestureHandling="greedy"
+                              onClick={() => setMapPinHover(null)}
+                            >
+                              {visibleClients.map((client) => {
+                                const pin = CRM_MAP_PIN_STYLES[client.temp]
+                                const initials = getInitials(client.name)
+                                const selected = mapPinHover === client.id
+                                return (
+                                  <AdvancedMarker
+                                    key={client.id}
+                                    position={{ lat: client.lat!, lng: client.lng! }}
+                                    onClick={(e) => {
+                                      e.domEvent?.stopPropagation()
+                                      setMapPinHover(client.id)
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        width: 36,
+                                        height: 36,
+                                        borderRadius: "50%",
+                                        background: pin.background,
+                                        border: `2px solid ${pin.border}`,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        cursor: "pointer",
+                                        transform: selected ? "scale(1.1)" : "scale(1)",
+                                        transition: "transform 0.15s",
+                                        boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
+                                      }}
+                                    >
+                                      <span style={{ color: "#ffffff", fontSize: 11, fontWeight: 500 }}>{initials}</span>
+                                    </div>
+                                  </AdvancedMarker>
+                                )
+                              })}
+
+                              {selectedClient && (
+                                <InfoWindow
+                                  position={{ lat: selectedClient.lat!, lng: selectedClient.lng! }}
+                                  onCloseClick={() => setMapPinHover(null)}
+                                  pixelOffset={[0, -44]}
+                                >
+                                  <div style={{ background: "rgba(10,10,20,0.95)", borderRadius: 8, padding: "10px 12px", minWidth: 180 }}>
+                                    <div style={{ color: "#ffffff", fontSize: 13, fontWeight: 500 }}>{selectedClient.name}</div>
+                                    <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 8 }}>
+                                      <span style={{
+                                        background: TEMP_STYLES[selectedClient.temp].bg,
+                                        color: TEMP_STYLES[selectedClient.temp].color,
+                                        fontSize: 11,
+                                        borderRadius: 4,
+                                        padding: "2px 8px",
+                                      }}>
+                                        {selectedClient.temp}
+                                      </span>
+                                    </div>
+                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginTop: 8 }}>
+                                      Último contacto: {selectedClient.lastContact}
+                                    </div>
+                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginTop: 4 }}>
+                                      Ticket promedio: {selectedClient.ticket}
                                     </div>
                                   </div>
-                                )}
-                                {/* Outer circle */}
-                                <div style={{ width: 36, height: 36, borderRadius: "50%", background: pin.outer, border: `1px solid ${pin.outerBorder}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                  {/* Inner circle */}
-                                  <div style={{ width: 20, height: 20, borderRadius: "50%", background: pin.inner, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <span style={{ color: "white", fontSize: 9, fontWeight: 500 }}>{initials}</span>
-                                  </div>
+                                </InfoWindow>
+                              )}
+
+                              <CrmMapZoomControls />
+                            </Map>
+
+                            {/* Bottom-left legend overlay */}
+                            <div style={{ position: "absolute", bottom: 16, left: 16, background: "rgba(10,10,20,0.8)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)", padding: "12px 16px", zIndex: 2, pointerEvents: "none" }}>
+                              <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>Clientes en el mapa</div>
+                              {[
+                                { color: "#ef4444", label: `Caliente (${countByTemp("Caliente")})` },
+                                { color: "#eab308", label: `Tibio (${countByTemp("Tibio")})` },
+                                { color: "#60a5fa", label: `Frío (${countByTemp("Frío")})` },
+                              ].map(({ color, label }) => (
+                                <div key={label} style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6 }}>
+                                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
+                                  <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>{label}</span>
                                 </div>
-                                {/* Triangle pointer */}
-                                <div style={{ width: 0, height: 0, borderLeft: "6px solid transparent", borderRight: "6px solid transparent", borderTop: `8px solid ${pin.outerBorder}`, margin: "0 auto" }} />
-                              </div>
-                            )
-                          })}
-
-                          {/* Top-left legend overlay */}
-                          <div style={{ position: "absolute", top: 16, left: 16, background: "rgba(10,10,20,0.8)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)", padding: "12px 16px" }}>
-                            <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>Clientes en el mapa</div>
-                            {[
-                              { color: "#ef4444", label: `Caliente (${countByTemp("Caliente")})` },
-                              { color: "#eab308", label: `Tibio (${countByTemp("Tibio")})` },
-                              { color: "#60a5fa", label: `Frío (${countByTemp("Frío")})` },
-                            ].map(({ color, label }) => (
-                              <div key={label} style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6 }}>
-                                <div style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
-                                <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>{label}</span>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
-
-                          {/* Bottom-right zoom controls */}
-                          <div style={{ position: "absolute", bottom: 16, right: 16, display: "flex", flexDirection: "column", gap: 4 }}>
-                            {["+", "−"].map((sym) => (
-                              <button key={sym} style={{ width: 32, height: 32, background: "rgba(10,10,20,0.8)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, color: "white", fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>{sym}</button>
-                            ))}
-                          </div>
-                        </div>
+                        </APIProvider>
                       )
                     })()
                   ) : (
@@ -2157,7 +3075,10 @@ export default function DashboardPage() {
                         {/* Top bar */}
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexShrink: 0 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Clientes</span>
+                            <div>
+                              <span style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Clientes</span>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{`${realClients.length} clientes`}</div>
+                            </div>
                             {(["Lista", "Ranking"] as const).map((m) => (
                               <button key={m} onClick={() => setCrmListMode(m)} style={{
                                 padding: "5px 12px", borderRadius: 6, fontSize: 12, border: "none", cursor: "pointer",
@@ -2174,6 +3095,16 @@ export default function DashboardPage() {
                           </div>
                           <div style={{ display: "flex", gap: 8 }}>
                             <button onClick={() => { setCrmView("import"); setImportStep(1); setImportFile(false) }} style={{ padding: "7px 14px", fontSize: 13, background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, cursor: "pointer" }}>Importar</button>
+                            <button
+                              type="button"
+                              onClick={() => fetchClients()}
+                              title="Actualizar"
+                              style={{ padding: "7px 10px", fontSize: 13, background: "none", color: "rgba(255,255,255,0.4)", border: "none", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "color 0.15s" }}
+                              onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")}
+                              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
+                            >
+                              <RefreshCw size={16} />
+                            </button>
                             <button onClick={() => setCrmView("new")} style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Nuevo cliente +</button>
                           </div>
                         </div>
@@ -2195,8 +3126,29 @@ export default function DashboardPage() {
                         )}
 
                         <div style={{ flex: 1, overflowY: "auto" }}>
+                          {crmLoading && (
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: '32px',
+                              color: 'rgba(255,255,255,0.3)',
+                              fontSize: '13px',
+                              gap: '8px',
+                            }}>
+                              <div style={{
+                                width: '16px',
+                                height: '16px',
+                                border: '2px solid rgba(37,99,235,0.3)',
+                                borderTop: '2px solid #2563EB',
+                                borderRadius: '50%',
+                                animation: 'spin 1s linear infinite',
+                              }} />
+                              Cargando clientes...
+                            </div>
+                          )}
                           {(() => {
-                            const filtered = crmClients
+                            const filtered = realClients
                               .filter((c) => crmTempFilter === "Todos" || c.temp === crmTempFilter)
                               .filter((c) => { const q = crmSearch.toLowerCase(); return !q || c.name.toLowerCase().includes(q) || c.company.toLowerCase().includes(q) })
 
@@ -2295,7 +3247,8 @@ export default function DashboardPage() {
                     Negociación: "rgba(249,115,22,0.5)",
                     Cerrado:     "rgba(34,197,94,0.5)",
                   }
-                  const OPPS: { id: string; name: string; company: string; amount: string; seller: string; close: string; prob: number; stage: Stage; won?: boolean }[] = [
+                  type OppCard = { id: string; name: string; company: string; amount: string; seller: string; close: string; prob: number; stage: Stage; won?: boolean }
+                  const DEFAULT_OPPS: OppCard[] = [
                     { id: "o1", name: "Luis Herrera",    company: "Grupo Herrera SA",    amount: "$28.500", seller: "CA", close: "Cierre en 12 días", prob: 30,  stage: "Prospecto"   },
                     { id: "o2", name: "Valentina Cruz",  company: "Sin empresa",          amount: "$1.200",  seller: "MR", close: "Cierre en 20 días", prob: 20,  stage: "Prospecto"   },
                     { id: "o3", name: "Sofía Martínez",  company: "Retail Express",       amount: "$8.900",  seller: "JP", close: "Cierre en 7 días",  prob: 60,  stage: "Propuesta"   },
@@ -2303,12 +3256,91 @@ export default function DashboardPage() {
                     { id: "o5", name: "Martín Pérez",    company: "Constructora MP",      amount: "$9.350",  seller: "JP", close: "Cierre en 5 días",  prob: 75,  stage: "Negociación" },
                     { id: "o6", name: "María González",  company: "Distribuidora Norte",  amount: "$4.200",  seller: "MR", close: "Cerrado hoy",        prob: 100, stage: "Cerrado", won: true },
                   ]
+                  const OPPS = DEFAULT_OPPS
+                  const kanbanOpps: OppCard[] = realOpportunities.length > 0
+                    ? realOpportunities.map((o) => ({
+                        id: String(o.id),
+                        name: o.client,
+                        company: o.company,
+                        amount: `$${Number(o.amount || 0).toLocaleString()}`,
+                        seller: o.seller,
+                        close: o.stage === 'Cerrado'
+                          ? 'Cerrado hoy'
+                          : o.daysToClose === 0
+                          ? 'Cierre hoy'
+                          : `Cierre en ${o.daysToClose} días`,
+                        prob: o.probability,
+                        stage: o.stage as Stage,
+                        won: o.stage === 'Cerrado',
+                      }))
+                    : DEFAULT_OPPS
+                  const prospectOpps = kanbanOpps.filter(o => o.stage === 'Prospecto')
+                  const proposalOpps = kanbanOpps.filter(o => o.stage === 'Propuesta')
+                  const negotiationOpps = kanbanOpps.filter(o => o.stage === 'Negociación')
+                  const closedOpps = kanbanOpps.filter(o => o.stage === 'Cerrado')
+                  const totalPipeline = realOpportunities
+                    .filter(o => o.stage !== 'Cerrado')
+                    .reduce((sum, o) => sum + (o.amount || 0), 0)
+                  const activeOpps = realOpportunities
+                    .filter(o => o.stage !== 'Cerrado').length
+                  const headerActiveOpps = realOpportunities.length > 0
+                    ? activeOpps
+                    : kanbanOpps.filter(o => o.stage !== 'Cerrado').length
+                  const headerTotalPipeline = realOpportunities.length > 0
+                    ? totalPipeline
+                    : kanbanOpps
+                      .filter(o => o.stage !== 'Cerrado')
+                      .reduce((sum, o) => sum + parseFloat(o.amount.replace(/[$.,]/g, "")), 0)
                   const stages: Stage[] = ["Prospecto", "Propuesta", "Negociación", "Cerrado"]
-                  const byStage = (s: Stage) => OPPS.filter(o => o.stage === s)
+                  const byStage = (s: Stage) => kanbanOpps.filter(o => o.stage === s)
                   const stageTotal = (s: Stage) => {
                     const sum = byStage(s).reduce((acc, o) => acc + parseFloat(o.amount.replace(/[$.,]/g, "")), 0)
                     return "$" + sum.toLocaleString("es-AR")
                   }
+
+                  const forecastOpps = realOpportunities.length > 0
+                    ? realOpportunities
+                    : DEFAULT_OPPS.map((o) => ({
+                        id: o.id,
+                        client: o.name,
+                        company: o.company,
+                        amount: parseFloat(o.amount.replace(/[$.,]/g, "")),
+                        stage: o.stage,
+                        probability: o.prob,
+                        daysToClose: 0,
+                        seller: o.seller,
+                      }))
+                  const weightedOppValue = (o: { amount?: number; probability?: number }) =>
+                    (o.amount || 0) * ((o.probability || 0) / 100)
+                  const activeForecastOpps = forecastOpps.filter(
+                    (o) => o.stage !== 'Cerrado' && o.stage !== 'Perdido'
+                  )
+                  const closedForecastOpps = forecastOpps.filter(
+                    (o) => o.stage === 'Cerrado'
+                  )
+                  const weightedForecast = activeForecastOpps.reduce(
+                    (sum, o) => sum + weightedOppValue(o), 0
+                  )
+                  const bestScenario = activeForecastOpps.reduce(
+                    (sum, o) => sum + (o.amount || 0), 0
+                  )
+                  const worstScenario = forecastOpps
+                    .filter((o) => o.stage === 'Negociación')
+                    .reduce((sum, o) => sum + weightedOppValue(o), 0)
+                  const closedWonAmount = closedForecastOpps.reduce(
+                    (sum, o) => sum + (o.amount || 0), 0
+                  )
+                  const forecastProgress = (weightedForecast + closedWonAmount) > 0
+                    ? Math.min(100, Math.round(
+                        (closedWonAmount / (weightedForecast + closedWonAmount)) * 100
+                      ))
+                    : 0
+                  const stageWeightedForecast = (stage: Stage) =>
+                    forecastOpps
+                      .filter((o) => o.stage === stage)
+                      .reduce((sum, o) => sum + weightedOppValue(o), 0)
+                  const fmtForecast = (n: number) =>
+                    `$${Math.round(n).toLocaleString()}`
 
                   const STAGE_BADGE_COLOR: Record<string, string> = {
                     Prospecto:   "rgba(99,102,241,0.6)",
@@ -2678,7 +3710,7 @@ export default function DashboardPage() {
                         {/* Bottom bar */}
                         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "#0D0D14", borderTop: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <button onClick={() => setVentasView("pipeline")} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 13, cursor: "pointer", transition: "color 0.15s" }} onMouseEnter={e => (e.currentTarget.style.color = "white")} onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>Cancelar</button>
-                          <button onClick={() => setVentasView("pipeline")} style={{ background: "#2563EB", color: "white", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>Crear oportunidad</button>
+                          <button onClick={saveNewOpportunity} style={{ background: "#2563EB", color: "white", border: "none", borderRadius: 8, padding: "9px 20px", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>Crear oportunidad</button>
                         </div>
                       </div>
                     )
@@ -2745,41 +3777,82 @@ export default function DashboardPage() {
                       {/* Forecast view */}
                       {ventasNavTab === "Pronóstico" && (
                         <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+                          {ventasLoading && (
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: '32px',
+                              color: 'rgba(255,255,255,0.3)',
+                              fontSize: '13px',
+                              gap: '8px',
+                            }}>
+                              <div style={{
+                                width: '16px',
+                                height: '16px',
+                                border: '2px solid rgba(37,99,235,0.3)',
+                                borderTop: '2px solid #2563EB',
+                                borderRadius: '50%',
+                                animation: 'spin 1s linear infinite',
+                              }} />
+                              Cargando pronóstico...
+                            </div>
+                          )}
+
                           {/* Summary cards */}
                           <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
                             <div style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
                               <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Pronóstico este mes</div>
-                              <div style={{ color: "white", fontSize: 20, fontWeight: 600, marginBottom: 8 }}>$56.350</div>
+                              <div style={{ color: "white", fontSize: 20, fontWeight: 600, marginBottom: 8 }}>{fmtForecast(weightedForecast)}</div>
                               <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
-                                <div style={{ height: "100%", width: "68%", background: "rgba(37,99,235,0.6)", borderRadius: 2 }} />
+                                <div style={{ height: "100%", width: `${forecastProgress}%`, background: "rgba(37,99,235,0.6)", borderRadius: 2 }} />
                               </div>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginTop: 6 }}>68% alcanzado</div>
+                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginTop: 6 }}>{forecastProgress}% alcanzado</div>
                             </div>
                             <div style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
                               <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Mejor escenario</div>
-                              <div style={{ color: "#22c55e", fontSize: 20, fontWeight: 600, marginBottom: 6 }}>$72.800</div>
+                              <div style={{ color: "#22c55e", fontSize: 20, fontWeight: 600, marginBottom: 6 }}>{fmtForecast(bestScenario)}</div>
                               <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Si cierran todas las oportunidades activas</div>
                             </div>
                             <div style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
                               <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Peor escenario</div>
-                              <div style={{ color: "#ef4444", fontSize: 20, fontWeight: 600, marginBottom: 6 }}>$31.200</div>
+                              <div style={{ color: "#ef4444", fontSize: 20, fontWeight: 600, marginBottom: 6 }}>{fmtForecast(worstScenario)}</div>
                               <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Solo oportunidades en negociación</div>
                             </div>
+                          </div>
+
+                          {/* Weighted forecast by stage */}
+                          <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
+                            {([
+                              { label: "Prospecto", value: stageWeightedForecast("Prospecto"), color: STAGE_COLOR.Prospecto },
+                              { label: "Propuesta", value: stageWeightedForecast("Propuesta"), color: STAGE_COLOR.Propuesta },
+                              { label: "Negociación", value: stageWeightedForecast("Negociación"), color: STAGE_COLOR["Negociación"] },
+                              { label: "Cerrado", value: closedWonAmount, color: STAGE_COLOR.Cerrado },
+                            ] as const).map(({ label, value, color }) => (
+                              <div key={label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6, borderTop: `2px solid ${color}`, paddingTop: 8 }}>{label}</div>
+                                <div style={{ color: "white", fontSize: 16, fontWeight: 500 }}>{fmtForecast(value)}</div>
+                                <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, marginTop: 4 }}>
+                                  {label === "Cerrado" ? "Ventas cerradas" : "Monto × probabilidad"}
+                                </div>
+                              </div>
+                            ))}
                           </div>
 
                           {/* Monthly chart */}
                           <div style={{ marginBottom: 24 }}>
                             <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }}>Evolución mensual</div>
                             {(() => {
+                              const forecastMonthK = Math.round(weightedForecast / 1000)
                               const months = [
                                 { label: "Ene", real: 28, pron: 30, forecast: false },
                                 { label: "Feb", real: 35, pron: 32, forecast: false },
                                 { label: "Mar", real: 31, pron: 35, forecast: false },
                                 { label: "Abr", real: 42, pron: 38, forecast: false },
                                 { label: "May", real: 38, pron: 40, forecast: false },
-                                { label: "Jun", real: 0,  pron: 56, forecast: true  },
+                                { label: "Jun", real: Math.round(closedWonAmount / 1000), pron: forecastMonthK, forecast: true },
                               ]
-                              const maxVal = 60
+                              const maxVal = Math.max(60, ...months.map((m) => Math.max(m.real, m.pron)))
                               const H = 120
                               return (
                                 <>
@@ -3482,7 +4555,7 @@ export default function DashboardPage() {
                         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                           <div>
                             <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Pipeline</div>
-                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3 }}>4 oportunidades activas · $66.450 en juego</div>
+                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3 }}>{`${headerActiveOpps} oportunidades activas · $${headerTotalPipeline.toLocaleString()} en juego`}</div>
                           </div>
                           <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
                             {(["Kanban", "Embudo", "Ranking"] as const).map((m) => (
@@ -3495,8 +4568,42 @@ export default function DashboardPage() {
                             ))}
                           </div>
                         </div>
-                        <button onClick={() => setVentasView("new")} style={{ background: "#2563EB", color: "white", border: "none", borderRadius: 8, padding: "7px 16px", fontSize: 13, cursor: "pointer" }}>Nueva oportunidad +</button>
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <button
+                            type="button"
+                            onClick={() => fetchOpportunities()}
+                            title="Actualizar"
+                            style={{ padding: "7px 10px", fontSize: 13, background: "none", color: "rgba(255,255,255,0.4)", border: "none", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "color 0.15s" }}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
+                          >
+                            <RefreshCw size={16} />
+                          </button>
+                          <button onClick={() => setVentasView("new")} style={{ background: "#2563EB", color: "white", border: "none", borderRadius: 8, padding: "7px 16px", fontSize: 13, cursor: "pointer" }}>Nueva oportunidad +</button>
+                        </div>
                       </div>
+
+                      {ventasLoading && (
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '32px',
+                          color: 'rgba(255,255,255,0.3)',
+                          fontSize: '13px',
+                          gap: '8px',
+                        }}>
+                          <div style={{
+                            width: '16px',
+                            height: '16px',
+                            border: '2px solid rgba(37,99,235,0.3)',
+                            borderTop: '2px solid #2563EB',
+                            borderRadius: '50%',
+                            animation: 'spin 1s linear infinite',
+                          }} />
+                          Cargando oportunidades...
+                        </div>
+                      )}
 
                       {/* Stats row */}
                       <div style={{ display: "flex", gap: 12, marginBottom: 24, flexShrink: 0 }}>
@@ -3753,27 +4860,71 @@ export default function DashboardPage() {
               ) : activeNode.id === 3 ? (
                 // ── MARKETING MODULE ──
                 (() => {
-                  type CampStatus = "Activa" | "Pausada" | "Finalizada"
-                  type CampChannel = "Email" | "Redes sociales" | "Google Ads" | "WhatsApp" | "Evento"
-                  const CAMPAIGNS: { id: number; name: string; channel: CampChannel; date: string; status: CampStatus; roi: string; roiDir: "up" | "down" | "flat"; budget: string }[] = [
-                    { id: 1, name: "Campaña Primavera 2026",    channel: "Email",           date: "Mayo 2026",  status: "Activa",    roi: "↑ 340%", roiDir: "up",   budget: "$2.400" },
-                    { id: 2, name: "Remarketing clientes fríos",channel: "Redes sociales",  date: "Mayo 2026",  status: "Activa",    roi: "↑ 180%", roiDir: "up",   budget: "$800"   },
-                    { id: 3, name: "Google Ads — Producto X",   channel: "Google Ads",      date: "Abril 2026", status: "Activa",    roi: "↑ 95%",  roiDir: "up",   budget: "$3.200" },
-                    { id: 4, name: "Newsletter mensual",        channel: "Email",           date: "Abril 2026", status: "Finalizada",roi: "↑ 220%", roiDir: "up",   budget: "$400"   },
-                    { id: 5, name: "Lanzamiento temporada",     channel: "Evento",          date: "Marzo 2026", status: "Finalizada",roi: "→",      roiDir: "flat", budget: "$5.000" },
-                    { id: 6, name: "WhatsApp broadcast",        channel: "WhatsApp",        date: "Marzo 2026", status: "Pausada",   roi: "↓ 20%",  roiDir: "down", budget: "$600"   },
+                  type CampStatus = "Activa" | "Pausada" | "Finalizada" | "Borrador"
+                  type CampChannel = "Email" | "Redes sociales" | "Google Ads" | "WhatsApp" | "Evento" | "Otro"
+                  const formatCampDate = (startDate: string | null) => {
+                    if (!startDate) return 'Sin fecha'
+                    const d = new Date(startDate)
+                    const months = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
+                    return months[d.getMonth()] + " " + d.getFullYear()
+                  }
+                  const formatRoi = (roi: number) => {
+                    if (roi > 0) return { roi: `↑ ${Math.round(roi)}%`, roiDir: "up" as const }
+                    if (roi < 0) return { roi: `↓ ${Math.abs(Math.round(roi))}%`, roiDir: "down" as const }
+                    return { roi: "→", roiDir: "flat" as const }
+                  }
+                  const mapCampaign = (c: typeof realCampaigns[0]) => {
+                    const roiVal = Number(c.metrics?.roi) || 0
+                    const { roi, roiDir } = formatRoi(roiVal)
+                    return {
+                      id: c.id,
+                      name: c.name,
+                      channel: c.channel as CampChannel,
+                      date: formatCampDate(c.startDate),
+                      status: c.status as CampStatus,
+                      roi,
+                      roiDir,
+                      budget: c.displayBudget,
+                    }
+                  }
+                  const CAMPAIGNS: { id: string; name: string; channel: CampChannel; date: string; status: CampStatus; roi: string; roiDir: "up" | "down" | "flat"; budget: string }[] = [
+                    ...mktLocalCampaigns,
+                    ...realCampaigns.map(mapCampaign),
                   ]
+                  const activeCampaignCount = realCampaigns
+                    .filter(c => c.status === 'Activa').length
+                  const avgROI = realCampaigns.length > 0
+                    ? realCampaigns.reduce((sum, c) => {
+                        const roi = c.metrics?.roi || 0
+                        return sum + Number(roi)
+                      }, 0) / realCampaigns.length
+                    : 0
+                  const bestChannel = realCampaigns.length > 0
+                    ? [...realCampaigns].sort((a, b) =>
+                        (Number(b.metrics?.roi) || 0) -
+                        (Number(a.metrics?.roi) || 0)
+                      )[0]?.channel || 'Email'
+                    : 'Email'
+                  const avgCostPerClient = realCampaigns.length > 0
+                    ? realCampaigns.reduce((sum, c) =>
+                        sum + (Number(c.metrics?.cost_per_client) || 0), 0
+                      ) / realCampaigns.length
+                    : 0
+                  const researchInProgress = realResearch
+                    .filter(r => r.status === 'En proceso').length
                   const CHANNEL_ICON: Record<CampChannel, { bg: string; color: string; icon: React.ReactNode }> = {
                     "Email":          { bg: "rgba(37,99,235,0.2)",   color: "#2563EB", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> },
                     "Redes sociales": { bg: "rgba(168,85,247,0.2)",  color: "#a855f7", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> },
                     "Google Ads":     { bg: "rgba(234,179,8,0.2)",   color: "#eab308", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> },
                     "WhatsApp":       { bg: "rgba(34,197,94,0.2)",   color: "#22c55e", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
                     "Evento":         { bg: "rgba(249,115,22,0.2)",  color: "#f97316", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> },
+                    "Otro":           { bg: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.4)", icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg> },
                   }
                   const STATUS_STYLE: Record<CampStatus, { bg: string; color: string; border: string }> = {
                     Activa:     { bg: "rgba(34,197,94,0.1)",  color: "#22c55e", border: "rgba(34,197,94,0.2)"  },
                     Pausada:    { bg: "rgba(234,179,8,0.1)",  color: "#eab308", border: "rgba(234,179,8,0.2)"  },
                     Finalizada: { bg: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.3)", border: "rgba(255,255,255,0.1)" },
+                    Borrador:   { bg: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.3)", border: "rgba(255,255,255,0.1)" },
                   }
                   const ROI_COLOR: Record<string, string> = { up: "#22c55e", down: "#ef4444", flat: "rgba(255,255,255,0.4)" }
                   const filterLabel: React.CSSProperties = { color: "rgba(255,255,255,0.3)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
@@ -3800,25 +4951,7 @@ export default function DashboardPage() {
                     const scoreDesc: Record<number, string> = { 0: "", 4: "Asunto muy corto, sé más específico", 6: "Asunto largo, puede truncarse", 8: "Buen asunto, claro y directo", 9: "Excelente asunto" }
                     const toggleSeg = (s: string) => setNewCampSegments(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s])
                     const handleLaunch = () => {
-                      const monthNames = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
-                      const now = new Date()
-                      const monthLabel = monthNames[now.getMonth()] + " " + now.getFullYear()
-                      const newEntry = {
-                        id: Date.now(),
-                        name: newCampName || "Nueva campaña",
-                        channel: (newCampChannel || "Email") as CampChannel,
-                        date: monthLabel,
-                        status: "Activa" as CampStatus,
-                        roi: "→",
-                        roiDir: "flat" as "flat",
-                        budget: newCampBudget ? "$" + newCampBudget : "$0",
-                      }
-                      CAMPAIGNS.unshift(newEntry)
-                      setNewCampName(""); setNewCampChannel(null); setNewCampObjective("Generar nuevas ventas")
-                      setNewCampSegments([]); setNewCampBudget(""); setNewCampStart(""); setNewCampEnd("")
-                      setNewCampOwner("JP"); setNewCampSubject(""); setNewCampMessage(""); setNewCampCTA("")
-                      setNewCampTargetOpen(""); setNewCampTargetClick(""); setNewCampTargetConv("")
-                      setMktView("campaigns")
+                      handleSaveNewCampaign()
                     }
                     return (
                       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
@@ -4222,10 +5355,22 @@ export default function DashboardPage() {
                         {(["Campañas", "Insights", "Investigaciones"] as const).map(nav => (
                           <button key={nav} onClick={() => setMktNavTab(nav)} style={{ padding: "12px 16px", fontSize: 13, background: "none", border: "none", cursor: "pointer", color: mktNavTab === nav ? "white" : "rgba(255,255,255,0.35)", borderBottom: `2px solid ${mktNavTab === nav ? "#2563EB" : "transparent"}`, transition: "color 0.15s, border-color 0.15s", marginBottom: -1 }}>{nav}</button>
                         ))}
-                        <button onClick={() => { setShowExportModal(true); setExportState("idle") }} style={{ position: "absolute" as const, right: 24, display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", fontSize: 12, background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                          Exportar reporte
-                        </button>
+                        <div style={{ position: "absolute" as const, right: 24, display: "flex", alignItems: "center", gap: 8 }}>
+                          <button
+                            type="button"
+                            onClick={() => { fetchCampaigns(); fetchResearch() }}
+                            title="Actualizar"
+                            style={{ padding: "7px 10px", fontSize: 13, background: "none", color: "rgba(255,255,255,0.4)", border: "none", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "color 0.15s" }}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
+                          >
+                            <RefreshCw size={16} />
+                          </button>
+                          <button onClick={() => { setShowExportModal(true); setExportState("idle") }} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", fontSize: 12, background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Exportar reporte
+                          </button>
+                        </div>
 
                         {/* Export modal */}
                         {showExportModal && (
@@ -4357,13 +5502,31 @@ export default function DashboardPage() {
                       {mktNavTab === "Investigaciones" && (() => {
                         type ResType = "Análisis de mercado" | "Estudio de competencia" | "Encuesta" | "Focus group" | "Tendencias"
                         type ResStatus = "En proceso" | "Finalizado" | "Archivado"
-                        const RESEARCH: { title: string; type: ResType; author: string; date: string; desc: string; tags: string[]; status: ResStatus; files: number; ai: boolean }[] = [
-                          { title: "Análisis de mercado Q2 2026",          type: "Análisis de mercado",    author: "JP",                 date: "15 Mayo 2026",  desc: "Relevamiento completo del mercado objetivo para el segundo trimestre. Incluye análisis de demanda y oportunidades.",                tags: ["Q2 2026","Mercado","Demanda"],   status: "En proceso",  files: 3, ai: true  },
-                          { title: "Estudio de competencia — Competidores directos", type: "Estudio de competencia", author: "CA",          date: "10 Mayo 2026",  desc: "Mapeo de competidores directos, precios, estrategias y posicionamiento actual.",                                                    tags: ["Competencia","Precios"],         status: "Finalizado",  files: 5, ai: true  },
-                          { title: "Encuesta satisfacción clientes 2026",   type: "Encuesta",               author: "MR",                 date: "5 Mayo 2026",   desc: "Encuesta enviada a 284 clientes activos sobre satisfacción del servicio.",                                                           tags: ["Satisfacción","Clientes"],       status: "Finalizado",  files: 2, ai: true  },
-                          { title: "Tendencias del sector primer semestre", type: "Tendencias",             author: "Consultor externo",  date: "1 Abril 2026",  desc: "Informe de tendencias del sector para planificación estratégica del primer semestre.",                                               tags: ["Tendencias","Estrategia"],       status: "Archivado",   files: 1, ai: false },
-                          { title: "Focus group — Nuevo producto X",        type: "Focus group",            author: "JP",                 date: "20 Marzo 2026", desc: "Sesión de focus group con 12 participantes sobre percepción del nuevo producto.",                                                      tags: ["Producto X","Focus group"],      status: "Finalizado",  files: 4, ai: true  },
-                        ]
+                        const mapResearchType = (type: string): ResType => {
+                          const map: Record<string, ResType> = {
+                            market_analysis: 'Análisis de mercado',
+                            competition: 'Estudio de competencia',
+                            survey: 'Encuesta',
+                            focus_group: 'Focus group',
+                            trends: 'Tendencias',
+                            other: 'Análisis de mercado',
+                          }
+                          return map[type] || 'Análisis de mercado'
+                        }
+                        const RESEARCH: { title: string; type: ResType; author: string; date: string; desc: string; tags: string[]; status: ResStatus; files: number; ai: boolean }[] =
+                          realResearch.map(r => ({
+                            title: r.title,
+                            type: mapResearchType(r.type),
+                            author: 'JP',
+                            date: r.created_at
+                              ? new Date(r.created_at).toLocaleDateString('es-UY', { day: 'numeric', month: 'long', year: 'numeric' })
+                              : '—',
+                            desc: r.summary || '',
+                            tags: r.tags,
+                            status: r.status as ResStatus,
+                            files: Array.isArray(r.files) ? r.files.length : 0,
+                            ai: r.ai_analyzed,
+                          }))
                         const TYPE_ICON: Record<ResType, { bg: string; color: string; icon: React.ReactNode }> = {
                           "Análisis de mercado":    { bg: "rgba(37,99,235,0.2)",  color: "#2563EB", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> },
                           "Estudio de competencia": { bg: "rgba(239,68,68,0.2)",  color: "#ef4444", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> },
@@ -4631,10 +5794,32 @@ export default function DashboardPage() {
 
                             {/* Right section */}
                             <div style={{ flex: 1, padding: "20px 24px", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                              {marketingLoading && (
+                                <div style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  padding: '32px',
+                                  color: 'rgba(255,255,255,0.3)',
+                                  fontSize: '13px',
+                                  gap: '8px',
+                                }}>
+                                  <div style={{
+                                    width: '16px',
+                                    height: '16px',
+                                    border: '2px solid rgba(37,99,235,0.3)',
+                                    borderTop: '2px solid #2563EB',
+                                    borderRadius: '50%',
+                                    animation: 'spin 1s linear infinite',
+                                  }} />
+                                  Cargando investigaciones...
+                                </div>
+                              )}
+
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexShrink: 0 }}>
                                 <div>
                                   <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Investigaciones</div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>5 investigaciones · 2 en proceso</div>
+                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>{`${realResearch.length} investigaciones · ${researchInProgress} en proceso`}</div>
                                 </div>
                                 <button onClick={() => setMktView("newresearch")} style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Nueva investigación +</button>
                               </div>
@@ -4687,12 +5872,35 @@ export default function DashboardPage() {
 
                       {mktNavTab === "Insights" && (
                         <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+                          {marketingLoading && (
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: '32px',
+                              color: 'rgba(255,255,255,0.3)',
+                              fontSize: '13px',
+                              gap: '8px',
+                              marginBottom: 16,
+                            }}>
+                              <div style={{
+                                width: '16px',
+                                height: '16px',
+                                border: '2px solid rgba(37,99,235,0.3)',
+                                borderTop: '2px solid #2563EB',
+                                borderRadius: '50%',
+                                animation: 'spin 1s linear infinite',
+                              }} />
+                              Cargando insights...
+                            </div>
+                          )}
+
                           {/* Top summary cards */}
                           <div style={{ display: "flex", gap: 14, marginBottom: 24 }}>
                             {[
-                              { label: "ROI promedio campañas", value: "209%", valueColor: "#22c55e", sub: "↑ 34% vs trimestre anterior", subColor: "#22c55e" },
-                              { label: "Canal más efectivo",    value: "Email", valueColor: "white",   sub: "68% apertura promedio",       subColor: "rgba(255,255,255,0.35)" },
-                              { label: "Costo por cliente",     value: "$195",  valueColor: "white",   sub: "↓ $40 vs mes anterior",       subColor: "#22c55e" },
+                              { label: "ROI promedio campañas", value: `${Math.round(avgROI)}%`, valueColor: "#22c55e", sub: "↑ 34% vs trimestre anterior", subColor: "#22c55e" },
+                              { label: "Canal más efectivo",    value: bestChannel, valueColor: "white",   sub: "68% apertura promedio",       subColor: "rgba(255,255,255,0.35)" },
+                              { label: "Costo por cliente",     value: `$${Math.round(avgCostPerClient).toLocaleString()}`,  valueColor: "white",   sub: "↓ $40 vs mes anterior",       subColor: "#22c55e" },
                             ].map(c => (
                               <div key={c.label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px 16px" }}>
                                 <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 6 }}>{c.label}</div>
@@ -5085,10 +6293,32 @@ export default function DashboardPage() {
 
                           {/* Right section */}
                           <div style={{ flex: 1, padding: "20px 24px", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                            {marketingLoading && (
+                              <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: '32px',
+                                color: 'rgba(255,255,255,0.3)',
+                                fontSize: '13px',
+                                gap: '8px',
+                              }}>
+                                <div style={{
+                                  width: '16px',
+                                  height: '16px',
+                                  border: '2px solid rgba(37,99,235,0.3)',
+                                  borderTop: '2px solid #2563EB',
+                                  borderRadius: '50%',
+                                  animation: 'spin 1s linear infinite',
+                                }} />
+                                Cargando campañas...
+                              </div>
+                            )}
+
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexShrink: 0 }}>
                               <div>
                                 <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Campañas</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>6 campañas · 3 activas</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>{`${realCampaigns.length} campañas · ${activeCampaignCount} activas`}</div>
                               </div>
                               <button onClick={() => setMktView("new")} style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Nueva campaña +</button>
                             </div>
@@ -5130,16 +6360,42 @@ export default function DashboardPage() {
                 // ── RRHH MODULE ──
                 (() => {
                   type EmpStatus = "Activo" | "Licencia" | "Baja"
-                  const EMPLOYEES: { id: number; name: string; initials: string; role: string; area: string; status: EmpStatus; score: number; alert: string; seniority: string }[] = [
-                    { id: 1, name: "Juan Pérez",      initials: "JP", role: "Vendedor Senior",      area: "Ventas",          status: "Activo",   score: 4.8, alert: "",                seniority: "3 años"    },
-                    { id: 2, name: "Carlos Acosta",   initials: "CA", role: "Vendedor",             area: "Ventas",          status: "Activo",   score: 3.9, alert: "Sobrecargado",     seniority: "1 año"     },
-                    { id: 3, name: "María Ruiz",      initials: "MR", role: "Vendedora",            area: "Ventas",          status: "Activo",   score: 4.2, alert: "",                seniority: "2 años"    },
-                    { id: 4, name: "Ana González",    initials: "AG", role: "Analista Marketing",   area: "Marketing",       status: "Activo",   score: 4.5, alert: "",                seniority: "2 años"    },
-                    { id: 5, name: "Pedro Martínez",  initials: "PM", role: "Administrativo",       area: "Administración",  status: "Licencia", score: 3.8, alert: "",                seniority: "4 años"    },
-                    { id: 6, name: "Laura Sánchez",   initials: "LS", role: "Coordinadora Ops",     area: "Operaciones",     status: "Activo",   score: 4.1, alert: "Riesgo renuncia", seniority: "3 años"    },
-                    { id: 7, name: "Diego Torres",    initials: "DT", role: "Asistente Admin",      area: "Administración",  status: "Activo",   score: 3.2, alert: "Bajo desempeño",  seniority: "8 meses"   },
-                    { id: 8, name: "Sofía Reyes",     initials: "SR", role: "Analista Operaciones", area: "Operaciones",     status: "Activo",   score: 4.6, alert: "",                seniority: "1 año"     },
-                  ]
+                  const getEmpAlert = (e: {
+                    ai_churn_risk?: string | null
+                    performance?: number
+                  }) => {
+                    if (e.ai_churn_risk === 'high') return 'Riesgo renuncia'
+                    if ((e.performance || 0) > 0 && (e.performance || 0) < 3.5)
+                      return 'Bajo desempeño'
+                    return ''
+                  }
+                  const toScore = (p: number) =>
+                    p > 5 ? p / 20 : p
+                  const EMPLOYEES: { id: string; name: string; initials: string; role: string; area: string; status: EmpStatus; score: number; alert: string; seniority: string }[] =
+                    realEmployees.map(emp => ({
+                      id: emp.id,
+                      name: emp.name,
+                      initials: emp.avatar,
+                      role: emp.role,
+                      area: emp.area,
+                      status: emp.status as EmpStatus,
+                      score: toScore(Number(emp.performance) || 0),
+                      alert: getEmpAlert(emp),
+                      seniority: emp.seniority,
+                    }))
+                  const employeesAtRisk = realEmployees.filter(e =>
+                    e.ai_churn_risk === 'high' ||
+                    e.status !== 'Activo'
+                  )
+                  const onLeaveCount = realEmployees
+                    .filter(e => e.status === 'Licencia').length
+                  const totalGrossSalary = realEmployees
+                    .reduce((sum, e) => sum + e.salary, 0)
+                  const totalSocialCharges =
+                    totalGrossSalary * 0.30
+                  const totalCost =
+                    totalGrossSalary + totalSocialCharges
+                  const totalNet = totalGrossSalary * 0.75
                   const STATUS_STYLE: Record<EmpStatus, { bg: string; color: string; border: string }> = {
                     Activo:   { bg: "rgba(34,197,94,0.1)",    color: "#22c55e", border: "rgba(34,197,94,0.2)"  },
                     Licencia: { bg: "rgba(234,179,8,0.1)",    color: "#eab308", border: "rgba(234,179,8,0.2)"  },
@@ -5168,7 +6424,6 @@ export default function DashboardPage() {
                       if (rrhhAlertFilter === "Bajo desempeño") return e.alert === "Bajo desempeño"
                       return true
                     })
-                  const alertCount = EMPLOYEES.filter(e => e.alert).length
 
                   // ── EMPLOYEE DETAIL VIEW ──
                   if (rrhhView === "detail" && rrhhSelectedEmp) {
@@ -5180,25 +6435,65 @@ export default function DashboardPage() {
                     const aiCard: React.CSSProperties = { background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }
                     const aiCardLabel: React.CSSProperties = { color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
                     const divider = <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "16px 0" }} />
-                    const EMP_INFO: Record<number, { email: string; phone: string; salary: string; joinDate: string; goalAmt: string; goalTotal: string; goalPct: number; vacLeft: number; vacUsed: number }> = {
-                      1: { email: "jp@empresa.com",  phone: "+54 11 0000-0000", salary: "$280.000", joinDate: "12 Mayo 2023",    goalAmt: "$48.750", goalTotal: "$50.000", goalPct: 97, vacLeft: 12, vacUsed: 8  },
-                      2: { email: "ca@empresa.com",  phone: "+54 11 0001-0001", salary: "$220.000", joinDate: "3 Enero 2025",    goalAmt: "$28.200", goalTotal: "$50.000", goalPct: 56, vacLeft: 5,  vacUsed: 3  },
-                      3: { email: "mr@empresa.com",  phone: "+54 11 0002-0002", salary: "$240.000", joinDate: "15 Marzo 2024",   goalAmt: "$37.500", goalTotal: "$50.000", goalPct: 75, vacLeft: 8,  vacUsed: 5  },
-                      4: { email: "ag@empresa.com",  phone: "+54 11 0003-0003", salary: "$260.000", joinDate: "20 Agosto 2024",  goalAmt: "—",       goalTotal: "—",       goalPct: 0,  vacLeft: 10, vacUsed: 4  },
-                      5: { email: "pm@empresa.com",  phone: "+54 11 0004-0004", salary: "$200.000", joinDate: "1 Febrero 2022",  goalAmt: "—",       goalTotal: "—",       goalPct: 0,  vacLeft: 0,  vacUsed: 20 },
-                      6: { email: "ls@empresa.com",  phone: "+54 11 0005-0005", salary: "$270.000", joinDate: "10 Junio 2023",   goalAmt: "—",       goalTotal: "—",       goalPct: 0,  vacLeft: 9,  vacUsed: 5  },
-                      7: { email: "dt@empresa.com",  phone: "+54 11 0006-0006", salary: "$180.000", joinDate: "15 Septiembre 2025", goalAmt: "—",   goalTotal: "—",       goalPct: 0,  vacLeft: 2,  vacUsed: 0  },
-                      8: { email: "sr@empresa.com",  phone: "+54 11 0007-0007", salary: "$245.000", joinDate: "5 Mayo 2025",     goalAmt: "—",       goalTotal: "—",       goalPct: 0,  vacLeft: 11, vacUsed: 3  },
+                    const realEmp = realEmployees.find(e => e.id === emp.id)
+                    const info = realEmp ? {
+                      email: '—',
+                      phone: '—',
+                      salary: `$${realEmp.salary.toLocaleString()}`,
+                      joinDate: realEmp.hireDate
+                        ? new Date(realEmp.hireDate).toLocaleDateString('es-UY', { day: 'numeric', month: 'long', year: 'numeric' })
+                        : '—',
+                      goalAmt: '—',
+                      goalTotal: '—',
+                      goalPct: 0,
+                      vacLeft: 0,
+                      vacUsed: 0,
+                    } : {
+                      email: '—',
+                      phone: '—',
+                      salary: '—',
+                      joinDate: '—',
+                      goalAmt: '—',
+                      goalTotal: '—',
+                      goalPct: 0,
+                      vacLeft: 0,
+                      vacUsed: 0,
                     }
-                    const info = EMP_INFO[emp.id] ?? EMP_INFO[1]
-                    const TASKS = [
-                      { id: 1, name: "Llamar a Carlos Mendoza",                  due: "Vence hoy",           priority: "Alta",  status: "Pendiente",  by: "Dueño", cat: "Ventas"        },
-                      { id: 2, name: "Preparar propuesta Tech Solutions",        due: "Vence mañana",        priority: "Alta",  status: "En proceso", by: "Dueño", cat: "Ventas"        },
-                      { id: 3, name: "Actualizar CRM con visitas",               due: "Vence viernes",       priority: "Media", status: "Pendiente",  by: "JP",    cat: "Admin"         },
-                      { id: 4, name: "Reunión con equipo de ventas",             due: "Completada ayer",     priority: "Media", status: "Completada", by: "Dueño", cat: "Admin"         },
-                      { id: 5, name: "Seguimiento Retail Express",               due: "Vence próx semana",   priority: "Baja",  status: "Pendiente",  by: "JP",    cat: "Ventas"        },
-                      { id: 6, name: "Capacitación negociación avanzada",        due: "Vence en 2 semanas",  priority: "Media", status: "En proceso", by: "Dueño", cat: "Capacitación"  },
-                    ]
+                    const employeeTasks = realTasks.filter(t =>
+                      t.employee_id === emp.id
+                    )
+                    const formatTaskDue = (dueDate: string | null) => {
+                      if (!dueDate) return 'Sin fecha'
+                      const d = new Date(dueDate)
+                      const today = new Date()
+                      today.setHours(0, 0, 0, 0)
+                      const due = new Date(d)
+                      due.setHours(0, 0, 0, 0)
+                      const diff = Math.round(
+                        (due.getTime() - today.getTime()) / 86400000
+                      )
+                      if (diff === 0) return 'Vence hoy'
+                      if (diff === 1) return 'Vence mañana'
+                      if (diff === -1) return 'Venció ayer'
+                      if (diff < 0) return `Venció hace ${Math.abs(diff)} días`
+                      if (diff <= 7) return 'Vence esta semana'
+                      return d.toLocaleDateString('es-UY', { day: 'numeric', month: 'long' })
+                    }
+                    const TASKS = employeeTasks.map(t => ({
+                      id: t.id,
+                      name: t.title,
+                      due: formatTaskDue(t.dueDate),
+                      priority: t.priority,
+                      status: t.status,
+                      by: 'Dueño',
+                      cat: t.category,
+                    }))
+                    const pendingTasks = employeeTasks
+                      .filter(t => t.status === 'Pendiente').length
+                    const inProgressTasks = employeeTasks
+                      .filter(t => t.status === 'En proceso').length
+                    const completedTasks = employeeTasks
+                      .filter(t => t.status === 'Completada').length
                     const filteredTasks = rrhhTaskFilter === "Todas" ? TASKS
                       : rrhhTaskFilter === "Hoy"          ? TASKS.filter(t => t.due.toLowerCase().includes("hoy"))
                       : rrhhTaskFilter === "Esta semana"  ? TASKS.filter(t => t.due.toLowerCase().includes("semana") || t.due.toLowerCase().includes("viernes") || t.due.toLowerCase().includes("mañana") || t.due.toLowerCase().includes("hoy"))
@@ -5208,9 +6503,35 @@ export default function DashboardPage() {
                       : TASKS
                     const prioColor = (p: string) => p === "Alta" ? "#ef4444" : p === "Media" ? "#eab308" : "#22c55e"
                     const catColor = "#2563EB"
-                    const taskCount = (s: string) => TASKS.filter(t => t.status === s).length
+                    const taskCount = (s: string) => s === 'Pendiente' ? pendingTasks
+                      : s === 'En proceso' ? inProgressTasks
+                      : completedTasks
                     return (
                       <div style={{ flex: 1, display: "flex", gap: 24, padding: "24px", overflow: "hidden" }}>
+                        {rrhhLoading && (
+                          <div style={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: 'rgba(13,13,20,0.6)',
+                            zIndex: 10,
+                            color: 'rgba(255,255,255,0.3)',
+                            fontSize: '13px',
+                            gap: '8px',
+                          }}>
+                            <div style={{
+                              width: '16px',
+                              height: '16px',
+                              border: '2px solid rgba(37,99,235,0.3)',
+                              borderTop: '2px solid #2563EB',
+                              borderRadius: '50%',
+                              animation: 'spin 1s linear infinite',
+                            }} />
+                            Cargando empleado...
+                          </div>
+                        )}
                         {/* LEFT COLUMN */}
                         <div style={{ width: "35%", flexShrink: 0, overflowY: "auto" }}>
                           {/* Avatar + name */}
@@ -5480,7 +6801,9 @@ export default function DashboardPage() {
                                     <input type="date" value={newTaskDue} onChange={e => setNewTaskDue(e.target.value)} style={{ width: "100%", padding: "6px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, color: "rgba(255,255,255,0.6)", fontSize: 12, outline: "none", boxSizing: "border-box" as const, marginBottom: 10 }} />
                                     <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
                                       <button onClick={() => { setShowAssignTaskForm(false); setNewTaskName(""); setNewTaskDue("") }} style={{ padding: "6px 14px", fontSize: 12, background: "transparent", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>Cancelar</button>
-                                      <button onClick={() => { setShowAssignTaskForm(false); setNewTaskName(""); setNewTaskDue("") }} style={{ padding: "6px 14px", fontSize: 12, background: "#2563EB", border: "none", borderRadius: 6, color: "white", cursor: "pointer" }}>Guardar</button>
+                                      <button onClick={() => {
+                                        if (rrhhSelectedEmp) handleSaveTask(rrhhSelectedEmp.id)
+                                      }} style={{ padding: "6px 14px", fontSize: 12, background: "#2563EB", border: "none", borderRadius: 6, color: "white", cursor: "pointer" }}>Guardar</button>
                                     </div>
                                   </div>
                                 )}
@@ -5638,10 +6961,22 @@ export default function DashboardPage() {
                   return (
                     <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
                       {/* Secondary nav */}
-                      <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "0 24px", flexShrink: 0 }}>
-                        {(["Equipo","Organigrama","Clima laboral","Sueldos","Resumen semanal"] as const).map(nav => (
-                          <button key={nav} onClick={() => setRrhhNavTab(nav)} style={{ padding: "12px 16px", fontSize: 13, background: "none", border: "none", cursor: "pointer", color: rrhhNavTab === nav ? "white" : "rgba(255,255,255,0.35)", borderBottom: `2px solid ${rrhhNavTab === nav ? "#2563EB" : "transparent"}`, transition: "color 0.15s, border-color 0.15s", marginBottom: -1 }}>{nav}</button>
-                        ))}
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "0 24px", flexShrink: 0 }}>
+                        <div style={{ display: "flex", gap: 0 }}>
+                          {(["Equipo","Organigrama","Clima laboral","Sueldos","Resumen semanal"] as const).map(nav => (
+                            <button key={nav} onClick={() => setRrhhNavTab(nav)} style={{ padding: "12px 16px", fontSize: 13, background: "none", border: "none", cursor: "pointer", color: rrhhNavTab === nav ? "white" : "rgba(255,255,255,0.35)", borderBottom: `2px solid ${rrhhNavTab === nav ? "#2563EB" : "transparent"}`, transition: "color 0.15s, border-color 0.15s", marginBottom: -1 }}>{nav}</button>
+                          ))}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => { fetchEmployees(); fetchTasks() }}
+                          title="Actualizar"
+                          style={{ padding: "7px 10px", fontSize: 13, background: "none", color: "rgba(255,255,255,0.4)", border: "none", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "color 0.15s", marginBottom: -1 }}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
+                        >
+                          <RefreshCw size={16} />
+                        </button>
                       </div>
 
                       {/* Organigrama tab */}
@@ -5686,7 +7021,7 @@ export default function DashboardPage() {
                           </div>
                         )
                         const AreaNode = ({ area }: { area: OrgArea }) => {
-                          const emp = EMPLOYEES.find(e => e.id === area.leader.id)
+                          const emp = EMPLOYEES.find(e => e.name === area.leader.name)
                           const dot = alertDotColor(emp?.alert ?? "")
                           return (
                             <div
@@ -5703,7 +7038,7 @@ export default function DashboardPage() {
                           )
                         }
                         const MemberNode = ({ m }: { m: OrgMember }) => {
-                          const emp = EMPLOYEES.find(e => e.id === m.id)
+                          const emp = EMPLOYEES.find(e => e.name === m.name)
                           const dot = alertDotColor(m.alert)
                           const isLicencia = m.status === "Licencia"
                           return (
@@ -6031,10 +7366,10 @@ export default function DashboardPage() {
                         const stSty = (s: string) => s === "Liquidado" ? { bg: "rgba(34,197,94,0.1)",  color: "#22c55e", border: "rgba(34,197,94,0.2)"  }
                                                     : s === "En proceso" ? { bg: "rgba(37,99,235,0.1)", color: "#2563EB", border: "rgba(37,99,235,0.2)"  }
                                                     :                      { bg: "rgba(234,179,8,0.1)", color: "#eab308", border: "rgba(234,179,8,0.2)"  }
-                        const totalBruto = PAYROLL.reduce((s, r) => s + r.bruto, 0)
-                        const totalCargas = Math.round(totalBruto * 0.30)
-                        const totalCosto  = totalBruto + totalCargas
-                        const totalNeto   = PAYROLL.reduce((s, r) => s + netOf(r.bruto), 0)
+                        const totalBruto = totalGrossSalary
+                        const totalCargas = Math.round(totalSocialCharges)
+                        const totalCosto  = totalCost
+                        const totalNeto   = Math.round(totalNet)
                         const gridCols = "2fr 1fr 1fr 1fr 1fr 1fr 1fr"
                         const selRow  = PAYROLL.find(r => r.id === payrollSelectedId) ?? null
                         const selCalc = selRow ? calc(selRow) : null
@@ -6044,7 +7379,7 @@ export default function DashboardPage() {
                           </div>
                         )
                         const summaryCards = [
-                          { label: "Total sueldos brutos",  value: fmt(totalBruto),  sub: "8 empleados activos" },
+                          { label: "Total sueldos brutos",  value: fmt(totalBruto),  sub: `${realEmployees.filter(e => e.status === 'Activo').length} empleados activos` },
                           { label: "Cargas sociales",       value: fmt(totalCargas),  sub: "30% sobre bruto"    },
                           { label: "Costo total empresa",   value: fmt(totalCosto),   sub: "Bruto + cargas"     },
                           { label: "Neto a pagar",          value: fmt(totalNeto),    sub: "Estimado este mes"  },
@@ -6489,20 +7824,42 @@ export default function DashboardPage() {
 
                           {/* Right section */}
                           <div style={{ flex: 1, padding: "20px 24px", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                            {rrhhLoading && (
+                              <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: '32px',
+                                color: 'rgba(255,255,255,0.3)',
+                                fontSize: '13px',
+                                gap: '8px',
+                              }}>
+                                <div style={{
+                                  width: '16px',
+                                  height: '16px',
+                                  border: '2px solid rgba(37,99,235,0.3)',
+                                  borderTop: '2px solid #2563EB',
+                                  borderRadius: '50%',
+                                  animation: 'spin 1s linear infinite',
+                                }} />
+                                Cargando equipo...
+                              </div>
+                            )}
+
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexShrink: 0 }}>
                               <div>
                                 <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Empleados</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>8 empleados · 1 en licencia</div>
+                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>{`${realEmployees.length} empleados · ${onLeaveCount} en licencia`}</div>
                               </div>
                               <button style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Nuevo empleado +</button>
                             </div>
 
                             {/* Alert banner */}
-                            {showRrhhAlertBanner && alertCount > 0 && (
+                            {showRrhhAlertBanner && employeesAtRisk.length > 0 && (
                               <div style={{ background: "rgba(234,179,8,0.06)", border: "1px solid rgba(234,179,8,0.2)", borderRadius: 8, padding: "10px 16px", marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                                  <span style={{ color: "#eab308", fontSize: 13 }}>{alertCount} empleados requieren atención</span>
+                                  <span style={{ color: "#eab308", fontSize: 13 }}>{`${employeesAtRisk.length} empleados requieren atención`}</span>
                                 </div>
                                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                   <button style={{ padding: "4px 10px", background: "rgba(234,179,8,0.1)", border: "none", borderRadius: 6, color: "#eab308", fontSize: 12, cursor: "pointer" }}>Ver alertas →</button>
@@ -6558,6 +7915,51 @@ export default function DashboardPage() {
               ) : activeNode.id === 5 ? (
                 // ── CONTABILIDAD MODULE ──
                 (() => {
+                  const currentMonth = new Date().getMonth()
+                  const currentYear = new Date().getFullYear()
+
+                  const monthMovements = realMovements.filter(m => {
+                    const d = new Date(m.date)
+                    return d.getMonth() === currentMonth &&
+                      d.getFullYear() === currentYear
+                  })
+
+                  const totalIncome = monthMovements
+                    .filter(m => m.type === 'income')
+                    .reduce((sum, m) => sum + m.amount, 0)
+
+                  const totalExpenses = monthMovements
+                    .filter(m => m.type === 'expense')
+                    .reduce((sum, m) => sum + m.amount, 0)
+
+                  const netResult = totalIncome - totalExpenses
+
+                  const cashFlow = realMovements
+                    .filter(m => m.type === 'income')
+                    .reduce((sum, m) => sum + m.amount, 0)
+                    - realMovements
+                    .filter(m => m.type === 'expense')
+                    .reduce((sum, m) => sum + m.amount, 0)
+
+                  const fmtContab = (n: number) =>
+                    `$${Math.round(n).toLocaleString()}`
+
+                  const marginPct = totalIncome > 0
+                    ? ((netResult / totalIncome) * 100).toFixed(1)
+                    : '0'
+
+                  const expenseArr = realMovements
+                    .filter(m => m.type === 'expense')
+                  const avgExpense = expenseArr.length > 0
+                    ? expenseArr.reduce((sum, m) =>
+                        sum + m.amount, 0) / expenseArr.length
+                    : 0
+
+                  const anomalies = realMovements.filter(m =>
+                    m.type === 'expense' &&
+                    m.amount > avgExpense * 2
+                  )
+
                   const MONTHS = [
                     { m:"Dic", ing:68000, gas:52000 },
                     { m:"Ene", ing:72000, gas:55000 },
@@ -6586,34 +7988,71 @@ export default function DashboardPage() {
                     { name:"Proveedor B", amt:"$8.200",  days:"Vence en 5 días",    urgColor:"#eab308" },
                     { name:"Alquiler",    amt:"$45.000", days:"Vence en 15 días",   urgColor:"rgba(255,255,255,0.3)" },
                   ]
-                  const MOVEMENTS = [
-                    { type:"in",  desc:"Venta — Tech Solutions",        cat:"Ventas",    when:"Hoy",          amt:"+$18.500", auto:true  },
-                    { type:"out", desc:"Campaña Google Ads",             cat:"Marketing", when:"Ayer",         amt:"-$3.200",  auto:false },
-                    { type:"in",  desc:"Venta — Distribuidora Norte",    cat:"Ventas",    when:"Hace 2 días",  amt:"+$4.200",  auto:true  },
-                    { type:"out", desc:"Sueldos Mayo — parcial",         cat:"Sueldos",   when:"Hace 3 días",  amt:"-$45.200", auto:false },
-                    { type:"in",  desc:"Venta — Grupo Herrera SA",       cat:"Ventas",    when:"Hace 3 días",  amt:"+$28.500", auto:true  },
-                  ]
+                  const MOVEMENTS = realMovements.slice(0, 5).map(mv => ({
+                    type: mv.type === 'income' ? 'in' as const : 'out' as const,
+                    desc: mv.description,
+                    cat: mv.category,
+                    when: mv.displayDate,
+                    amt: mv.displayAmount,
+                    auto: mv.origin === 'automatic',
+                    anomaly: mv.is_anomaly ||
+                      (mv.type === 'expense' && mv.amount > avgExpense * 2),
+                  }))
                   const aiCard: React.CSSProperties = { background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:10, padding:"12px 14px", marginBottom:0 }
                   const aiLabel: React.CSSProperties = { color:"rgba(255,255,255,0.5)", fontSize:10, textTransform:"uppercase" as const, letterSpacing:"0.05em" }
                   return (
                     <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
                       {/* Secondary nav */}
-                      <div style={{ display:"flex", gap:0, borderBottom:"1px solid rgba(255,255,255,0.06)", padding:"0 24px", flexShrink:0 }}>
-                        {(["Dashboard","Movimientos","Análisis","Proyecciones","Exportar"] as const).map(nav => (
-                          <button key={nav} onClick={() => setContabNavTab(nav)} style={{ padding:"12px 16px", fontSize:13, background:"none", border:"none", cursor:"pointer", color:contabNavTab===nav?"white":"rgba(255,255,255,0.35)", borderBottom:`2px solid ${contabNavTab===nav?"#2563EB":"transparent"}`, transition:"color 0.15s, border-color 0.15s", marginBottom:-1 }}>{nav}</button>
-                        ))}
+                      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", borderBottom:"1px solid rgba(255,255,255,0.06)", padding:"0 24px", flexShrink:0 }}>
+                        <div style={{ display:"flex", gap:0 }}>
+                          {(["Dashboard","Movimientos","Análisis","Proyecciones","Exportar"] as const).map(nav => (
+                            <button key={nav} onClick={() => setContabNavTab(nav)} style={{ padding:"12px 16px", fontSize:13, background:"none", border:"none", cursor:"pointer", color:contabNavTab===nav?"white":"rgba(255,255,255,0.35)", borderBottom:`2px solid ${contabNavTab===nav?"#2563EB":"transparent"}`, transition:"color 0.15s, border-color 0.15s", marginBottom:-1 }}>{nav}</button>
+                          ))}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => fetchMovements()}
+                          title="Actualizar"
+                          style={{ padding:"7px 10px", fontSize:13, background:"none", color:"rgba(255,255,255,0.4)", border:"none", borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", transition:"color 0.15s", marginBottom:-1 }}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
+                        >
+                          <RefreshCw size={16} />
+                        </button>
                       </div>
 
                       {/* Dashboard view */}
                       {contabNavTab === "Dashboard" && (
                         <div style={{ flex:1, overflowY:"auto", padding:24 }}>
 
+                          {contabilidadLoading && (
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: '32px',
+                              color: 'rgba(255,255,255,0.3)',
+                              fontSize: '13px',
+                              gap: '8px',
+                            }}>
+                              <div style={{
+                                width: '16px',
+                                height: '16px',
+                                border: '2px solid rgba(37,99,235,0.3)',
+                                borderTop: '2px solid #2563EB',
+                                borderRadius: '50%',
+                                animation: 'spin 1s linear infinite',
+                              }} />
+                              Cargando contabilidad...
+                            </div>
+                          )}
+
                           {/* Alert banner */}
-                          {showContabAlertBanner && (
+                          {showContabAlertBanner && anomalies.length > 0 && (
                             <div style={{ background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.22)", borderRadius:10, padding:"12px 16px", marginBottom:20, display:"flex", justifyContent:"space-between", alignItems:"center", boxShadow:"0 2px 8px rgba(239,68,68,0.08)" }}>
                               <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                                <span style={{ color:"#ef4444", fontSize:13 }}>Gasto inusual detectado esta semana</span>
+                                <span style={{ color:"#ef4444", fontSize:13 }}>{`Gasto inusual detectado — ${anomalies[0].description}`}</span>
                               </div>
                               <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                                 <button style={{ padding:"4px 10px", background:"rgba(239,68,68,0.1)", border:"none", borderRadius:6, color:"#ef4444", fontSize:12, cursor:"pointer" }}>Ver detalle</button>
@@ -6625,10 +8064,10 @@ export default function DashboardPage() {
                           {/* Metrics row */}
                           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:24 }}>
                             {[
-                              { label:"Ingresos este mes",  value:"$105.370", valueColor:"#22c55e", sub:"↑ 28% vs mes anterior",  subColor:"#22c55e",               accent:"#22c55e" },
-                              { label:"Gastos este mes",    value:"$67.840",  valueColor:"white",   sub:"↑ 8% vs mes anterior",   subColor:"rgba(255,255,255,0.35)", accent:"#ef4444" },
-                              { label:"Resultado neto",     value:"$37.530",  valueColor:"#22c55e", sub:"Margen 35.6%",            subColor:"rgba(255,255,255,0.35)", accent:"#22c55e" },
-                              { label:"Flujo de caja",      value:"$52.180",  valueColor:"white",   sub:"Disponible actual",       subColor:"rgba(255,255,255,0.35)", accent:"#2563EB" },
+                              { label:"Ingresos este mes",  value:fmtContab(totalIncome), valueColor:"#22c55e", sub:"↑ 28% vs mes anterior",  subColor:"#22c55e",               accent:"#22c55e" },
+                              { label:"Gastos este mes",    value:fmtContab(totalExpenses),  valueColor:"white",   sub:"↑ 8% vs mes anterior",   subColor:"rgba(255,255,255,0.35)", accent:"#ef4444" },
+                              { label:"Resultado neto",     value:fmtContab(netResult),  valueColor:netResult >= 0 ? "#22c55e" : "#ef4444", sub:`Margen ${marginPct}%`,            subColor:"rgba(255,255,255,0.35)", accent:netResult >= 0 ? "#22c55e" : "#ef4444" },
+                              { label:"Flujo de caja",      value:fmtContab(cashFlow),  valueColor:"white",   sub:"Disponible actual",       subColor:"rgba(255,255,255,0.35)", accent:"#2563EB" },
                             ].map(c => (
                               <div key={c.label} style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderTop:`2px solid ${c.accent}`, borderRadius:10, padding:"16px 18px", boxShadow:"0 2px 10px rgba(0,0,0,0.2)" }}>
                                 <div style={{ color:"rgba(255,255,255,0.4)", fontSize:10, textTransform:"uppercase" as const, letterSpacing:"0.05em", marginBottom:8 }}>{c.label}</div>
@@ -6765,7 +8204,7 @@ export default function DashboardPage() {
                               const iconColor = isIn ? "#22c55e" : "#ef4444"
                               const iconBg = isIn ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)"
                               return (
-                                <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+                                <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:"1px solid rgba(255,255,255,0.04)", borderLeft: mv.anomaly ? "2px solid #ef4444" : "2px solid transparent", background: mv.anomaly ? "rgba(239,68,68,0.02)" : "transparent" }}>
                                   <div style={{ width:32, height:32, borderRadius:"50%", background:iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                                     {isIn
                                       ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
@@ -6791,19 +8230,18 @@ export default function DashboardPage() {
 
                       {/* Movimientos view */}
                       {contabNavTab === "Movimientos" && (() => {
-                        type MovRow = { id:number; type:"in"|"out"; desc:string; cat:string; dateGroup:string; auto:boolean; amt:number; anomaly?:boolean }
-                        const ALL_MOVS: MovRow[] = [
-                          { id:1,  type:"in",  desc:"Venta — Tech Solutions",          cat:"Ventas",      dateGroup:"HOY — 25 Mayo",        auto:true,  amt:18500 },
-                          { id:2,  type:"out", desc:"Google Ads — Campaña mayo",        cat:"Marketing",   dateGroup:"HOY — 25 Mayo",        auto:false, amt:3200, anomaly:true },
-                          { id:3,  type:"in",  desc:"Venta — Distribuidora Norte",      cat:"Ventas",      dateGroup:"AYER — 24 Mayo",       auto:true,  amt:4200 },
-                          { id:4,  type:"out", desc:"Servicios de internet y telefonía", cat:"Servicios",  dateGroup:"AYER — 24 Mayo",       auto:false, amt:4200 },
-                          { id:5,  type:"out", desc:"Sueldos Mayo — anticipo",           cat:"Sueldos",    dateGroup:"HACE 3 DÍAS — 22 Mayo",auto:false, amt:45200 },
-                          { id:6,  type:"in",  desc:"Venta — Grupo Herrera SA",          cat:"Ventas",     dateGroup:"HACE 3 DÍAS — 22 Mayo",auto:true,  amt:28500 },
-                          { id:7,  type:"in",  desc:"Venta — Importadora DL",            cat:"Ventas",     dateGroup:"HACE 3 DÍAS — 22 Mayo",auto:true,  amt:9750 },
-                          { id:8,  type:"out", desc:"Impuesto IVA — Abril",              cat:"Impuestos",  dateGroup:"HACE 5 DÍAS — 20 Mayo",auto:false, amt:12400 },
-                          { id:9,  type:"out", desc:"Proveedor materiales",               cat:"Operaciones",dateGroup:"HACE 5 DÍAS — 20 Mayo",auto:false, amt:8200 },
-                          { id:10, type:"in",  desc:"Venta — Retail Express",             cat:"Ventas",     dateGroup:"HACE 5 DÍAS — 20 Mayo",auto:true,  amt:8900 },
-                        ]
+                        type MovRow = { id:string; type:"in"|"out"; desc:string; cat:string; dateGroup:string; auto:boolean; amt:number; anomaly?:boolean }
+                        const ALL_MOVS: MovRow[] = realMovements.map(m => ({
+                          id: m.id,
+                          type: m.type === 'income' ? 'in' as const : 'out' as const,
+                          desc: m.description,
+                          cat: m.category,
+                          dateGroup: m.displayDate,
+                          auto: m.origin === 'automatic',
+                          amt: m.amount,
+                          anomaly: m.is_anomaly ||
+                            (m.type === 'expense' && m.amount > avgExpense * 2),
+                        }))
                         const catMeta: Record<string,{color:string;icon:string}> = {
                           "Ventas":      { color:"#22c55e", icon:"↑" },
                           "Sueldos":     { color:"#2563EB", icon:"👤" },
@@ -6821,10 +8259,16 @@ export default function DashboardPage() {
                         if (movCatFilter !== "Todas")        filtered = filtered.filter(m => m.cat === movCatFilter)
                         if (movOrigenFilter === "Automático") filtered = filtered.filter(m => m.auto)
                         if (movOrigenFilter === "Manual")     filtered = filtered.filter(m => !m.auto)
+                        const groupedMovements = filtered.reduce((groups, movement) => {
+                          const date = movement.dateGroup
+                          if (!groups[date]) groups[date] = []
+                          groups[date].push(movement)
+                          return groups
+                        }, {} as Record<string, MovRow[]>)
                         const groups = Array.from(new Set(filtered.map(m => m.dateGroup)))
-                        const totalIn  = filtered.filter(m=>m.type==="in").reduce((s,m)=>s+m.amt,0)
-                        const totalOut = filtered.filter(m=>m.type==="out").reduce((s,m)=>s+m.amt,0)
-                        const neto = totalIn - totalOut
+                        const totalIn  = totalIncome
+                        const totalOut = totalExpenses
+                        const neto = netResult
                         const sideBtn = (label:string, active:boolean, onClick:()=>void) => (
                           <button key={label} onClick={onClick} style={{ display:"block", width:"100%", textAlign:"left", padding:"6px 10px", borderRadius:6, border:"none", cursor:"pointer", fontSize:12, background:active?"rgba(37,99,235,0.15)":"none", color:active?"white":"rgba(255,255,255,0.4)", marginBottom:2 }}>{label}</button>
                         )
@@ -6852,6 +8296,28 @@ export default function DashboardPage() {
 
                             {/* RIGHT SECTION */}
                             <div style={{ flex:1, padding:"20px 24px", display:"flex", flexDirection:"column", overflowY:"auto" }} onClick={()=>setMovMenuOpenId(null)}>
+                              {contabilidadLoading && (
+                                <div style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  padding: '32px',
+                                  color: 'rgba(255,255,255,0.3)',
+                                  fontSize: '13px',
+                                  gap: '8px',
+                                }}>
+                                  <div style={{
+                                    width: '16px',
+                                    height: '16px',
+                                    border: '2px solid rgba(37,99,235,0.3)',
+                                    borderTop: '2px solid #2563EB',
+                                    borderRadius: '50%',
+                                    animation: 'spin 1s linear infinite',
+                                  }} />
+                                  Cargando movimientos...
+                                </div>
+                              )}
+
                               {/* Top bar */}
                               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexShrink:0 }}>
                                 <div>
@@ -6895,7 +8361,7 @@ export default function DashboardPage() {
                                   <div style={{ border:"1px dashed rgba(255,255,255,0.1)", borderRadius:6, padding:8, textAlign:"center", color:"rgba(255,255,255,0.3)", fontSize:11, marginBottom:12, cursor:"pointer" }}>+ Adjuntar comprobante</div>
                                   <div style={{ display:"flex", justifyContent:"flex-end", gap:8 }}>
                                     <button onClick={()=>setShowRegGasto(false)} style={{ padding:"6px 14px", fontSize:12, background:"none", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, color:"rgba(255,255,255,0.4)", cursor:"pointer" }}>Cancelar</button>
-                                    <button onClick={()=>setShowRegGasto(false)} style={{ padding:"6px 14px", fontSize:12, background:"#2563EB", border:"none", borderRadius:6, color:"white", cursor:"pointer" }}>Guardar</button>
+                                    <button onClick={handleSaveExpense} style={{ padding:"6px 14px", fontSize:12, background:"#2563EB", border:"none", borderRadius:6, color:"white", cursor:"pointer" }}>Guardar</button>
                                   </div>
                                 </div>
                               )}
@@ -6940,7 +8406,7 @@ export default function DashboardPage() {
                                   </div>
                                   <div style={{ display:"flex", justifyContent:"flex-end", gap:8, marginTop:4 }}>
                                     <button onClick={()=>setShowRegIngreso(false)} style={{ padding:"6px 14px", fontSize:12, background:"none", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, color:"rgba(255,255,255,0.4)", cursor:"pointer" }}>Cancelar</button>
-                                    <button onClick={()=>setShowRegIngreso(false)} style={{ padding:"6px 14px", fontSize:12, background:"#2563EB", border:"none", borderRadius:6, color:"white", cursor:"pointer" }}>Guardar</button>
+                                    <button onClick={handleSaveIncome} style={{ padding:"6px 14px", fontSize:12, background:"#2563EB", border:"none", borderRadius:6, color:"white", cursor:"pointer" }}>Guardar</button>
                                   </div>
                                 </div>
                               )}
@@ -6961,7 +8427,7 @@ export default function DashboardPage() {
                               {groups.map((grp, gi) => (
                                 <div key={grp}>
                                   <div style={{ color:"rgba(255,255,255,0.3)", fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", padding:"8px 0", marginTop: gi===0 ? 0 : 20 }}>{grp}</div>
-                                  {filtered.filter(m=>m.dateGroup===grp).map(mov => {
+                                  {(groupedMovements[grp] ?? []).map(mov => {
                                     const meta = catMeta[mov.cat] ?? catMeta["Otros"]
                                     const isMenuOpen = movMenuOpenId === mov.id
                                     return (
@@ -7661,7 +9127,7 @@ export default function DashboardPage() {
                     { name:"Contabilidad", icon:"📊", status:"Gasto inusual detectado",         dot:"#eab308" },
                     { name:"Workspace",    icon:"⚡", status:"Todo actualizado",                dot:"#22c55e" },
                   ]
-                  const QUICK_STATS = [
+                  const QUICK_STATS_DEFAULT = [
                     { label:"Ventas del mes",    value:"$105.370", color:"#22c55e" },
                     { label:"Clima laboral",      value:"7.8/10",   color:"#22c55e" },
                     { label:"Tareas pendientes",  value:"4",        color:"#eab308" },
@@ -7704,18 +9170,103 @@ export default function DashboardPage() {
                     { id:2, icon:"calculator" as const, color:"#eab308", bg:"rgba(234,179,8,0.15)", name:"Resumen financiero mensual", schedule:"Primer día de cada mes · 8:00 AM" },
                     { id:3, icon:"bar-chart-2" as const, color:"#f97316", bg:"rgba(249,115,22,0.15)", name:"Reporte ejecutivo mensual", schedule:"Primer lunes de cada mes · 9:00 AM" },
                   ]
+                  const realAlerts = realNotifications
+                    .filter(n => !n.read)
+                    .map(n => ({
+                      color: n.priority === 'urgent'
+                        ? '#ef4444'
+                        : n.priority === 'high'
+                        ? '#ef4444'
+                        : '#eab308',
+                      title: n.title,
+                      subtitle: `${n.module} · ${n.displayTime}`,
+                    }))
+                  const allAlerts = realAlerts.length > 0
+                    ? realAlerts.map(a => ({ color: a.color, title: a.title, sub: a.subtitle }))
+                    : ALERTS.map(a => ({ color: a.color, title: a.title, sub: a.sub }))
+                  const wsKpis = companyMemory?.kpis
+                  const QUICK_STATS = wsKpis ? [
+                    { label:"Ventas del mes",    value:`$${Number(wsKpis.monthly_revenue || 0).toLocaleString()}`, color:"#22c55e" },
+                    { label:"Clima laboral",      value:"7.8/10",   color:"#22c55e" },
+                    { label:"Tareas pendientes",  value:"4",        color:"#eab308" },
+                    { label:"Alertas activas",    value:String(realAlerts.length || 3), color:"#ef4444" },
+                  ] : QUICK_STATS_DEFAULT
+                  const reportTypeStyle = (type: string): { icon: WorkspaceReportIcon; color: string; bg: string } => {
+                    const t = (type || '').toLowerCase()
+                    if (t.includes('sales') || t.includes('venta')) return { icon: "trending-up", color: "#22c55e", bg: "rgba(34,197,94,0.15)" }
+                    if (t.includes('team') || t.includes('equipo')) return { icon: "users", color: "#2563EB", bg: "rgba(37,99,235,0.15)" }
+                    if (t.includes('finance') || t.includes('financ')) return { icon: "calculator", color: "#eab308", bg: "rgba(234,179,8,0.15)" }
+                    if (t.includes('marketing') || t.includes('mkt')) return { icon: "megaphone", color: "#a855f7", bg: "rgba(168,85,247,0.15)" }
+                    if (t.includes('executive') || t.includes('ejecut')) return { icon: "bar-chart-2", color: "#f97316", bg: "rgba(249,115,22,0.15)" }
+                    return { icon: "file-text", color: "rgba(255,255,255,0.4)", bg: "rgba(255,255,255,0.08)" }
+                  }
+                  const mappedRealReports: WorkspaceGeneratedReport[] = realReports.map((r, i) => {
+                    const style = reportTypeStyle(r.type)
+                    return {
+                      id: 1000 + i,
+                      icon: style.icon,
+                      color: style.color,
+                      bg: style.bg,
+                      name: r.title,
+                      generated: `Generado el ${new Date(r.created_at).toLocaleDateString('es-UY', { day: 'numeric', month: 'short', year: 'numeric' })} · Por Pupi AI`,
+                      period: r.period || '',
+                      format: (r.format || 'pdf').toUpperCase(),
+                      size: r.size_kb ? `${r.size_kb} KB` : '',
+                    }
+                  })
+                  const displayReports = mappedRealReports.length > 0
+                    ? mappedRealReports
+                    : wsGeneratedReports
                   return (
                     <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
                       {/* Secondary nav */}
-                      <div style={{ display:"flex", gap:0, borderBottom:"1px solid rgba(255,255,255,0.06)", padding:"0 24px", flexShrink:0 }}>
+                      <div style={{ display:"flex", gap:0, borderBottom:"1px solid rgba(255,255,255,0.06)", padding:"0 24px", flexShrink:0, position:"relative" as const, alignItems:"center" }}>
                         {WS_NAV.map(n => (
                           <button key={n.key} onClick={()=>setWsView(n.key)} style={{ padding:"12px 16px", fontSize:13, background:"none", border:"none", cursor:"pointer", color:wsView===n.key?"white":"rgba(255,255,255,0.35)", borderBottom:`2px solid ${wsView===n.key?"#2563EB":"transparent"}`, transition:"color 0.15s, border-color 0.15s", marginBottom:-1, whiteSpace:"nowrap" as const }}>{n.label}</button>
                         ))}
+                        <div style={{ position:"absolute" as const, right:24, display:"flex", alignItems:"center", gap:8 }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              fetchNotifications()
+                              fetchChatHistory()
+                              fetchCompanyMemory()
+                              fetchReports()
+                            }}
+                            title="Actualizar"
+                            style={{ padding:"7px 10px", fontSize:13, background:"none", color:"rgba(255,255,255,0.4)", border:"none", borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", transition:"color 0.15s" }}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
+                          >
+                            <RefreshCw size={16} />
+                          </button>
+                        </div>
                       </div>
 
                       {/* Home view */}
                       {wsView === "home" && (
                         <div style={{ flex:1, overflowY:"auto", padding:24 }}>
+                          {workspaceLoading && (
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: '32px',
+                              color: 'rgba(255,255,255,0.3)',
+                              fontSize: '13px',
+                              gap: '8px',
+                            }}>
+                              <div style={{
+                                width: '16px',
+                                height: '16px',
+                                border: '2px solid rgba(37,99,235,0.3)',
+                                borderTop: '2px solid #2563EB',
+                                borderRadius: '50%',
+                                animation: 'spin 0.8s linear infinite',
+                              }} />
+                              Cargando...
+                            </div>
+                          )}
                           {/* Greeting */}
                           <div style={{ marginBottom:24 }}>
                             <div style={{ color:"white", fontSize:20, fontWeight:600 }}>Buenos días, Nacho 👋</div>
@@ -7740,7 +9291,7 @@ export default function DashboardPage() {
                           {/* Priority alerts */}
                           <div style={{ marginBottom:24 }}>
                             <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:12 }}>Alertas prioritarias</div>
-                            {ALERTS.map(a => (
+                            {allAlerts.map(a => (
                               <div key={a.title} style={{ display:"flex", alignItems:"center", gap:12, background:"rgba(255,255,255,0.02)", borderLeft:`3px solid ${a.color}`, borderTop:"1px solid rgba(255,255,255,0.06)", borderRight:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)", borderRadius:"0 8px 8px 0", padding:"12px 16px", marginBottom:6, cursor:"pointer" }}>
                                 <span style={{ color:a.color, fontSize:16, flexShrink:0 }}>●</span>
                                 <div style={{ flex:1, minWidth:0 }}>
@@ -7945,7 +9496,7 @@ export default function DashboardPage() {
                           <div style={{ marginTop:32 }}>
                             <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Reportes generados</div>
                             <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Historial de reportes<br />creados automáticamente</div>
-                            {wsGeneratedReports.map(report => {
+                            {displayReports.map(report => {
                               const downloadState = wsDownloadStates[report.id] || "idle"
                               return (
                                 <div
@@ -8678,7 +10229,21 @@ export default function DashboardPage() {
                                     <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>KPIs establecidos como base</div>
                                     <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Pupi medirá tu progreso contra estos números</div>
                                     <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10 }}>
-                                      {[{v:"$88.200",n:"VENTAS MENSUALES"},{v:"284",n:"CLIENTES ACTIVOS"},{v:"68%",n:"TASA DE CIERRE"},{v:"7.8/10",n:"CLIMA LABORAL"},{v:"35.6%",n:"MARGEN NETO"},{v:"$4.200",n:"TICKET PROMEDIO"}].map(k=>(
+                                      {(companyMemory?.kpis ? [
+                                        { v:`$${Number(companyMemory.kpis.monthly_revenue || 0).toLocaleString()}`, n:"VENTAS MENSUALES" },
+                                        { v:String(companyMemory.kpis.active_clients ?? 284), n:"CLIENTES ACTIVOS" },
+                                        { v:`${companyMemory.kpis.close_rate ?? 68}%`, n:"TASA DE CIERRE" },
+                                        { v:"7.8/10", n:"CLIMA LABORAL" },
+                                        { v:"35.6%", n:"MARGEN NETO" },
+                                        { v:`$${Number(companyMemory.kpis.avg_ticket || 0).toLocaleString()}`, n:"TICKET PROMEDIO" },
+                                      ] : [
+                                        {v:"$88.200",n:"VENTAS MENSUALES"},
+                                        {v:"284",n:"CLIENTES ACTIVOS"},
+                                        {v:"68%",n:"TASA DE CIERRE"},
+                                        {v:"7.8/10",n:"CLIMA LABORAL"},
+                                        {v:"35.6%",n:"MARGEN NETO"},
+                                        {v:"$4.200",n:"TICKET PROMEDIO"},
+                                      ]).map(k=>(
                                         <div key={k.n} style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, padding:14, textAlign:"center" }}>
                                           <div style={{ color:"white", fontSize:18, fontWeight:600 }}>{k.v}</div>
                                           <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", marginTop:6 }}>{k.n}</div>
@@ -8743,7 +10308,7 @@ export default function DashboardPage() {
                           { icon:Calculator, color:"#eab308", area:"Finanzas", status:"Parcial", detail:"5 meses de movimientos, márgenes y proyecciones. Falta historial de años anteriores", count:"529 datos registrados", empty:false },
                           { icon:BarChart2, color:"rgba(255,255,255,0.4)", area:"Mercado", status:"Vacío", detail:"Sin investigaciones de mercado cargadas todavía. Subí estudios para completar este módulo", count:"0 datos registrados", empty:true },
                         ]
-                        const PATTERNS = [
+                        const PATTERNS_DEFAULT = [
                           { icon:TrendingUp, color:"#22c55e", desc:"Pico de ventas en mayo y noviembre", source:"Aprendido de: 5 meses de datos", conf:"Alta confianza", confColor:"#22c55e" },
                           { icon:Clock, color:"#2563EB", desc:"JP cierra más los martes y miércoles", source:"Aprendido de: 47 cierres registrados", conf:"Alta confianza", confColor:"#22c55e" },
                           { icon:Users, color:"#ef4444", desc:"Clientes sin contacto +30 días tienen 68% más riesgo de abandono", source:"Aprendido de: comportamiento 284 clientes", conf:"Alta confianza", confColor:"#22c55e" },
@@ -8753,6 +10318,40 @@ export default function DashboardPage() {
                           { icon:User, color:"#22c55e", desc:"MR convierte mejor clientes nuevos", source:"Aprendido de: 38 primeros contactos", conf:"Alta confianza", confColor:"#22c55e" },
                           { icon:Target, color:"#2563EB", desc:"Producto C tiene mejor margen (68%)", source:"Aprendido de: 5 meses de ventas", conf:"Alta confianza", confColor:"#22c55e" },
                         ]
+                        const patternKeyLabels: Record<string, string> = {
+                          best_sales_day: "Mejor día de ventas",
+                          peak_months: "Meses pico de demanda",
+                          avg_deal_cycle_days: "Ciclo promedio de cierre",
+                        }
+                        const formatPatternValue = (key: string, val: unknown) => {
+                          if (Array.isArray(val)) return `${patternKeyLabels[key] || key}: ${val.join(", ")}`
+                          if (key === 'best_sales_day') return `Mejor día de ventas: ${String(val)}`
+                          if (key === 'avg_deal_cycle_days') return `Ciclo promedio de cierre: ${String(val)} días`
+                          return `${patternKeyLabels[key] || key}: ${String(val)}`
+                        }
+                        const memoryPatterns = companyMemory?.patterns && Object.keys(companyMemory.patterns).length > 0
+                          ? Object.entries(companyMemory.patterns).map(([key, val]) => ({
+                              icon: TrendingUp,
+                              color: "#22c55e",
+                              desc: formatPatternValue(key, val),
+                              source: "Aprendido de datos reales",
+                              conf: "Alta confianza",
+                              confColor: "#22c55e",
+                            }))
+                          : []
+                        const memoryInsights = companyMemory?.insights && Object.keys(companyMemory.insights).length > 0
+                          ? Object.entries(companyMemory.insights).map(([, val]) => ({
+                              icon: Brain,
+                              color: "#2563EB",
+                              desc: typeof val === 'string' ? val : String(val),
+                              source: "Insight de Pupi AI",
+                              conf: "Alta confianza",
+                              confColor: "#22c55e",
+                            }))
+                          : []
+                        const PATTERNS = memoryPatterns.length > 0 || memoryInsights.length > 0
+                          ? [...memoryPatterns, ...memoryInsights]
+                          : PATTERNS_DEFAULT
                         const MONITORING = [
                           { title:"Temperatura de 284 clientes", freq:"Frecuencia: cada 6 horas", last:"Hace 2 horas" },
                           { title:"Pipeline de ventas — 5 oportunidades", freq:"Frecuencia: en tiempo real", last:"Hace 5 min" },
@@ -8898,6 +10497,169 @@ export default function DashboardPage() {
           )
         })()}
       </div>
+
+      {showSuccessToast && (
+        <div style={{
+          position: 'fixed',
+          bottom: '90px',
+          right: '24px',
+          background: 'rgba(34,197,94,0.1)',
+          border: '1px solid rgba(34,197,94,0.3)',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          color: '#22c55e',
+          fontSize: '13px',
+          zIndex: 9999,
+          backdropFilter: 'blur(8px)',
+        }}>
+          ✓ {toastMessage}
+        </div>
+      )}
+
+      {/* Floating chat button */}
+      <button
+        type="button"
+        onClick={toggleChatPanel}
+        style={{
+          position: "fixed",
+          bottom: 24,
+          right: 24,
+          width: 52,
+          height: 52,
+          borderRadius: "50%",
+          background: "#2563EB",
+          border: "none",
+          cursor: "pointer",
+          zIndex: 60,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: chatButtonPulse
+            ? "0 0 30px rgba(37,99,235,0.8)"
+            : "0 0 20px rgba(37,99,235,0.4)",
+          transition: "box-shadow 0.3s",
+        }}
+      >
+        <MessageCircle size={22} color="white" />
+        {unreadCount > 0 && (
+          <span style={{
+            position: "absolute",
+            top: -2,
+            right: -2,
+            minWidth: 18,
+            height: 18,
+            borderRadius: "50%",
+            background: "#ef4444",
+            color: "white",
+            fontSize: 10,
+            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "0 4px",
+          }}>
+            {unreadCount}
+          </span>
+        )}
+      </button>
+
+      {showChatPanel && (
+        <div style={{
+          position: "fixed",
+          bottom: 88,
+          right: 24,
+          width: 360,
+          height: 480,
+          background: "#0D0D14",
+          border: "1px solid rgba(37,99,235,0.2)",
+          borderRadius: 16,
+          zIndex: 60,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+        }}>
+          <div style={{
+            padding: "14px 16px",
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}>
+            <span style={{ color: "white", fontSize: 14, fontWeight: 500 }}>Pupi AI</span>
+            <button
+              type="button"
+              onClick={toggleChatPanel}
+              style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 18, cursor: "pointer", lineHeight: 1 }}
+            >×</button>
+          </div>
+          {showWakeGreeting && (
+            <div style={{ padding: "8px 16px", background: "rgba(37,99,235,0.1)", color: "#2563EB", fontSize: 12 }}>
+              Te escucho — decime en qué te ayudo
+            </div>
+          )}
+          <div style={{ flex: 1, overflowY: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+            {chatMessages.map((msg, i) => (
+              <div
+                key={i}
+                style={{
+                  alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
+                  maxWidth: "85%",
+                  background: msg.role === "user"
+                    ? "#2563EB"
+                    : "rgba(255,255,255,0.06)",
+                  color: "white",
+                  fontSize: 13,
+                  lineHeight: 1.5,
+                  padding: "10px 14px",
+                  borderRadius: msg.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
+                }}
+              >
+                {msg.text}
+              </div>
+            ))}
+          </div>
+          <div style={{
+            padding: 12,
+            borderTop: "1px solid rgba(255,255,255,0.06)",
+            display: "flex",
+            gap: 8,
+          }}>
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") sendChatMessage() }}
+              placeholder="Preguntale algo a Pupi..."
+              style={{
+                flex: 1,
+                padding: "10px 12px",
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 8,
+                color: "white",
+                fontSize: 13,
+                outline: "none",
+              }}
+            />
+            <button
+              type="button"
+              onClick={sendChatMessage}
+              style={{
+                padding: "10px 14px",
+                background: "#2563EB",
+                color: "white",
+                border: "none",
+                borderRadius: 8,
+                fontSize: 13,
+                cursor: "pointer",
+              }}
+            >
+              →
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-server'
+import { sendWelcomeEmail } from '@/lib/emails/send'
 import bcrypt from 'bcryptjs'
 
 export async function POST(req: NextRequest) {
@@ -63,6 +64,12 @@ export async function POST(req: NextRequest) {
       })
 
     if (authError) throw authError
+
+    await sendWelcomeEmail(
+      email,
+      name,
+      company_name
+    )
 
     return NextResponse.json({
       success: true,
