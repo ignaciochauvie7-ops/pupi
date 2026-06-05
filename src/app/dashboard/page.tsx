@@ -23,7 +23,6 @@ import {
   Target,
   Mic,
   RefreshCw,
-  MessageCircle,
 } from "lucide-react"
 import { supabase } from '@/lib/supabase'
 import {
@@ -1091,9 +1090,6 @@ export default function DashboardPage() {
       })))
     }
   }, [chatHistory])
-
-  const unreadCount = realNotifications
-    .filter(n => !n.read).length
 
   const [showSuccessToast, setShowSuccessToast] =
     useState(false)
@@ -10501,7 +10497,7 @@ export default function DashboardPage() {
       {showSuccessToast && (
         <div style={{
           position: 'fixed',
-          bottom: '90px',
+          bottom: '24px',
           right: '24px',
           background: 'rgba(34,197,94,0.1)',
           border: '1px solid rgba(34,197,94,0.3)',
@@ -10513,151 +10509,6 @@ export default function DashboardPage() {
           backdropFilter: 'blur(8px)',
         }}>
           ✓ {toastMessage}
-        </div>
-      )}
-
-      {/* Floating chat button */}
-      <button
-        type="button"
-        onClick={toggleChatPanel}
-        style={{
-          position: "fixed",
-          bottom: 24,
-          right: 24,
-          width: 52,
-          height: 52,
-          borderRadius: "50%",
-          background: "#2563EB",
-          border: "none",
-          cursor: "pointer",
-          zIndex: 60,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: chatButtonPulse
-            ? "0 0 30px rgba(37,99,235,0.8)"
-            : "0 0 20px rgba(37,99,235,0.4)",
-          transition: "box-shadow 0.3s",
-        }}
-      >
-        <MessageCircle size={22} color="white" />
-        {unreadCount > 0 && (
-          <span style={{
-            position: "absolute",
-            top: -2,
-            right: -2,
-            minWidth: 18,
-            height: 18,
-            borderRadius: "50%",
-            background: "#ef4444",
-            color: "white",
-            fontSize: 10,
-            fontWeight: 600,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "0 4px",
-          }}>
-            {unreadCount}
-          </span>
-        )}
-      </button>
-
-      {showChatPanel && (
-        <div style={{
-          position: "fixed",
-          bottom: 88,
-          right: 24,
-          width: 360,
-          height: 480,
-          background: "#0D0D14",
-          border: "1px solid rgba(37,99,235,0.2)",
-          borderRadius: 16,
-          zIndex: 60,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-        }}>
-          <div style={{
-            padding: "14px 16px",
-            borderBottom: "1px solid rgba(255,255,255,0.06)",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}>
-            <span style={{ color: "white", fontSize: 14, fontWeight: 500 }}>Pupi AI</span>
-            <button
-              type="button"
-              onClick={toggleChatPanel}
-              style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 18, cursor: "pointer", lineHeight: 1 }}
-            >×</button>
-          </div>
-          {showWakeGreeting && (
-            <div style={{ padding: "8px 16px", background: "rgba(37,99,235,0.1)", color: "#2563EB", fontSize: 12 }}>
-              Te escucho — decime en qué te ayudo
-            </div>
-          )}
-          <div style={{ flex: 1, overflowY: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-            {chatMessages.map((msg, i) => (
-              <div
-                key={i}
-                style={{
-                  alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
-                  maxWidth: "85%",
-                  background: msg.role === "user"
-                    ? "#2563EB"
-                    : "rgba(255,255,255,0.06)",
-                  color: "white",
-                  fontSize: 13,
-                  lineHeight: 1.5,
-                  padding: "10px 14px",
-                  borderRadius: msg.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
-                }}
-              >
-                {msg.text}
-              </div>
-            ))}
-          </div>
-          <div style={{
-            padding: 12,
-            borderTop: "1px solid rgba(255,255,255,0.06)",
-            display: "flex",
-            gap: 8,
-          }}>
-            <input
-              type="text"
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") sendChatMessage() }}
-              placeholder="Preguntale algo a Pupi..."
-              style={{
-                flex: 1,
-                padding: "10px 12px",
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 8,
-                color: "white",
-                fontSize: 13,
-                outline: "none",
-              }}
-            />
-            <button
-              type="button"
-              onClick={sendChatMessage}
-              style={{
-                padding: "10px 14px",
-                background: "#2563EB",
-                color: "white",
-                border: "none",
-                borderRadius: 8,
-                fontSize: 13,
-                cursor: "pointer",
-              }}
-            >
-              →
-            </button>
-          </div>
         </div>
       )}
     </div>
