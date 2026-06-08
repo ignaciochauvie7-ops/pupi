@@ -1656,9 +1656,9 @@ export default function DashboardPage() {
         <span style={{ color: "white", fontWeight: 700 }}>Pupi</span>
         <span style={{ color: "#2563EB", fontWeight: 400 }}> AI</span>
         <span style={{ display: "inline-block", width: 1, height: 14, background: "rgba(255,255,255,0.15)", margin: "0 12px", verticalAlign: "middle" }} />
-        <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, fontWeight: 400 }}>Distribuidora Norte</span>
-        <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, margin: "0 6px" }}>·</span>
-        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>Dueño</span>
+        <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, fontWeight: 400 }}>Distribuidora Norte</span>
+        <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, margin: "0 6px" }}>·</span>
+        <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>Dueño</span>
       </div>
 
       {/* Orbital container */}
@@ -1839,7 +1839,7 @@ export default function DashboardPage() {
             onMouseLeave={() => setCenterHovered(false)}
             onClick={() => setShowVoiceInput((v) => !v)}
           />
-          <div style={{ position: "absolute", top: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)", whiteSpace: "nowrap", color: "rgba(255,255,255,0.2)", fontSize: 12, textAlign: "center", pointerEvents: "none" }}>
+          <div style={{ position: "absolute", top: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)", whiteSpace: "nowrap", color: "rgba(255,255,255,0.5)", fontSize: 12, textAlign: "center", pointerEvents: "none" }}>
             Tocá cualquier área para explorar
           </div>
         </div>
@@ -1940,7 +1940,7 @@ export default function DashboardPage() {
                   {activeNode.id === 1 && crmView === "detail" && crmSelectedClient ? (
                     <>
                       <button onClick={() => { setCrmView("list"); setCrmTab("Historial") }} style={{ color: "rgba(255,255,255,0.4)", fontSize: 16, fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")} onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>{activeNode.title}</button>
-                      <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 14 }}>/</span>
+                      <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 14 }}>/</span>
                       <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>{crmSelectedClient.name}</span>
                     </>
                   ) : activeNode.id === 1 && crmView === "new" ? (
@@ -2058,7 +2058,7 @@ export default function DashboardPage() {
                                     {getInitials(c.name)}
                                   </div>
                                   <div style={{ color: "white", fontSize: 16, fontWeight: 500, textAlign: "center" }}>{c.name}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, textAlign: "center" }}>{c.company}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, textAlign: "center" }}>{c.company}</div>
                                   <div style={{ background: ts.bg, color: ts.color, fontSize: 11, padding: "2px 8px", borderRadius: 20 }}>{c.temp}</div>
                                 </div>
 
@@ -2073,7 +2073,7 @@ export default function DashboardPage() {
                                   ["ETIQUETA", "Cliente VIP"],
                                 ].map(([label, value]) => (
                                   <div key={label} style={{ marginBottom: 12 }}>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>{label}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>{label}</div>
                                     <div style={{ color: "white", fontSize: 13 }}>{value}</div>
                                   </div>
                                 ))}
@@ -2089,7 +2089,7 @@ export default function DashboardPage() {
                                   const fillColor = c.temp === "Caliente" ? "#ef4444" : c.temp === "Tibio" ? "#eab308" : "#3b82f6"
                                   return (
                                     <div style={{ marginBottom: 14 }}>
-                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Temperatura</div>
+                                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Temperatura</div>
                                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                         <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.06)", position: "relative", overflow: "hidden" }}>
                                           <div style={{ position: "absolute", top: 0, left: 0, height: "100%", width: `${fillPct}%`, borderRadius: 3, background: "linear-gradient(to right, #3b82f6, #ef4444)" }} />
@@ -2104,7 +2104,7 @@ export default function DashboardPage() {
                                 <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }}>
                                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Próxima compra</span>
+                                    <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Próxima compra</span>
                                   </div>
                                   <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>En 6 días</div>
                                 </div>
@@ -2117,7 +2117,7 @@ export default function DashboardPage() {
                                     <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }}>
                                       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={riskColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                                        <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Riesgo de abandono</span>
+                                        <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Riesgo de abandono</span>
                                       </div>
                                       <div style={{ color: riskColor, fontSize: 13, fontWeight: 500 }}>{riskLabel}</div>
                                     </div>
@@ -2128,7 +2128,7 @@ export default function DashboardPage() {
                                 <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }}>
                                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Valor del cliente</span>
+                                    <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Valor del cliente</span>
                                   </div>
                                   <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>Alto — top 15%</div>
                                 </div>
@@ -2137,10 +2137,10 @@ export default function DashboardPage() {
                                 <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }}>
                                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Acción sugerida</span>
+                                    <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Acción sugerida</span>
                                   </div>
                                   <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Llamar esta semana</div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>No compra desde hace 28 días, su ciclo promedio es 28 días</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>No compra desde hace 28 días, su ciclo promedio es 28 días</div>
                                 </div>
                               </>
                             )
@@ -2205,7 +2205,7 @@ export default function DashboardPage() {
                                     </div>
                                     <div style={{ paddingBottom: 4 }}>
                                       <div style={{ color: "white", fontSize: 13, marginBottom: 4 }}>{action}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{date}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{date}</div>
                                     </div>
                                   </div>
                                 ))}
@@ -2222,7 +2222,7 @@ export default function DashboardPage() {
                                     { label: "Interacciones", value: "5 contactos" },
                                   ].map(({ label, value }) => (
                                     <div key={label} style={{ flex: 1, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "14px 16px" }}>
-                                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 6 }}>{label}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginBottom: 6 }}>{label}</div>
                                       <div style={{ color: "white", fontSize: 18, fontWeight: 600 }}>{value}</div>
                                     </div>
                                   ))}
@@ -2230,7 +2230,7 @@ export default function DashboardPage() {
 
                                 {/* Horizontal milestone timeline */}
                                 <div>
-                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.05em" }}>Hitos del ciclo</div>
+                                  <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.05em" }}>Hitos del ciclo</div>
                                   <div style={{ position: "relative", paddingTop: 48 }}>
                                     {/* Connector line */}
                                     <div style={{ position: "absolute", top: "calc(48px + 6px)", left: 0, right: 0, height: 1, background: "rgba(255,255,255,0.08)" }} />
@@ -2253,8 +2253,8 @@ export default function DashboardPage() {
                                               }}>
                                                 {m.above && (
                                                   <>
-                                                    <div style={{ color: m.done ? "white" : "rgba(255,255,255,0.35)", fontSize: 11, fontWeight: m.done ? 500 : 400, lineHeight: 1.3 }}>{m.label}</div>
-                                                    <div style={{ color: m.done ? "#2563EB" : "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 2 }}>{m.sub}</div>
+                                                    <div style={{ color: m.done ? "white" : "rgba(255,255,255,0.65)", fontSize: 11, fontWeight: m.done ? 500 : 400, lineHeight: 1.3 }}>{m.label}</div>
+                                                    <div style={{ color: m.done ? "#2563EB" : "rgba(255,255,255,0.55)", fontSize: 10, marginTop: 2 }}>{m.sub}</div>
                                                   </>
                                                 )}
                                               </div>
@@ -2269,8 +2269,8 @@ export default function DashboardPage() {
                                               {/* Below label */}
                                               {!m.above && (
                                                 <div style={{ position: "absolute", top: 20, textAlign: "center", width: "100%" }}>
-                                                  <div style={{ color: m.done ? "white" : "rgba(255,255,255,0.35)", fontSize: 11, fontWeight: m.done ? 500 : 400, lineHeight: 1.3 }}>{m.label}</div>
-                                                  <div style={{ color: m.done ? "#2563EB" : "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 2 }}>{m.sub}</div>
+                                                  <div style={{ color: m.done ? "white" : "rgba(255,255,255,0.65)", fontSize: 11, fontWeight: m.done ? 500 : 400, lineHeight: 1.3 }}>{m.label}</div>
+                                                  <div style={{ color: m.done ? "#2563EB" : "rgba(255,255,255,0.55)", fontSize: 10, marginTop: 2 }}>{m.sub}</div>
                                                 </div>
                                               )}
                                             </div>
@@ -2283,7 +2283,7 @@ export default function DashboardPage() {
 
                                 {/* Bar chart */}
                                 <div style={{ marginTop: 32 }}>
-                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.05em" }}>Evolución de compras</div>
+                                  <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.05em" }}>Evolución de compras</div>
                                   {(() => {
                                     const bars = [
                                       { label: "Oct", amount: "$1.200", value: 1200 },
@@ -2312,7 +2312,7 @@ export default function DashboardPage() {
                                                 borderRadius: "4px 4px 0 0",
                                                 transition: "background 0.15s, height 0.2s",
                                               }} />
-                                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10 }}>{b.label}</div>
+                                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10 }}>{b.label}</div>
                                             </div>
                                           )
                                         })}
@@ -2363,8 +2363,8 @@ export default function DashboardPage() {
                                         </div>
                                         <div>
                                           <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 2 }}>{item.title}</div>
-                                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{item.date}</div>
-                                          {item.amount && <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginTop: 2 }}>{item.amount}</div>}
+                                          <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{item.date}</div>
+                                          {item.amount && <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, marginTop: 2 }}>{item.amount}</div>}
                                         </div>
                                       </div>
                                     )
@@ -2426,7 +2426,7 @@ export default function DashboardPage() {
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
                                 </svg>
-                                <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>Sin documentos adjuntos</div>
+                                <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 13 }}>Sin documentos adjuntos</div>
                                 <button style={{ border: "1px solid rgba(37,99,235,0.3)", color: "#2563EB", fontSize: 12, borderRadius: 6, padding: "7px 14px", background: "none", cursor: "pointer" }}>
                                   + Adjuntar archivo
                                 </button>
@@ -2474,7 +2474,7 @@ export default function DashboardPage() {
                             {/* Section label helper */}
                             {(() => {
                               const sLabel = (text: string) => (
-                                <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 10 }}>{text}</div>
+                                <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 10 }}>{text}</div>
                               )
                               const infoCard = (content: React.ReactNode) => (
                                 <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.12)", borderRadius: 8, padding: 14, marginBottom: 20 }}>{content}</div>
@@ -2520,7 +2520,7 @@ export default function DashboardPage() {
                                         </div>
                                         <div>
                                           <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12 }}>{action}</div>
-                                          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginTop: 2 }}>{date}</div>
+                                          <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginTop: 2 }}>{date}</div>
                                         </div>
                                       </div>
                                     ))}
@@ -2553,11 +2553,11 @@ export default function DashboardPage() {
                       <div style={{ flex: 1, overflowY: "auto", padding: "24px 24px 100px" }}>
                         {(() => {
                           const inputStyle: React.CSSProperties = { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: "8px 12px", color: "white", fontSize: 13, width: "100%", outline: "none", boxSizing: "border-box" }
-                          const labelStyle: React.CSSProperties = { color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 6, display: "block" }
+                          const labelStyle: React.CSSProperties = { color: "rgba(255,255,255,0.7)", fontSize: 11, marginBottom: 6, display: "block" }
                           const sectionTitle: React.CSSProperties = { color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }
                           const field = (label: string, el: React.ReactNode, optional?: boolean) => (
                             <div style={{ marginBottom: 12 }}>
-                              <label style={labelStyle}>{label}{optional && <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, marginLeft: 4 }}>(opcional)</span>}</label>
+                              <label style={labelStyle}>{label}{optional && <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, marginLeft: 4 }}>(opcional)</span>}</label>
                               {el}
                             </div>
                           )
@@ -2589,7 +2589,7 @@ export default function DashboardPage() {
                                 <div style={{ marginBottom: 12 }}>
                                   <label style={labelStyle}>Etiquetas</label>
                                   <input style={inputStyle} placeholder="Cliente VIP, Distribuidor..." value={newTags} onChange={e => setNewTags(e.target.value)} onFocus={e => (e.target.style.borderColor = "rgba(37,99,235,0.5)")} onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.08)")} />
-                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, marginTop: 4 }}>Separadas por coma</div>
+                                  <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, marginTop: 4 }}>Separadas por coma</div>
                                 </div>
                               </div>
 
@@ -2607,7 +2607,7 @@ export default function DashboardPage() {
                                 <div style={{ marginBottom: 12 }}>
                                   <label style={labelStyle}>Ticket promedio</label>
                                   <div style={{ position: "relative" }}>
-                                    <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.4)", fontSize: 13, pointerEvents: "none" }}>$</span>
+                                    <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.7)", fontSize: 13, pointerEvents: "none" }}>$</span>
                                     <input type="number" style={{ ...inputStyle, paddingLeft: 24 }} placeholder="0" value={newTicket} onChange={e => setNewTicket(e.target.value)} onFocus={e => (e.target.style.borderColor = "rgba(37,99,235,0.5)")} onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.08)")} />
                                   </div>
                                 </div>
@@ -2615,7 +2615,7 @@ export default function DashboardPage() {
                                   <label style={labelStyle}>Frecuencia de compra</label>
                                   <div style={{ position: "relative" }}>
                                     <input type="number" style={{ ...inputStyle, paddingRight: 48 }} placeholder="30" value={newFrequency} onChange={e => setNewFrequency(e.target.value)} onFocus={e => (e.target.style.borderColor = "rgba(37,99,235,0.5)")} onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.08)")} />
-                                    <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.4)", fontSize: 13, pointerEvents: "none" }}>días</span>
+                                    <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.7)", fontSize: 13, pointerEvents: "none" }}>días</span>
                                   </div>
                                 </div>
                                 {field("Grupo / Cuenta B2B", <input style={inputStyle} placeholder="Ej: Grupo Herrera" value={newB2B} onChange={e => setNewB2B(e.target.value)} onFocus={e => (e.target.style.borderColor = "rgba(37,99,235,0.5)")} onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.08)")} />, true)}
@@ -2661,9 +2661,9 @@ export default function DashboardPage() {
                                       <div style={{
                                         width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 600,
                                         background: isActive ? "#2563EB" : isDone ? "rgba(37,99,235,0.2)" : "rgba(255,255,255,0.06)",
-                                        color: isActive ? "white" : isDone ? "#2563EB" : "rgba(255,255,255,0.3)",
+                                        color: isActive ? "white" : isDone ? "#2563EB" : "rgba(255,255,255,0.6)",
                                       }}>{n}</div>
-                                      <div style={{ fontSize: 11, color: isActive ? "white" : "rgba(255,255,255,0.3)", whiteSpace: "nowrap" }}>{n}. {label}</div>
+                                      <div style={{ fontSize: 11, color: isActive ? "white" : "rgba(255,255,255,0.6)", whiteSpace: "nowrap" }}>{n}. {label}</div>
                                     </div>
                                     {idx < steps.length - 1 && (
                                       <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)", marginTop: 10, marginLeft: 8, marginRight: 8 }} />
@@ -2698,8 +2698,8 @@ export default function DashboardPage() {
                                     <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
                                   </svg>
                                   <div style={{ color: "white", fontSize: 14, fontWeight: 500, marginTop: 12 }}>Arrastrá tu archivo aquí</div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 4 }}>o hacé clic para seleccionar</div>
-                                  <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 11, marginTop: 16 }}>Formatos aceptados: .xlsx .csv</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 4 }}>o hacé clic para seleccionar</div>
+                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginTop: 16 }}>Formatos aceptados: .xlsx .csv</div>
                                 </div>
 
                                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -2722,7 +2722,7 @@ export default function DashboardPage() {
                                   </svg>
                                   <div style={{ flex: 1 }}>
                                     <div style={{ color: "white", fontSize: 13 }}>clientes.xlsx</div>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>24 KB</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 2 }}>24 KB</div>
                                   </div>
                                   <button onClick={(e) => { e.stopPropagation(); setImportFile(false) }} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 16, lineHeight: 1, padding: 4 }}>×</button>
                                 </div>
@@ -2745,7 +2745,7 @@ export default function DashboardPage() {
                                 <thead>
                                   <tr style={{ background: "rgba(255,255,255,0.04)" }}>
                                     {["Nombre", "Empresa", "Email", "Teléfono", "Temperatura"].map(col => (
-                                      <th key={col} style={{ padding: "8px 12px", color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: "uppercase" as const, textAlign: "left" as const, fontWeight: 600, letterSpacing: "0.04em" }}>{col}</th>
+                                      <th key={col} style={{ padding: "8px 12px", color: "rgba(255,255,255,0.65)", fontSize: 11, textTransform: "uppercase" as const, textAlign: "left" as const, fontWeight: 600, letterSpacing: "0.04em" }}>{col}</th>
                                     ))}
                                   </tr>
                                 </thead>
@@ -2767,7 +2767,7 @@ export default function DashboardPage() {
                               </table>
                             </div>
 
-                            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>5 clientes detectados — 0 duplicados encontrados</div>
+                            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 12 }}>5 clientes detectados — 0 duplicados encontrados</div>
 
                             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
                               <button onClick={() => setImportStep(1)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.5)", fontSize: 13, borderRadius: 8, padding: "9px 20px", cursor: "pointer" }}>← Volver</button>
@@ -2783,7 +2783,7 @@ export default function DashboardPage() {
                               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
                             </svg>
                             <div style={{ color: "white", fontSize: 16, fontWeight: 600, marginTop: 4 }}>¡Importación exitosa!</div>
-                            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, textAlign: "center" }}>5 clientes agregados correctamente</div>
+                            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, textAlign: "center" }}>5 clientes agregados correctamente</div>
                             <button onClick={() => { setCrmView("list"); setImportStep(1); setImportFile(false) }} style={{ marginTop: 24, background: "#2563EB", color: "white", border: "none", borderRadius: 8, padding: "9px 24px", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
                               Ver clientes importados
                             </button>
@@ -2797,7 +2797,7 @@ export default function DashboardPage() {
                     <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
                       <div style={{ marginBottom: 24 }}>
                         <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Duplicados detectados</div>
-                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 4 }}>Revisá y unificá los registros</div>
+                        <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 4 }}>Revisá y unificá los registros</div>
                       </div>
 
                       {dupResolved.every(Boolean) ? (
@@ -2806,7 +2806,7 @@ export default function DashboardPage() {
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
                           </svg>
                           <div style={{ color: "white", fontSize: 14, fontWeight: 500 }}>Todo resuelto</div>
-                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>No hay más duplicados pendientes</div>
+                          <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12 }}>No hay más duplicados pendientes</div>
                           <button onClick={() => setCrmView("list")} style={{ marginTop: 20, background: "#2563EB", color: "white", border: "none", borderRadius: 8, padding: "9px 24px", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>Volver a clientes</button>
                         </div>
                       ) : (
@@ -2836,21 +2836,21 @@ export default function DashboardPage() {
                                   {miniAvatar(c.name)}
                                   <div>
                                     <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{c.name}</div>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{c.company}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{c.company}</div>
                                   </div>
                                 </div>
                                 <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 2 }}>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{c.email}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{c.phone}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{c.email}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{c.phone}</div>
                                 </div>
                               </div>
                             )
                             return (
                               <div key={gi} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 16, marginBottom: 16 }}>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Posible duplicado</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Posible duplicado</div>
                                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                                   {card(group.a)}
-                                  <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, flexShrink: 0 }}>vs</span>
+                                  <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, flexShrink: 0 }}>vs</span>
                                   {card(group.b)}
                                 </div>
                                 <div style={{ marginTop: 12, display: "flex", gap: 8, justifyContent: "flex-end" }}>
@@ -2980,10 +2980,10 @@ export default function DashboardPage() {
                                         {selectedClient.temp}
                                       </span>
                                     </div>
-                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginTop: 8 }}>
+                                    <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, marginTop: 8 }}>
                                       Último contacto: {selectedClient.lastContact}
                                     </div>
-                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginTop: 4 }}>
+                                    <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, marginTop: 4 }}>
                                       Ticket promedio: {selectedClient.ticket}
                                     </div>
                                   </div>
@@ -3003,7 +3003,7 @@ export default function DashboardPage() {
                               ].map(({ color, label }) => (
                                 <div key={label} style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6 }}>
                                   <div style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
-                                  <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>{label}</span>
+                                  <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 11 }}>{label}</span>
                                 </div>
                               ))}
                             </div>
@@ -3034,7 +3034,7 @@ export default function DashboardPage() {
                             outline: "none", boxSizing: "border-box",
                           }}
                         />
-                        <div style={{ marginTop: 20, marginBottom: 6, color: "rgba(255,255,255,0.3)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em" }}>Temperatura</div>
+                        <div style={{ marginTop: 20, marginBottom: 6, color: "rgba(255,255,255,0.6)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em" }}>Temperatura</div>
                         {(["Todos", "Caliente 🔴", "Tibio 🟡", "Frío 🔵"] as const).map((label) => {
                           const key = label.split(" ")[0] as Temp
                           const selected = crmTempFilter === key
@@ -3048,13 +3048,13 @@ export default function DashboardPage() {
                             }}>{label}</button>
                           )
                         })}
-                        <div style={{ marginTop: 20, marginBottom: 8, color: "rgba(255,255,255,0.3)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em" }}>Etiquetas</div>
+                        <div style={{ marginTop: 20, marginBottom: 8, color: "rgba(255,255,255,0.6)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em" }}>Etiquetas</div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                           {["Cliente VIP", "Distribuidor", "Nuevo"].map((tag) => (
                             <button key={tag} style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", borderRadius: 20, padding: "4px 10px", fontSize: 11, border: "none", cursor: "pointer" }}>{tag}</button>
                           ))}
                         </div>
-                        <div style={{ marginTop: 20, marginBottom: 8, color: "rgba(255,255,255,0.3)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em" }}>Vista</div>
+                        <div style={{ marginTop: 20, marginBottom: 8, color: "rgba(255,255,255,0.6)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em" }}>Vista</div>
                         {(["todos", "empresa"] as const).map((v) => (
                           <button key={v} onClick={() => setCrmGroupBy(v)} style={{
                             width: "100%", textAlign: "left", padding: "7px 10px", borderRadius: 6, fontSize: 13,
@@ -3073,7 +3073,7 @@ export default function DashboardPage() {
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                             <div>
                               <span style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Clientes</span>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{`${realClients.length} clientes`}</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 2 }}>{`${realClients.length} clientes`}</div>
                             </div>
                             {(["Lista", "Ranking"] as const).map((m) => (
                               <button key={m} onClick={() => setCrmListMode(m)} style={{
@@ -3128,7 +3128,7 @@ export default function DashboardPage() {
                               alignItems: 'center',
                               justifyContent: 'center',
                               padding: '32px',
-                              color: 'rgba(255,255,255,0.3)',
+                              color: 'rgba(255,255,255,0.6)',
                               fontSize: '13px',
                               gap: '8px',
                             }}>
@@ -3153,7 +3153,7 @@ export default function DashboardPage() {
                               const ticketVal = (t: string) => parseFloat(t.replace(/[$.,]/g, "")) || 0
                               const sorted = [...filtered].sort((a, b) => ticketVal(b.ticket) - ticketVal(a.ticket))
                               const maxTicket = ticketVal(sorted[0]?.ticket ?? "$0")
-                              const posColor = (i: number) => i === 0 ? "#2563EB" : i === 1 ? "rgba(255,255,255,0.5)" : i === 2 ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.2)"
+                              const posColor = (i: number) => i === 0 ? "#2563EB" : i === 1 ? "rgba(255,255,255,0.8)" : i === 2 ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.5)"
                               return sorted.map((client, i) => {
                                 const ts = TEMP_STYLES[client.temp]
                                 const pct = maxTicket > 0 ? (ticketVal(client.ticket) / maxTicket) * 100 : 0
@@ -3167,7 +3167,7 @@ export default function DashboardPage() {
                                       <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(37,99,235,0.2)", color: "#2563EB", fontSize: 12, fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{getInitials(client.name)}</div>
                                       <div style={{ flex: 1, minWidth: 0 }}>
                                         <div style={{ color: "white", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{client.name}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{client.company}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{client.company}</div>
                                       </div>
                                       <div style={{ color: "white", fontSize: 14, fontWeight: 500, flexShrink: 0, marginRight: 8 }}>{client.ticket}</div>
                                       <div style={{ background: ts.bg, color: ts.color, fontSize: 11, padding: "2px 8px", borderRadius: 20, flexShrink: 0 }}>{client.temp}</div>
@@ -3194,12 +3194,12 @@ export default function DashboardPage() {
                                   <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(37,99,235,0.2)", color: "#2563EB", fontSize: 12, fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{getInitials(client.name)}</div>
                                   <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ color: "white", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{client.name}</div>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{client.company}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{client.company}</div>
                                   </div>
                                   <div style={{ background: ts.bg, color: ts.color, fontSize: 11, padding: "2px 8px", borderRadius: 20, flexShrink: 0 }}>{client.temp}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, flexShrink: 0, width: 90, textAlign: "right" }}>{client.lastContact}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, flexShrink: 0, width: 70, textAlign: "right" }}>{client.ticket}</div>
-                                  <div style={{ width: 24, height: 24, borderRadius: "50%", background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.4)", fontSize: 11, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{client.seller}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, flexShrink: 0, width: 90, textAlign: "right" }}>{client.lastContact}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, flexShrink: 0, width: 70, textAlign: "right" }}>{client.ticket}</div>
+                                  <div style={{ width: 24, height: 24, borderRadius: "50%", background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)", fontSize: 11, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{client.seller}</div>
                                 </div>
                               )
                             }
@@ -3213,8 +3213,8 @@ export default function DashboardPage() {
                               return Object.entries(groups).map(([company, clients]) => (
                                 <div key={company}>
                                   <div style={{ background: "rgba(255,255,255,0.03)", padding: "6px 12px", display: "flex", alignItems: "center", gap: 8 }}>
-                                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em" }}>{company}</span>
-                                    <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 11 }}>({clients.length} {clients.length === 1 ? "cliente" : "clientes"})</span>
+                                    <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em" }}>{company}</span>
+                                    <span style={{ color: "rgba(255,255,255,0.55)", fontSize: 11 }}>({clients.length} {clients.length === 1 ? "cliente" : "clientes"})</span>
                                   </div>
                                   {clients.map((c) => <ClientRow key={c.id} client={c} indent />)}
                                 </div>
@@ -3353,7 +3353,7 @@ export default function DashboardPage() {
 
                   if (ventasView === "detail" && ventasSelectedOpp) {
                     const opp = ventasSelectedOpp
-                    const stageColor = STAGE_BADGE_COLOR[opp.stage] ?? "rgba(255,255,255,0.3)"
+                    const stageColor = STAGE_BADGE_COLOR[opp.stage] ?? "rgba(255,255,255,0.6)"
                     const stageBg    = STAGE_BADGE_BG[opp.stage]    ?? "rgba(255,255,255,0.06)"
                     const SELLER_MAP: Record<string, string> = { CA: "Carlos A.", MR: "María R.", JP: "Juan P." }
                     const JOURNEY_STEPS = [
@@ -3387,7 +3387,7 @@ export default function DashboardPage() {
                               <span style={{ color: "#2563EB", fontSize: 16, fontWeight: 600 }}>{opp.name.split(" ").map((w: string) => w[0]).slice(0,2).join("")}</span>
                             </div>
                             <div style={{ color: "white", fontSize: 16, fontWeight: 500 }}>{opp.name}</div>
-                            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginTop: 2 }}>{opp.company}</div>
+                            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, marginTop: 2 }}>{opp.company}</div>
                             <div style={{ color: "white", fontSize: 22, fontWeight: 600, marginTop: 12 }}>{opp.amount}</div>
                             <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
                               <span style={{ background: stageBg, color: stageColor, border: `1px solid ${stageColor}`, borderRadius: 20, padding: "4px 12px", fontSize: 12 }}>{opp.stage}</span>
@@ -3405,7 +3405,7 @@ export default function DashboardPage() {
                             ["ORIGEN", "Campaña digital"],
                           ].map(([label, value]) => (
                             <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                              <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", paddingTop: 1 }}>{label}</span>
+                              <span style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", paddingTop: 1 }}>{label}</span>
                               <span style={{ color: "white", fontSize: 12, textAlign: "right" as const, maxWidth: "55%" }}>{value}</span>
                             </div>
                           ))}
@@ -3431,17 +3431,17 @@ export default function DashboardPage() {
                             <div key={label} style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }}>
                               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
                                 {icon}
-                                <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{label}</span>
+                                <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{label}</span>
                               </div>
                               <div style={{ color: valueColor, fontSize: 13, fontWeight: 500 }}>{value}</div>
-                              {sub && <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 3 }}>{sub}</div>}
+                              {sub && <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 3 }}>{sub}</div>}
                             </div>
                           ))}
 
                           <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "16px 0" }} />
 
                           {/* Move stage */}
-                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Mover a</div>
+                          <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Mover a</div>
                           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" as const }}>
                             {STAGES_ALL.map(s => {
                               const sc = STAGE_BADGE_COLOR[s]
@@ -3478,8 +3478,8 @@ export default function DashboardPage() {
                                     <div style={{ position: "absolute", left: -20, top: 3, width: 10, height: 10, borderRadius: "50%", background: step.state === "future" ? "transparent" : "#2563EB", border: step.state === "future" ? "1px solid rgba(255,255,255,0.2)" : "none", boxShadow: step.state === "current" ? "0 0 0 3px rgba(37,99,235,0.2)" : "none", animation: step.state === "current" ? "pulse 2s infinite" : "none" }} />
                                     <div>
                                       <div style={{ color: step.state === "future" ? "rgba(255,255,255,0.35)" : "white", fontSize: 13, fontWeight: 500 }}>{step.title}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>{step.desc}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 3 }}>{step.date}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 2 }}>{step.desc}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 10, marginTop: 3 }}>{step.date}</div>
                                     </div>
                                   </div>
                                 ))}
@@ -3502,7 +3502,7 @@ export default function DashboardPage() {
                                       <div style={{ width: 28, height: 28, borderRadius: "50%", background: `${meta.color}1a`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{meta.icon}</div>
                                       <div>
                                         <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 2 }}>{act.title}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{act.date}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{act.date}</div>
                                       </div>
                                     </div>
                                   )
@@ -3520,7 +3520,7 @@ export default function DashboardPage() {
                                     <span style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>Enviada</span>
                                   </div>
                                   <div style={{ color: "white", fontSize: 18, fontWeight: 500, marginTop: 8 }}>{opp.amount}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 4 }}>Enviada hace 8 días</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 4 }}>Enviada hace 8 días</div>
                                   <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                                     <button style={{ border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.5)", fontSize: 12, borderRadius: 6, padding: "6px 14px", background: "none", cursor: "pointer" }}>Ver propuesta</button>
                                     <button style={{ background: "#2563EB", color: "white", border: "none", borderRadius: 6, padding: "6px 14px", fontSize: 12, cursor: "pointer" }}>Enviar recordatorio</button>
@@ -3546,7 +3546,7 @@ export default function DashboardPage() {
                   if (ventasView === "new") {
                     const STAGE_PROB: Record<string, number> = { Prospecto: 25, Propuesta: 50, Negociación: 75, Cerrado: 100 }
                     const inputStyle: React.CSSProperties = { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: "8px 12px", color: "white", fontSize: 13, width: "100%", outline: "none", boxSizing: "border-box" }
-                    const labelStyle: React.CSSProperties = { color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 6, display: "block" }
+                    const labelStyle: React.CSSProperties = { color: "rgba(255,255,255,0.7)", fontSize: 11, marginBottom: 6, display: "block" }
                     const field = (label: string, el: React.ReactNode) => (
                       <div style={{ marginBottom: 12 }}>
                         <label style={labelStyle}>{label}</label>
@@ -3571,8 +3571,8 @@ export default function DashboardPage() {
                                   onClick={() => setNewOppClientOpen(v => !v)}
                                   style={{ ...inputStyle, cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
                                 >
-                                  <span style={{ color: newOppClient ? "white" : "rgba(255,255,255,0.25)" }}>{newOppClient || "Seleccionar cliente..."}</span>
-                                  <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>▾</span>
+                                  <span style={{ color: newOppClient ? "white" : "rgba(255,255,255,0.55)" }}>{newOppClient || "Seleccionar cliente..."}</span>
+                                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 10 }}>▾</span>
                                 </div>
                                 {newOppClientOpen && (
                                   <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, background: "#0D0D14", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, zIndex: 50, overflow: "hidden" }}>
@@ -3595,7 +3595,7 @@ export default function DashboardPage() {
                                           </div>
                                           <div>
                                             <div style={{ color: "white", fontSize: 12 }}>{c.name}</div>
-                                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10 }}>{c.company}</div>
+                                            <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10 }}>{c.company}</div>
                                           </div>
                                         </div>
                                       ))}
@@ -3610,7 +3610,7 @@ export default function DashboardPage() {
                               {/* Monto */}
                               {field("Monto estimado",
                                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>$</span>
+                                  <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>$</span>
                                   <input type="number" placeholder="0" value={newOppAmount} onChange={e => setNewOppAmount(e.target.value)} style={{ ...inputStyle, flex: 1 }} />
                                 </div>
                               )}
@@ -3720,7 +3720,7 @@ export default function DashboardPage() {
                     return (
                       <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
                         <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Oportunidades en riesgo</div>
-                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 4, marginBottom: 24 }}>Requieren atención inmediata</div>
+                        <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 4, marginBottom: 24 }}>Requieren atención inmediata</div>
                         {RISK_OPPS.map((r, i) => {
                           const sc = STAGE_BADGE_COLOR[r.stage] ?? "rgba(255,255,255,0.3)"
                           const sb = STAGE_BADGE_BG[r.stage] ?? "rgba(255,255,255,0.06)"
@@ -3729,7 +3729,7 @@ export default function DashboardPage() {
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                                 <div>
                                   <div style={{ color: "white", fontSize: 14, fontWeight: 500 }}>{r.name}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>{r.company}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 2 }}>{r.company}</div>
                                 </div>
                                 <div style={{ textAlign: "right" as const }}>
                                   <div style={{ color: "white", fontSize: 16, fontWeight: 600 }}>{r.amount}</div>
@@ -3779,7 +3779,7 @@ export default function DashboardPage() {
                               alignItems: 'center',
                               justifyContent: 'center',
                               padding: '32px',
-                              color: 'rgba(255,255,255,0.3)',
+                              color: 'rgba(255,255,255,0.6)',
                               fontSize: '13px',
                               gap: '8px',
                             }}>
@@ -3798,22 +3798,22 @@ export default function DashboardPage() {
                           {/* Summary cards */}
                           <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
                             <div style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Pronóstico este mes</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Pronóstico este mes</div>
                               <div style={{ color: "white", fontSize: 20, fontWeight: 600, marginBottom: 8 }}>{fmtForecast(weightedForecast)}</div>
                               <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
                                 <div style={{ height: "100%", width: `${forecastProgress}%`, background: "rgba(37,99,235,0.6)", borderRadius: 2 }} />
                               </div>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginTop: 6 }}>{forecastProgress}% alcanzado</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, marginTop: 6 }}>{forecastProgress}% alcanzado</div>
                             </div>
                             <div style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Mejor escenario</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Mejor escenario</div>
                               <div style={{ color: "#22c55e", fontSize: 20, fontWeight: 600, marginBottom: 6 }}>{fmtForecast(bestScenario)}</div>
-                              <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Si cierran todas las oportunidades activas</div>
+                              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10 }}>Si cierran todas las oportunidades activas</div>
                             </div>
                             <div style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Peor escenario</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Peor escenario</div>
                               <div style={{ color: "#ef4444", fontSize: 20, fontWeight: 600, marginBottom: 6 }}>{fmtForecast(worstScenario)}</div>
-                              <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Solo oportunidades en negociación</div>
+                              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10 }}>Solo oportunidades en negociación</div>
                             </div>
                           </div>
 
@@ -3826,9 +3826,9 @@ export default function DashboardPage() {
                               { label: "Cerrado", value: closedWonAmount, color: STAGE_COLOR.Cerrado },
                             ] as const).map(({ label, value, color }) => (
                               <div key={label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6, borderTop: `2px solid ${color}`, paddingTop: 8 }}>{label}</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6, borderTop: `2px solid ${color}`, paddingTop: 8 }}>{label}</div>
                                 <div style={{ color: "white", fontSize: 16, fontWeight: 500 }}>{fmtForecast(value)}</div>
-                                <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, marginTop: 4 }}>
+                                <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, marginTop: 4 }}>
                                   {label === "Cerrado" ? "Ventas cerradas" : "Monto × probabilidad"}
                                 </div>
                               </div>
@@ -3861,18 +3861,18 @@ export default function DashboardPage() {
                                           )}
                                           <div style={{ flex: 1, height: Math.round((m.pron / maxVal) * H), background: m.forecast ? "rgba(37,99,235,0.08)" : "rgba(37,99,235,0.15)", border: m.forecast ? "1px dashed rgba(37,99,235,0.4)" : "1px solid rgba(37,99,235,0.2)", borderRadius: "4px 4px 0 0", boxSizing: "border-box" as const }} />
                                         </div>
-                                        <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 4 }}>{m.label}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 10, marginTop: 4 }}>{m.label}</div>
                                       </div>
                                     ))}
                                   </div>
                                   <div style={{ display: "flex", gap: 16, marginTop: 12 }}>
                                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                                       <div style={{ width: 10, height: 10, background: "rgba(37,99,235,0.5)", borderRadius: 2 }} />
-                                      <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>Real</span>
+                                      <span style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>Real</span>
                                     </div>
                                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                                       <div style={{ width: 10, height: 10, background: "transparent", border: "1px solid rgba(37,99,235,0.4)", borderRadius: 2 }} />
-                                      <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>Pronóstico</span>
+                                      <span style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>Pronóstico</span>
                                     </div>
                                   </div>
                                 </>
@@ -3893,7 +3893,7 @@ export default function DashboardPage() {
                                 <div>
                                   <div style={{ color: rec.color, fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 4 }}>{rec.priority} prioridad</div>
                                   <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{rec.title}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{rec.reason}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{rec.reason}</div>
                                   <button style={{ background: "none", border: "none", color: "#2563EB", fontSize: 11, cursor: "pointer", padding: 0, marginTop: 8 }}>Aplicar →</button>
                                 </div>
                               </div>
@@ -3901,7 +3901,7 @@ export default function DashboardPage() {
                             {/* Retargeting section */}
                             <div style={{ marginTop: 24 }}>
                               <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 6 }}>✦ Retargeting interno</div>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Clientes que compraron antes y están fuera de su ciclo habitual</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 16 }}>Clientes que compraron antes y están fuera de su ciclo habitual</div>
                               {[
                                 { name: "Ana Rodríguez",  company: "Sin empresa",      last: "31 días", cycle: "20 días", overdue: "+11 días fuera de ciclo" },
                                 { name: "Valentina Cruz",  company: "Sin empresa",      last: "45 días", cycle: "30 días", overdue: "+15 días fuera de ciclo" },
@@ -3917,8 +3917,8 @@ export default function DashboardPage() {
                                       </div>
                                       <div>
                                         <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{r.name}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{r.company}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 4 }}>Último pedido hace {r.last} · Ciclo promedio: {r.cycle}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{r.company}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 4 }}>Último pedido hace {r.last} · Ciclo promedio: {r.cycle}</div>
                                       </div>
                                     </div>
                                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
@@ -3940,7 +3940,7 @@ export default function DashboardPage() {
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
                             <div>
                               <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Comisiones</div>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Mayo 2026</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 2 }}>Mayo 2026</div>
                             </div>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               <button onClick={() => setShowCommModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid rgba(255,255,255,0.1)", background: "none", color: "rgba(255,255,255,0.4)", fontSize: 12, borderRadius: 6, padding: "6px 12px", cursor: "pointer" }}>
@@ -3950,7 +3950,7 @@ export default function DashboardPage() {
                                 Configurar comisiones
                               </button>
                               <button style={{ background: "rgba(255,255,255,0.08)", border: "none", color: "rgba(255,255,255,0.4)", borderRadius: 6, padding: "4px 8px", fontSize: 13, cursor: "pointer" }}>←</button>
-                              <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>Mayo 2026</span>
+                              <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>Mayo 2026</span>
                               <button style={{ background: "rgba(255,255,255,0.08)", border: "none", color: "rgba(255,255,255,0.4)", borderRadius: 6, padding: "4px 8px", fontSize: 13, cursor: "pointer" }}>→</button>
                             </div>
                           </div>
@@ -3966,7 +3966,7 @@ export default function DashboardPage() {
                                 </div>
 
                                 {/* Section 1 — Tipo */}
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 8 }}>Tipo de comisión</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 8 }}>Tipo de comisión</div>
                                 {[
                                   { label: "Porcentaje fijo por vendedor",   desc: "Cada vendedor tiene su propio %" },
                                   { label: "Porcentaje por tramo de venta",  desc: "El % cambia según el monto vendido" },
@@ -3978,7 +3978,7 @@ export default function DashboardPage() {
                                     </div>
                                     <div>
                                       <div style={{ color: "white", fontSize: 13 }}>{opt.label}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{opt.desc}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 2 }}>{opt.desc}</div>
                                     </div>
                                   </div>
                                 ))}
@@ -3988,7 +3988,7 @@ export default function DashboardPage() {
                                 {/* Section 2a — Porcentaje por vendedor */}
                                 {commType === 0 && (
                                   <div>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 12 }}>Comisión por vendedor</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 12 }}>Comisión por vendedor</div>
                                     {[{ id: "JP", name: "Juan Pérez" }, { id: "CA", name: "Carlos Acosta" }, { id: "MR", name: "María Ruiz" }].map(s => (
                                       <div key={s.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -3999,7 +3999,7 @@ export default function DashboardPage() {
                                         </div>
                                         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                                           <input type="number" value={commRates[s.id]} onChange={e => setCommRates(prev => ({ ...prev, [s.id]: e.target.value }))} style={{ width: 60, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "6px 10px", color: "white", fontSize: 13, textAlign: "right" as const, outline: "none" }} />
-                                          <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>%</span>
+                                          <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>%</span>
                                         </div>
                                       </div>
                                     ))}
@@ -4009,13 +4009,13 @@ export default function DashboardPage() {
                                 {/* Section 2b — Tramos */}
                                 {commType === 1 && (
                                   <div>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 12 }}>Tramos</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 12 }}>Tramos</div>
                                     {[["Hasta $10.000", "6"], ["Hasta $30.000", "8"], ["Más de $30.000", "10"]].map(([label, pct], i) => (
                                       <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                                         <input defaultValue={label} style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "6px 10px", color: "white", fontSize: 12, outline: "none" }} />
-                                        <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>→</span>
+                                        <span style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>→</span>
                                         <input defaultValue={pct} type="number" style={{ width: 56, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "6px 10px", color: "white", fontSize: 13, textAlign: "right" as const, outline: "none" }} />
-                                        <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>%</span>
+                                        <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>%</span>
                                       </div>
                                     ))}
                                     <button style={{ background: "none", border: "none", color: "#2563EB", fontSize: 11, cursor: "pointer", padding: 0, marginTop: 4 }}>+ Agregar tramo</button>
@@ -4025,9 +4025,9 @@ export default function DashboardPage() {
                                 {/* Section 2c — Monto fijo */}
                                 {commType === 2 && (
                                   <div>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 12 }}>Monto fijo por venta</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 12 }}>Monto fijo por venta</div>
                                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                      <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>$</span>
+                                      <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>$</span>
                                       <input type="number" defaultValue="500" style={{ width: 120, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "6px 10px", color: "white", fontSize: 13, outline: "none" }} />
                                     </div>
                                   </div>
@@ -4036,7 +4036,7 @@ export default function DashboardPage() {
                                 <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "20px 0" }} />
 
                                 {/* Section 3 — Periodicidad */}
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 8 }}>Pago de comisiones</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 8 }}>Pago de comisiones</div>
                                 {[
                                   { label: "Mensual — al cierre del mes" },
                                   { label: "Por venta — al cerrar cada venta" },
@@ -4066,9 +4066,9 @@ export default function DashboardPage() {
                               { label: "Tasa promedio",    value: "8%",  valueSize: 20, valueColor: "white", sub: "Sobre ventas cerradas" },
                             ].map(({ label, value, valueSize, valueColor, sub }) => (
                               <div key={label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>{label}</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>{label}</div>
                                 <div style={{ color: valueColor, fontSize: valueSize, fontWeight: 500, marginBottom: 6 }}>{value}</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{sub}</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{sub}</div>
                               </div>
                             ))}
                           </div>
@@ -4091,7 +4091,7 @@ export default function DashboardPage() {
                                 {/* Header */}
                                 <div style={{ ...gridStyle, background: "rgba(255,255,255,0.03)", padding: "10px 16px" }}>
                                   {["Vendedor", "Ventas", "Monto total", "Tasa", "Comisión", "Estado"].map(col => (
-                                    <div key={col} style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{col}</div>
+                                    <div key={col} style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{col}</div>
                                   ))}
                                 </div>
                                 {/* Rows */}
@@ -4112,7 +4112,7 @@ export default function DashboardPage() {
                                         </div>
                                         <div style={{ color: "white", fontSize: 13 }}>{seller.ventas}</div>
                                         <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{seller.monto}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{seller.tasa}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 13 }}>{seller.tasa}</div>
                                         <div style={{ color: "#22c55e", fontSize: 13, fontWeight: 500 }}>{seller.comision}</div>
                                         <div>
                                           <span style={{ background: es.bg, color: es.color, border: `1px solid ${es.border}`, borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>{seller.estado}</span>
@@ -4124,7 +4124,7 @@ export default function DashboardPage() {
                                             <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0" }}>
                                               <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>{client}</span>
                                               <div style={{ display: "flex", gap: 12 }}>
-                                                <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{amount}</span>
+                                                <span style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{amount}</span>
                                                 <span style={{ color: "#22c55e", fontSize: 11 }}>→ {comm}</span>
                                               </div>
                                             </div>
@@ -4158,7 +4158,7 @@ export default function DashboardPage() {
                                 <div key={i} style={{ flex: 1, background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.12)", borderRadius: 10, padding: 14 }}>
                                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{iconPath}</svg>
                                   <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginTop: 6 }}>{title}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{text}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{text}</div>
                                 </div>
                               ))}
                             </div>
@@ -4196,18 +4196,18 @@ export default function DashboardPage() {
                               <div style={{ position: "fixed" as const, inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setShowGoalsModal(false)}>
                                 <div style={{ background: "#0f1e35", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, padding: 24, width: 420, maxHeight: "85vh", overflowY: "auto" as const }} onClick={e => e.stopPropagation()}>
                                   <div style={{ color: "white", fontSize: 16, fontWeight: 500 }}>Metas de ventas</div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 20, marginTop: 2 }}>Mayo 2026</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 20, marginTop: 2 }}>Mayo 2026</div>
 
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Tipo de meta</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Tipo de meta</div>
                                   {[["Por monto vendido — $", 0], ["Por cantidad de ventas — unidades", 1]].map(([label, val]) => (
                                     <div key={val} onClick={() => setGoalsType(val as 0 | 1)} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 8, border: `1px solid ${goalsType === val ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`, background: goalsType === val ? "rgba(37,99,235,0.1)" : "rgba(255,255,255,0.02)", cursor: "pointer", marginBottom: 8, transition: "all 0.15s" }}>
                                       <div style={{ width: 14, height: 14, borderRadius: "50%", border: `2px solid ${goalsType === val ? "#2563EB" : "rgba(255,255,255,0.2)"}`, background: goalsType === val ? "#2563EB" : "transparent", transition: "all 0.15s" }} />
-                                      <span style={{ color: goalsType === val ? "white" : "rgba(255,255,255,0.5)", fontSize: 13 }}>{label}</span>
+                                      <span style={{ color: goalsType === val ? "white" : "rgba(255,255,255,0.8)", fontSize: 13 }}>{label}</span>
                                     </div>
                                   ))}
 
                                   <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "16px 0" }} />
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Meta por vendedor</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Meta por vendedor</div>
                                   {SELLERS.map(s => {
                                     const goalVal = parseInt(goalRates[s.key]?.replace(/\D/g,"") || "50000")
                                     const pct = Math.round((s.montoNum / goalVal) * 100)
@@ -4217,33 +4217,33 @@ export default function DashboardPage() {
                                           <div style={{ width: 30, height: 30, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", fontSize: 11, fontWeight: 700 }}>{s.key}</div>
                                           <div>
                                             <div style={{ color: "white", fontSize: 13 }}>{s.name}</div>
-                                            <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Progreso actual: {s.monto} ({pct}%)</div>
+                                            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10 }}>Progreso actual: {s.monto} ({pct}%)</div>
                                           </div>
                                         </div>
                                         <div style={{ position: "relative" as const, width: 110 }}>
-                                          {goalsType === 0 && <span style={{ position: "absolute" as const, left: 10, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.4)", fontSize: 13, pointerEvents: "none" }}>$</span>}
+                                          {goalsType === 0 && <span style={{ position: "absolute" as const, left: 10, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.7)", fontSize: 13, pointerEvents: "none" }}>$</span>}
                                           <input type="text" value={goalRates[s.key] || ""} onChange={e => setGoalRates(p => ({ ...p, [s.key]: e.target.value }))}
                                             style={{ width: "100%", padding: goalsType === 0 ? "7px 8px 7px 22px" : "7px 50px 7px 8px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white", fontSize: 13, outline: "none", boxSizing: "border-box" as const }} />
-                                          {goalsType === 1 && <span style={{ position: "absolute" as const, right: 8, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.3)", fontSize: 11, pointerEvents: "none" }}>ventas</span>}
+                                          {goalsType === 1 && <span style={{ position: "absolute" as const, right: 8, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.6)", fontSize: 11, pointerEvents: "none" }}>ventas</span>}
                                         </div>
                                       </div>
                                     )
                                   })}
 
                                   <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "16px 0" }} />
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Meta global del equipo</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Meta global del equipo</div>
                                   <div style={{ marginBottom: 4 }}>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 5 }}>Meta total del equipo</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginBottom: 5 }}>Meta total del equipo</div>
                                     <div style={{ position: "relative" as const }}>
-                                      <span style={{ position: "absolute" as const, left: 10, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.4)", fontSize: 13, pointerEvents: "none" }}>$</span>
+                                      <span style={{ position: "absolute" as const, left: 10, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.7)", fontSize: 13, pointerEvents: "none" }}>$</span>
                                       <input type="text" value={goalTeam} onChange={e => setGoalTeam(e.target.value)}
                                         style={{ width: "100%", padding: "8px 8px 8px 22px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white", fontSize: 13, outline: "none", boxSizing: "border-box" as const }} />
                                     </div>
                                   </div>
-                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginTop: 4 }}>Suma de metas individuales: ${sumIndividual.toLocaleString("es-AR")}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginTop: 4 }}>Suma de metas individuales: ${sumIndividual.toLocaleString("es-AR")}</div>
 
                                   <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "16px 0" }} />
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Alertas</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Alertas</div>
                                   {[
                                     { label: "Alertar cuando un vendedor está por debajo del 50% a mitad de mes", on: goalsAlertBelow, toggle: () => setGoalsAlertBelow(p => !p) },
                                     { label: "Alertar cuando la meta global está en riesgo", on: goalsAlertRisk, toggle: () => setGoalsAlertRisk(p => !p) },
@@ -4266,7 +4266,7 @@ export default function DashboardPage() {
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                               <div>
                                 <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Rendimiento de vendedores</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3 }}>Mayo 2026 · 3 vendedores activos</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 3 }}>Mayo 2026 · 3 vendedores activos</div>
                               </div>
                               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                                 <select style={{ padding: "6px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "rgba(255,255,255,0.6)", fontSize: 12, outline: "none", cursor: "pointer" }}>
@@ -4283,17 +4283,17 @@ export default function DashboardPage() {
                             <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 12, padding: 18, marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20 }}>
                               <div>
                                 <div style={{ color: "white", fontSize: 14, fontWeight: 500 }}>Meta global del equipo</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Mayo 2026</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 2 }}>Mayo 2026</div>
                               </div>
                               <div style={{ flex: 1, maxWidth: 300 }}>
                                 <div style={{ height: 8, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden", marginBottom: 8 }}>
                                   <div style={{ width: `${Math.min(teamPct, 100)}%`, height: "100%", background: "#2563EB", borderRadius: 4 }} />
                                 </div>
-                                <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{fmtNum(totalActual)} de {fmtNum(teamGoalNum)}</div>
+                                <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 12 }}>{fmtNum(totalActual)} de {fmtNum(teamGoalNum)}</div>
                               </div>
                               <div style={{ textAlign: "right" as const, flexShrink: 0 }}>
                                 <div style={{ color: "white", fontSize: 28, fontWeight: 600 }}>{teamPct}%</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>alcanzado</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 2 }}>alcanzado</div>
                               </div>
                             </div>
 
@@ -4312,20 +4312,20 @@ export default function DashboardPage() {
                                       <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{s.key}</div>
                                       <div>
                                         <div style={{ color: "white", fontSize: 14, fontWeight: 500 }}>{s.name}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{s.ventas} ventas este mes</div>
+                                        <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 2 }}>{s.ventas} ventas este mes</div>
                                       </div>
                                     </div>
                                     <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "14px 0" }} />
                                     {[["MONTO TOTAL", s.monto],["TASA DE CIERRE", s.cierre],["TICKET PROMEDIO", s.ticket],["TIEMPO CIERRE", s.tiempo]].map(([k, v]) => (
                                       <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                                        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{k}</span>
+                                        <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{k}</span>
                                         <span style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{v}</span>
                                       </div>
                                     ))}
                                     <div style={{ marginTop: 4 }}>
                                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                                        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>META MENSUAL</span>
-                                        <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 10 }}>{s.monto} / {fmtNum(goalVal)}</span>
+                                        <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>META MENSUAL</span>
+                                        <span style={{ color: "rgba(255,255,255,0.65)", fontSize: 10 }}>{s.monto} / {fmtNum(goalVal)}</span>
                                       </div>
                                       <div title={tooltip} style={{ width: "100%", height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden", cursor: "help" }}>
                                         <div style={{ width: `${Math.min(pct, 100)}%`, height: "100%", background: metaColor(pct), borderRadius: 2 }} />
@@ -4357,7 +4357,7 @@ export default function DashboardPage() {
                               <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: "8px 8px 0 0" }}>
                                 <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr 1fr", padding: "10px 16px" }}>
                                   {["VENDEDOR","VENTAS","MONTO","CIERRE %","TICKET","TIEMPO","VS MES ANT"].map(h => (
-                                    <span key={h} style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{h}</span>
+                                    <span key={h} style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{h}</span>
                                   ))}
                                 </div>
                               </div>
@@ -4386,7 +4386,7 @@ export default function DashboardPage() {
                                     <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{p.key}</div>
                                     <div>
                                       <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>{p.title}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{p.body}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 12 }}>{p.body}</div>
                                     </div>
                                   </div>
                                 ))}
@@ -4437,7 +4437,7 @@ export default function DashboardPage() {
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                               <div>
                                 <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Ventas por producto</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3 }}>Historial y análisis</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 3 }}>Historial y análisis</div>
                               </div>
                               <select style={{ padding: "6px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "rgba(255,255,255,0.6)", fontSize: 12, outline: "none", cursor: "pointer" }}>
                                 {["Mayo 2026","Abril 2026","Marzo 2026","Q2 2026"].map(m => <option key={m}>{m}</option>)}
@@ -4452,9 +4452,9 @@ export default function DashboardPage() {
                                 { label: "Mejor margen",         value: "Producto C", sub: "68% margen bruto" },
                               ].map(c => (
                                 <div key={c.label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px 16px" }}>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 6 }}>{c.label}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginBottom: 6 }}>{c.label}</div>
                                   <div style={{ color: "white", fontSize: 16, fontWeight: 500 }}>{c.value}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 4 }}>{c.sub}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 4 }}>{c.sub}</div>
                                 </div>
                               ))}
                             </div>
@@ -4468,7 +4468,7 @@ export default function DashboardPage() {
                               <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: "8px 8px 0 0" }}>
                                 <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr", padding: "10px 16px" }}>
                                   {["PRODUCTO","UNIDADES","INGRESOS","MARGEN","TENDENCIA","VS MES ANT"].map(h => (
-                                    <span key={h} style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{h}</span>
+                                    <span key={h} style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{h}</span>
                                   ))}
                                 </div>
                               </div>
@@ -4481,7 +4481,7 @@ export default function DashboardPage() {
                                     <div style={{ width: 8, height: 8, borderRadius: "50%", background: p.dot, flexShrink: 0 }} />
                                     <div>
                                       <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{p.name}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{p.cat}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{p.cat}</div>
                                     </div>
                                   </div>
                                   <span style={{ color: "white", fontSize: 13 }}>{p.units}</span>
@@ -4499,18 +4499,18 @@ export default function DashboardPage() {
                             {/* Product combos */}
                             <div style={{ marginTop: 24 }}>
                               <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Productos que se venden juntos</div>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Basado en historial de compras</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 16 }}>Basado en historial de compras</div>
                               {COMBOS.map(c => (
                                 <div key={c.a.name + c.b.name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px", marginBottom: 8 }}>
                                   <div>
                                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                                       <div style={{ width: 8, height: 8, borderRadius: "50%", background: c.a.dot }} />
                                       <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{c.a.name}</span>
-                                      <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>+</span>
+                                      <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>+</span>
                                       <div style={{ width: 8, height: 8, borderRadius: "50%", background: c.b.dot }} />
                                       <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{c.b.name}</span>
                                     </div>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 4 }}>Se compran juntos en el {c.pct} de los casos</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 4 }}>Se compran juntos en el {c.pct} de los casos</div>
                                   </div>
                                   <button style={{ padding: "5px 12px", background: "transparent", border: "1px solid rgba(37,99,235,0.3)", borderRadius: 6, color: "#2563EB", fontSize: 12, cursor: "pointer", flexShrink: 0 }}>Sugerir combo →</button>
                                 </div>
@@ -4531,7 +4531,7 @@ export default function DashboardPage() {
                                     <div>
                                       <div style={{ color: r.pColor, fontSize: 10, marginBottom: 3 }}>{r.prio}</div>
                                       <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 3 }}>{r.title}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{r.body}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 12 }}>{r.body}</div>
                                     </div>
                                   </div>
                                 ))}
@@ -4551,7 +4551,7 @@ export default function DashboardPage() {
                         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                           <div>
                             <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Pipeline</div>
-                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3 }}>{`${headerActiveOpps} oportunidades activas · $${headerTotalPipeline.toLocaleString()} en juego`}</div>
+                            <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 3 }}>{`${headerActiveOpps} oportunidades activas · $${headerTotalPipeline.toLocaleString()} en juego`}</div>
                           </div>
                           <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
                             {(["Kanban", "Embudo", "Ranking"] as const).map((m) => (
@@ -4585,7 +4585,7 @@ export default function DashboardPage() {
                           alignItems: 'center',
                           justifyContent: 'center',
                           padding: '32px',
-                          color: 'rgba(255,255,255,0.3)',
+                          color: 'rgba(255,255,255,0.6)',
                           fontSize: '13px',
                           gap: '8px',
                         }}>
@@ -4610,7 +4610,7 @@ export default function DashboardPage() {
                           { label: "Tiempo de cierre",value: "18 días",sub: "↓ 3 días menos",         subColor: "#22c55e" },
                         ].map(({ label, value, sub, subColor }) => (
                           <div key={label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
-                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>{label}</div>
+                            <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>{label}</div>
                             <div style={{ color: "white", fontSize: 18, fontWeight: 500, marginBottom: 4 }}>{value}</div>
                             <div style={{ color: subColor, fontSize: 11 }}>{sub}</div>
                           </div>
@@ -4642,7 +4642,7 @@ export default function DashboardPage() {
                           { pos: 4, name: "Luis Herrera",    company: "Sin empresa",       amount: "$3.500",  stage: "Prospecto",   prob: 30, days: 12, score: 52, action: "Calificar →" },
                           { pos: 5, name: "Valentina Cruz",  company: "Sin empresa",       amount: "$1.200",  stage: "Prospecto",   prob: 20, days: 20, score: 31, action: "Calificar →" },
                         ]
-                        const posColor = (p: number) => p === 1 ? "#2563EB" : p === 2 ? "rgba(255,255,255,0.6)" : p === 3 ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.2)"
+                        const posColor = (p: number) => p === 1 ? "#2563EB" : p === 2 ? "rgba(255,255,255,0.6)" : p === 3 ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.5)"
                         const probColor = (p: number) => p >= 75 ? "#22c55e" : p >= 50 ? "#eab308" : "#ef4444"
                         const scoreColor = (s: number) => s >= 90 ? "#22c55e" : s >= 70 ? "#2563EB" : s >= 50 ? "#eab308" : "#ef4444"
                         const STAGE_COLOR_MAP: Record<string, string> = { "Negociación": "#22c55e", "Propuesta": "#2563EB", "Prospecto": "#eab308", "Cerrado": "rgba(255,255,255,0.2)" }
@@ -4652,7 +4652,7 @@ export default function DashboardPage() {
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                               <div>
                                 <div style={{ color: "white", fontSize: 14, fontWeight: 500 }}>Oportunidades por prioridad</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3 }}>Ordenadas por IA según probabilidad, urgencia y valor</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 3 }}>Ordenadas por IA según probabilidad, urgencia y valor</div>
                               </div>
                               <select style={{ width: 180, padding: "6px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "rgba(255,255,255,0.6)", fontSize: 12, outline: "none", cursor: "pointer" }}>
                                 {["Prioridad IA","Mayor monto","Cierre más próximo","Mayor probabilidad"].map(o => <option key={o}>{o}</option>)}
@@ -4673,23 +4673,23 @@ export default function DashboardPage() {
                                   <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{r.name.split(" ").map(w => w[0]).join("").slice(0,2)}</div>
                                   <div style={{ minWidth: 0 }}>
                                     <div style={{ color: "white", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</div>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.company}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.company}</div>
                                     <span style={{ background: `${STAGE_COLOR_MAP[r.stage]}20`, color: STAGE_COLOR_MAP[r.stage], border: `1px solid ${STAGE_COLOR_MAP[r.stage]}40`, borderRadius: 4, padding: "1px 6px", fontSize: 10, marginTop: 2, display: "inline-block" }}>{r.stage}</span>
                                   </div>
                                 </div>
                                 {/* Amount */}
                                 <div>
-                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 3 }}>Monto</div>
+                                  <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 3 }}>Monto</div>
                                   <div style={{ color: "white", fontSize: 14, fontWeight: 600 }}>{r.amount}</div>
                                 </div>
                                 {/* Probability */}
                                 <div>
-                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 3 }}>Prob. cierre</div>
+                                  <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 3 }}>Prob. cierre</div>
                                   <div style={{ color: probColor(r.prob), fontSize: 14, fontWeight: 600 }}>{r.prob}%</div>
                                 </div>
                                 {/* Closing date */}
                                 <div>
-                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 3 }}>Cierre estimado</div>
+                                  <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em", marginBottom: 3 }}>Cierre estimado</div>
                                   <div style={{ color: r.days < 5 ? "#ef4444" : "white", fontSize: 13, fontWeight: 500 }}>En {r.days} días</div>
                                 </div>
                                 {/* AI priority bar */}
@@ -4698,7 +4698,7 @@ export default function DashboardPage() {
                                     <div style={{ width: `${r.score}%`, height: "100%", background: scoreColor(r.score), borderRadius: 3 }} />
                                   </div>
                                   <div style={{ color: scoreColor(r.score), fontSize: 11, fontWeight: 500 }}>{r.score}/100</div>
-                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Prioridad Pupi</div>
+                                  <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10 }}>Prioridad Pupi</div>
                                 </div>
                                 {/* Quick action */}
                                 <div>
@@ -4715,13 +4715,13 @@ export default function DashboardPage() {
                                   <div key={label} style={{ display: "contents" }}>
                                     <div style={{ flex: 1, textAlign: "center" as const }}>
                                       <div style={{ color: "white", fontSize: 16, fontWeight: 600 }}>{pct}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 4 }}>{label}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 4 }}>{label}</div>
                                     </div>
                                     {i < arr.length - 1 && <div style={{ width: 1, background: "rgba(255,255,255,0.06)", margin: "0 8px", alignSelf: "stretch" }} />}
                                   </div>
                                 ))}
                               </div>
-                              <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, textAlign: "center" as const, marginTop: 12 }}>La prioridad se recalcula automáticamente cada 24 horas</div>
+                              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, textAlign: "center" as const, marginTop: 12 }}>La prioridad se recalcula automáticamente cada 24 horas</div>
                             </div>
 
                             <div style={{ height: 16 }} />
@@ -4739,9 +4739,9 @@ export default function DashboardPage() {
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, borderTop: `2px solid ${STAGE_COLOR[stage]}`, paddingTop: 10 }}>
                                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                     <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{stage}</span>
-                                    <span style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.4)", borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>{cards.length}</span>
+                                    <span style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)", borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>{cards.length}</span>
                                   </div>
-                                  <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>{stageTotal(stage)}</span>
+                                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}>{stageTotal(stage)}</span>
                                 </div>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 10, overflowY: "auto" }}>
                                   {cards.map((opp) => {
@@ -4760,13 +4760,13 @@ export default function DashboardPage() {
                                         }}
                                       >
                                         <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{opp.name}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>{opp.company}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 2 }}>{opp.company}</div>
                                         <div style={{ color: "white", fontSize: 15, fontWeight: 500, marginTop: 10 }}>{opp.amount}</div>
                                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
                                           <div style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                                             <span style={{ color: "#2563EB", fontSize: 9, fontWeight: 600 }}>{opp.seller}</span>
                                           </div>
-                                          <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>{opp.close}</span>
+                                          <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 10 }}>{opp.close}</span>
                                         </div>
                                         <div style={{ marginTop: 10, height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
                                           <div style={{ height: "100%", width: `${opp.prob}%`, background: STAGE_FILL[stage], borderRadius: 2 }} />
@@ -4919,11 +4919,11 @@ export default function DashboardPage() {
                   const STATUS_STYLE: Record<CampStatus, { bg: string; color: string; border: string }> = {
                     Activa:     { bg: "rgba(34,197,94,0.1)",  color: "#22c55e", border: "rgba(34,197,94,0.2)"  },
                     Pausada:    { bg: "rgba(234,179,8,0.1)",  color: "#eab308", border: "rgba(234,179,8,0.2)"  },
-                    Finalizada: { bg: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.3)", border: "rgba(255,255,255,0.1)" },
-                    Borrador:   { bg: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.3)", border: "rgba(255,255,255,0.1)" },
+                    Finalizada: { bg: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.6)", border: "rgba(255,255,255,0.1)" },
+                    Borrador:   { bg: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.6)", border: "rgba(255,255,255,0.1)" },
                   }
                   const ROI_COLOR: Record<string, string> = { up: "#22c55e", down: "#ef4444", flat: "rgba(255,255,255,0.4)" }
-                  const filterLabel: React.CSSProperties = { color: "rgba(255,255,255,0.3)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
+                  const filterLabel: React.CSSProperties = { color: "rgba(255,255,255,0.6)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
                   const filteredCampaigns = CAMPAIGNS
                     .filter(c => mktStatusFilter === "Todas" || c.status === mktStatusFilter.replace(/\s.*/, ""))
                     .filter(c => mktChannelFilter === "Todos" || c.channel === mktChannelFilter)
@@ -4932,7 +4932,7 @@ export default function DashboardPage() {
                   // ── NEW CAMPAIGN FORM VIEW ──
                   if (mktView === "new") {
                     const inputStyle: React.CSSProperties = { width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "white", fontSize: 13, outline: "none", boxSizing: "border-box" as const, fontFamily: "inherit" }
-                    const labelStyle: React.CSSProperties = { color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 5, display: "block", textTransform: "uppercase" as const, letterSpacing: "0.04em" }
+                    const labelStyle: React.CSSProperties = { color: "rgba(255,255,255,0.7)", fontSize: 11, marginBottom: 5, display: "block", textTransform: "uppercase" as const, letterSpacing: "0.04em" }
                     const selectStyle: React.CSSProperties = { ...inputStyle, cursor: "pointer", appearance: "none" as const }
                     const CHANNELS: { key: string; label: string; color: string; icon: React.ReactNode }[] = [
                       { key: "Email",          label: "Email",    color: "#2563EB", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> },
@@ -5004,7 +5004,7 @@ export default function DashboardPage() {
                               <div>
                                 <label style={labelStyle}>Presupuesto</label>
                                 <div style={{ position: "relative" as const }}>
-                                  <span style={{ position: "absolute" as const, left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.4)", fontSize: 13, pointerEvents: "none" }}>$</span>
+                                  <span style={{ position: "absolute" as const, left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.7)", fontSize: 13, pointerEvents: "none" }}>$</span>
                                   <input type="number" value={newCampBudget} onChange={e => setNewCampBudget(e.target.value)} placeholder="0" style={{ ...inputStyle, paddingLeft: 24 }} />
                                 </div>
                               </div>
@@ -5014,11 +5014,11 @@ export default function DashboardPage() {
                                 <label style={labelStyle}>Período</label>
                                 <div style={{ display: "flex", gap: 12 }}>
                                   <div style={{ flex: 1 }}>
-                                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 4 }}>Inicio</div>
+                                    <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginBottom: 4 }}>Inicio</div>
                                     <input type="date" value={newCampStart} onChange={e => setNewCampStart(e.target.value)} style={{ ...inputStyle, colorScheme: "dark" }} />
                                   </div>
                                   <div style={{ flex: 1 }}>
-                                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 4 }}>Fin</div>
+                                    <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginBottom: 4 }}>Fin</div>
                                     <input type="date" value={newCampEnd} onChange={e => setNewCampEnd(e.target.value)} style={{ ...inputStyle, colorScheme: "dark" }} />
                                   </div>
                                 </div>
@@ -5045,7 +5045,7 @@ export default function DashboardPage() {
                                   <div style={{ color: "#2563EB", fontSize: 11 }}>
                                     {newCampSubject.length > 0 && `✦ Puntuación Pupi: ${subjectScore}/10 — ${scoreDesc[subjectScore]}`}
                                   </div>
-                                  <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10 }}>{newCampSubject.length}/60 caracteres</div>
+                                  <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 10 }}>{newCampSubject.length}/60 caracteres</div>
                                 </div>
                               </div>
 
@@ -5065,7 +5065,7 @@ export default function DashboardPage() {
                               <div>
                                 <label style={labelStyle}>Material adjunto</label>
                                 <div style={{ border: "1px dashed rgba(255,255,255,0.1)", borderRadius: 8, padding: 16, textAlign: "center" as const }}>
-                                  <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, marginBottom: 8 }}>Arrastrá imágenes o archivos</div>
+                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 8 }}>Arrastrá imágenes o archivos</div>
                                   <button style={{ padding: "5px 12px", fontSize: 11, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>+ Adjuntar</button>
                                 </div>
                               </div>
@@ -5079,10 +5079,10 @@ export default function DashboardPage() {
                                   { label: "CONVERSIONES",      suffix: "ventas", placeholder: "10", val: newCampTargetConv,  set: setNewCampTargetConv  },
                                 ].map(m => (
                                   <div key={m.label} style={{ flex: 1 }}>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginBottom: 5, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{m.label}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, marginBottom: 5, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{m.label}</div>
                                     <div style={{ position: "relative" as const }}>
                                       <input type="number" value={m.val} onChange={e => m.set(e.target.value)} placeholder={m.placeholder} style={{ ...inputStyle, paddingRight: m.suffix === "ventas" ? 48 : 28 }} />
-                                      <span style={{ position: "absolute" as const, right: 10, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.3)", fontSize: 11, pointerEvents: "none" }}>{m.suffix}</span>
+                                      <span style={{ position: "absolute" as const, right: 10, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.6)", fontSize: 11, pointerEvents: "none" }}>{m.suffix}</span>
                                     </div>
                                   </div>
                                 ))}
@@ -5116,18 +5116,18 @@ export default function DashboardPage() {
                     const st = STATUS_STYLE[camp.status as CampStatus]
                     const metricCard = (label: string, value: string, sub: string, color: string) => (
                       <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "12px 16px", flex: 1 }}>
-                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 4 }}>{label}</div>
+                        <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginBottom: 4 }}>{label}</div>
                         <div style={{ color, fontSize: 20, fontWeight: 700 }}>{value}</div>
-                        <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, marginTop: 2 }}>{sub}</div>
+                        <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, marginTop: 2 }}>{sub}</div>
                       </div>
                     )
                     const aiCard = (icon: string, label: string, value: string, valueColor: string, sub: string) => (
                       <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 10, padding: "12px 14px", display: "flex", gap: 12, alignItems: "flex-start" }}>
                         <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>{icon}</div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{label}</div>
+                          <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{label}</div>
                           <div style={{ color: valueColor, fontSize: 16, fontWeight: 700, marginTop: 1 }}>{value}</div>
-                          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginTop: 2 }}>{sub}</div>
+                          <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginTop: 2 }}>{sub}</div>
                         </div>
                       </div>
                     )
@@ -5180,7 +5180,7 @@ export default function DashboardPage() {
                               ["Segmento",      "Clientes activos"],
                             ].map(([k, v]) => (
                               <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>{k}</span>
+                                <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>{k}</span>
                                 <span style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 500 }}>{v}</span>
                               </div>
                             ))}
@@ -5189,7 +5189,7 @@ export default function DashboardPage() {
                           {/* Budget progress */}
                           <div>
                             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                              <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>Presupuesto ejecutado</span>
+                              <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}>Presupuesto ejecutado</span>
                               <span style={{ color: "white", fontSize: 11, fontWeight: 600 }}>65%</span>
                             </div>
                             <div style={{ height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 3, overflow: "hidden" }}>
@@ -5199,7 +5199,7 @@ export default function DashboardPage() {
 
                           {/* AI cards */}
                           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                            <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Análisis IA</div>
+                            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Análisis IA</div>
                             {aiCard("📈", "ROI",                  camp.roi === "→" ? "Plano" : camp.roi, ROI_COLOR[camp.roiDir], "vs. promedio de campañas")}
                             {aiCard("👥", "Clientes generados",   "8",    "white", "en este período")}
                             {aiCard("💰", "Costo por cliente",    "$195", "white", "por conversión")}
@@ -5230,7 +5230,7 @@ export default function DashboardPage() {
 
                                 {/* Line chart */}
                                 <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "16px 20px" }}>
-                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 12, display: "flex", gap: 16 }}>
+                                  <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, marginBottom: 12, display: "flex", gap: 16 }}>
                                     <span style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 10, height: 2, background: "#2563EB", display: "inline-block", borderRadius: 2 }}/>Aperturas</span>
                                     <span style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 10, height: 2, background: "#22c55e", display: "inline-block", borderRadius: 2 }}/>Clicks</span>
                                   </div>
@@ -5252,18 +5252,18 @@ export default function DashboardPage() {
 
                                 {/* Funnel */}
                                 <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "16px 20px" }}>
-                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 14 }}>Embudo de conversión</div>
+                                  <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, marginBottom: 14 }}>Embudo de conversión</div>
                                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                                     {funnel.map((f, i) => {
                                       const colors = ["#2563EB","#3b82f6","#60a5fa","#22c55e"]
                                       return (
                                         <div key={f.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                          <div style={{ width: 90, color: "rgba(255,255,255,0.4)", fontSize: 11, textAlign: "right" as const, flexShrink: 0 }}>{f.label}</div>
+                                          <div style={{ width: 90, color: "rgba(255,255,255,0.7)", fontSize: 11, textAlign: "right" as const, flexShrink: 0 }}>{f.label}</div>
                                           <div style={{ flex: 1, height: 20, background: "rgba(255,255,255,0.05)", borderRadius: 4, overflow: "hidden" }}>
                                             <div style={{ width: `${f.pct}%`, height: "100%", background: colors[i], borderRadius: 4, minWidth: 4 }} />
                                           </div>
                                           <div style={{ width: 56, color: "white", fontSize: 12, fontWeight: 600, textAlign: "right" as const, flexShrink: 0 }}>{f.val.toLocaleString()}</div>
-                                          <div style={{ width: 36, color: "rgba(255,255,255,0.3)", fontSize: 11, textAlign: "right" as const, flexShrink: 0 }}>{f.pct}%</div>
+                                          <div style={{ width: 36, color: "rgba(255,255,255,0.6)", fontSize: 11, textAlign: "right" as const, flexShrink: 0 }}>{f.pct}%</div>
                                         </div>
                                       )
                                     })}
@@ -5276,7 +5276,7 @@ export default function DashboardPage() {
                             {mktDetailTab === "Audiencia" && (
                               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                                 <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "16px 20px" }}>
-                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 12 }}>Segmento</div>
+                                  <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, marginBottom: 12 }}>Segmento</div>
                                   <div style={{ display: "flex", gap: 16, flexWrap: "wrap" as const }}>
                                     {[["Clientes activos","68%"],["Clientes inactivos","20%"],["Prospectos","12%"]].map(([seg, pct]) => (
                                       <div key={seg} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -5287,7 +5287,7 @@ export default function DashboardPage() {
                                   </div>
                                 </div>
                                 <div>
-                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Top respondentes</div>
+                                  <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginBottom: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Top respondentes</div>
                                   {[
                                     { name: "Farmacia Central",      email: "central@farmacia.com",   opens: 14 },
                                     { name: "Distribuidora Norte",   email: "norte@distribuidora.com",opens: 11 },
@@ -5297,7 +5297,7 @@ export default function DashboardPage() {
                                       <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{r.name[0]}</div>
                                       <div style={{ flex: 1, minWidth: 0 }}>
                                         <div style={{ color: "white", fontSize: 13 }}>{r.name}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>{r.email}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}>{r.email}</div>
                                       </div>
                                       <div style={{ color: "#60a5fa", fontSize: 12, fontWeight: 600 }}>{r.opens} aperturas</div>
                                     </div>
@@ -5310,18 +5310,18 @@ export default function DashboardPage() {
                             {mktDetailTab === "Contenido" && (
                               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                                 <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "16px 20px" }}>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 4 }}>Asunto del email</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginBottom: 4 }}>Asunto del email</div>
                                   <div style={{ color: "white", fontSize: 14, fontWeight: 500, marginBottom: 12 }}>🌸 ¡Llegó la Primavera! Descubrí nuestras novedades</div>
                                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                    <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>Puntuación IA</span>
+                                    <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>Puntuación IA</span>
                                     <div style={{ display: "flex", gap: 2 }}>
                                       {[1,2,3,4,5].map(s => <span key={s} style={{ color: s <= 4 ? "#eab308" : "rgba(255,255,255,0.15)", fontSize: 16 }}>★</span>)}
-                                      <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginLeft: 6, alignSelf: "center" }}>4/5</span>
+                                      <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, marginLeft: 6, alignSelf: "center" }}>4/5</span>
                                     </div>
                                   </div>
                                 </div>
                                 <div>
-                                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Sugerencias IA</div>
+                                  <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginBottom: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Sugerencias IA</div>
                                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const }}>
                                     {["Agregar CTA más específico", "Reducir longitud en 20%"].map(sug => (
                                       <span key={sug} style={{ background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 20, padding: "5px 12px", color: "#60a5fa", fontSize: 12 }}>{sug}</span>
@@ -5334,7 +5334,7 @@ export default function DashboardPage() {
                             {/* ── NOTAS ── */}
                             {mktDetailTab === "Notas" && (
                               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                                <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>Notas internas de la campaña</div>
+                                <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>Notas internas de la campaña</div>
                                 <textarea placeholder="Escribí tus notas aquí..." style={{ width: "100%", minHeight: 180, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, color: "white", fontSize: 13, padding: "12px 14px", resize: "vertical" as const, outline: "none", boxSizing: "border-box" as const, fontFamily: "inherit" }} />
                               </div>
                             )}
@@ -5373,10 +5373,10 @@ export default function DashboardPage() {
                           <div style={{ position: "fixed" as const, inset: 0, background: "rgba(0,0,0,0.65)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setShowExportModal(false)}>
                             <div style={{ background: "#0f1e35", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, padding: 24, width: 480, maxHeight: "88vh", overflowY: "auto" as const }} onClick={e => e.stopPropagation()}>
                               <div style={{ color: "white", fontSize: 16, fontWeight: 500 }}>Exportar reporte</div>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 20, marginTop: 2 }}>Generado por Pupi AI</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 20, marginTop: 2 }}>Generado por Pupi AI</div>
 
                               {/* Checkboxes */}
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>¿Qué querés exportar?</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>¿Qué querés exportar?</div>
                               {[
                                 ["Resumen de campañas",     "Performance, ROI y métricas clave"],
                                 ["Análisis por canal",       "Comparativo de todos los canales"],
@@ -5392,14 +5392,14 @@ export default function DashboardPage() {
                                   <div style={{ flex: 1 }}>
                                     <div style={{ color: "white", fontSize: 13 }}>{label}</div>
                                   </div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textAlign: "right" as const, maxWidth: 160 }}>{desc}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, textAlign: "right" as const, maxWidth: 160 }}>{desc}</div>
                                 </div>
                               ))}
 
                               <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "20px 0" }} />
 
                               {/* Period */}
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Período</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Período</div>
                               <div style={{ display: "flex", gap: 6, marginBottom: exportPeriod === "Personalizado" ? 12 : 0 }}>
                                 {["Este mes","Último trimestre","Este año","Personalizado"].map(p => (
                                   <button key={p} onClick={() => setExportPeriod(p)} style={{ padding: "6px 12px", fontSize: 12, borderRadius: 6, border: `1px solid ${exportPeriod === p ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`, background: exportPeriod === p ? "rgba(37,99,235,0.1)" : "transparent", color: exportPeriod === p ? "#2563EB" : "rgba(255,255,255,0.4)", cursor: "pointer", transition: "all 0.15s" }}>{p}</button>
@@ -5408,11 +5408,11 @@ export default function DashboardPage() {
                               {exportPeriod === "Personalizado" && (
                                 <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
                                   <div style={{ flex: 1 }}>
-                                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 4 }}>Desde</div>
+                                    <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginBottom: 4 }}>Desde</div>
                                     <input type="date" value={exportCustomFrom} onChange={e => setExportCustomFrom(e.target.value)} style={{ width: "100%", padding: "7px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white", fontSize: 12, outline: "none", colorScheme: "dark", boxSizing: "border-box" as const }} />
                                   </div>
                                   <div style={{ flex: 1 }}>
-                                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginBottom: 4 }}>Hasta</div>
+                                    <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginBottom: 4 }}>Hasta</div>
                                     <input type="date" value={exportCustomTo} onChange={e => setExportCustomTo(e.target.value)} style={{ width: "100%", padding: "7px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white", fontSize: 12, outline: "none", colorScheme: "dark", boxSizing: "border-box" as const }} />
                                   </div>
                                 </div>
@@ -5421,7 +5421,7 @@ export default function DashboardPage() {
                               <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "20px 0" }} />
 
                               {/* Format */}
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Formato</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Formato</div>
                               {[
                                 { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>, label: "Reporte PDF",      desc: "Ideal para presentaciones y reuniones con clientes" },
                                 { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>, label: "Planilla Excel",   desc: "Datos crudos para análisis personalizado" },
@@ -5431,7 +5431,7 @@ export default function DashboardPage() {
                                   <div style={{ marginTop: 2 }}>{f.icon}</div>
                                   <div>
                                     <div style={{ color: "white", fontSize: 13 }}>{f.label}</div>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{f.desc}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 2 }}>{f.desc}</div>
                                   </div>
                                   <div style={{ marginLeft: "auto", width: 14, height: 14, borderRadius: "50%", border: `2px solid ${exportFormat === i ? "#2563EB" : "rgba(255,255,255,0.2)"}`, background: exportFormat === i ? "#2563EB" : "transparent", flexShrink: 0, marginTop: 3 }} />
                                 </div>
@@ -5440,7 +5440,7 @@ export default function DashboardPage() {
                               <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "20px 0" }} />
 
                               {/* Personalización */}
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Personalización</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>Personalización</div>
                               {[
                                 { label: "Incluir logo de la empresa", on: exportLogo, toggle: () => setExportLogo(p => !p) },
                                 { label: "Incluir marca Pupi AI",      on: exportBrand, toggle: () => setExportBrand(p => !p) },
@@ -5453,17 +5453,17 @@ export default function DashboardPage() {
                                 </div>
                               ))}
                               <div style={{ marginTop: 12 }}>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 5 }}>Título del reporte</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginBottom: 5 }}>Título del reporte</div>
                                 <input type="text" value={exportTitle} onChange={e => setExportTitle(e.target.value)} placeholder="Reporte de Marketing — Mayo 2026" style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white", fontSize: 13, outline: "none", boxSizing: "border-box" as const }} />
                               </div>
 
                               {/* Preview card */}
                               <div style={{ marginTop: 16, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 16 }}>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Vista previa</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Vista previa</div>
                                 <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: 16, textAlign: "center" as const }}>
                                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block", margin: "0 auto" }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, marginTop: 10 }}>{exportTitle || "Reporte de Marketing — Mayo 2026"}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, marginTop: 4 }}>{exportChecks.filter(Boolean).length} secciones · {["PDF","Excel","PowerPoint"][exportFormat]} · ~{exportChecks.filter(Boolean).length + 2} páginas</div>
+                                  <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, marginTop: 10 }}>{exportTitle || "Reporte de Marketing — Mayo 2026"}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, marginTop: 4 }}>{exportChecks.filter(Boolean).length} secciones · {["PDF","Excel","PowerPoint"][exportFormat]} · ~{exportChecks.filter(Boolean).length + 2} páginas</div>
                                   <div style={{ color: "#2563EB", fontSize: 11, marginTop: 6 }}>✦ Generado por Pupi AI</div>
                                 </div>
                               </div>
@@ -5533,10 +5533,10 @@ export default function DashboardPage() {
                         const STATUS_STYLE: Record<ResStatus, { bg: string; color: string; border: string }> = {
                           "En proceso": { bg: "rgba(37,99,235,0.1)",    color: "#2563EB", border: "rgba(37,99,235,0.2)"  },
                           "Finalizado": { bg: "rgba(34,197,94,0.1)",    color: "#22c55e", border: "rgba(34,197,94,0.2)"  },
-                          "Archivado":  { bg: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.3)", border: "rgba(255,255,255,0.1)" },
+                          "Archivado":  { bg: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.6)", border: "rgba(255,255,255,0.1)" },
                         }
                         const AUTHOR_MAP: Record<string, string> = { "JP": "JP — Juan Pérez", "CA": "CA — Carlos Acosta", "MR": "MR — María Ruiz", "Consultor externo": "Consultor externo" }
-                        const filterLabel: React.CSSProperties = { color: "rgba(255,255,255,0.3)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
+                        const filterLabel: React.CSSProperties = { color: "rgba(255,255,255,0.6)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
                         const filtered = RESEARCH
                           .filter(r => !resSearch || r.title.toLowerCase().includes(resSearch.toLowerCase()))
                           .filter(r => resTipoFilter === "Todos" || r.type === resTipoFilter)
@@ -5590,7 +5590,7 @@ export default function DashboardPage() {
                                     ["ARCHIVOS", `${r.files} ${r.files === 1 ? "archivo" : "archivos"}`],
                                   ].map(([k, v]) => (
                                     <div key={k} style={{ display: "flex", justifyContent: "space-between" }}>
-                                      <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>{k}</span>
+                                      <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}>{k}</span>
                                       <span style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, fontWeight: 500, textAlign: "right" as const, maxWidth: "60%" }}>{v}</span>
                                     </div>
                                   ))}
@@ -5598,13 +5598,13 @@ export default function DashboardPage() {
 
                                 {/* Files */}
                                 <div style={{ padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Archivos adjuntos</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Archivos adjuntos</div>
                                   {FILES_DATA.slice(0, r.files).map(f => (
                                     <div key={f.name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={f.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                                       <div style={{ flex: 1, minWidth: 0 }}>
                                         <div style={{ color: "white", fontSize: 12, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.name}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>{f.size}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10 }}>{f.size}</div>
                                       </div>
                                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ cursor: "pointer" }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                     </div>
@@ -5614,10 +5614,10 @@ export default function DashboardPage() {
 
                                 {/* Tags */}
                                 <div style={{ padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Etiquetas</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Etiquetas</div>
                                   <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>
                                     {r.tags.map(tag => (
-                                      <span key={tag} style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "2px 8px", fontSize: 11, color: "rgba(255,255,255,0.5)" }}>{tag}</span>
+                                      <span key={tag} style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "2px 8px", fontSize: 11, color: "rgba(255,255,255,0.8)" }}>{tag}</span>
                                     ))}
                                   </div>
                                   <button style={{ marginTop: 8, background: "none", border: "none", color: "#2563EB", fontSize: 11, cursor: "pointer", padding: 0 }}>+ Agregar etiqueta</button>
@@ -5637,7 +5637,7 @@ export default function DashboardPage() {
                                         <div key={card.title} style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.12)", borderRadius: 8, padding: "10px 12px", display: "flex", gap: 8, alignItems: "flex-start" }}>
                                           <div style={{ marginTop: 2, flexShrink: 0 }}>{card.icon}</div>
                                           <div>
-                                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginBottom: 2 }}>{card.title}</div>
+                                            <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, marginBottom: 2 }}>{card.title}</div>
                                             <div style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{card.value}</div>
                                           </div>
                                         </div>
@@ -5646,7 +5646,7 @@ export default function DashboardPage() {
                                   ) : (
                                     <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: 14, textAlign: "center" as const }}>
                                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block", margin: "0 auto 8px" }}><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="10"/></svg>
-                                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, marginBottom: 10 }}>Sin análisis de IA</div>
+                                      <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, marginBottom: 10 }}>Sin análisis de IA</div>
                                       <button style={{ padding: "7px 14px", background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.25)", borderRadius: 6, color: "#2563EB", fontSize: 12, cursor: "pointer" }}>Analizar con Pupi</button>
                                     </div>
                                   )}
@@ -5668,13 +5668,13 @@ export default function DashboardPage() {
                                     <div>
                                       {/* Executive summary */}
                                       <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 18, marginBottom: 20 }}>
-                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Resumen ejecutivo</div>
+                                        <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Resumen ejecutivo</div>
                                         <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, lineHeight: 1.7, margin: 0 }}>El análisis de mercado Q2 2026 revela una demanda creciente en el segmento B2B, especialmente en la región norte. Se identificaron oportunidades de expansión en tres categorías de producto y un riesgo competitivo en el canal digital.</p>
                                         <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
                                           {[["284","EMPRESAS RELEVADAS"],["3","OPORTUNIDADES"],["1","RIESGO CRÍTICO"]].map(([v, l]) => (
                                             <div key={l} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, padding: "10px 12px" }}>
                                               <div style={{ color: "white", fontSize: 18, fontWeight: 600 }}>{v}</div>
-                                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginTop: 3, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{l}</div>
+                                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, marginTop: 3, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{l}</div>
                                             </div>
                                           ))}
                                         </div>
@@ -5696,7 +5696,7 @@ export default function DashboardPage() {
                                             </svg>
                                             <div>
                                               <div style={{ color: c.stroke, fontSize: 11, fontWeight: 500, marginBottom: 3 }}>{c.prio}</div>
-                                              <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.6 }}>{c.body}</div>
+                                              <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, lineHeight: 1.6 }}>{c.body}</div>
                                             </div>
                                           </div>
                                         ))}
@@ -5710,7 +5710,7 @@ export default function DashboardPage() {
                                             <div key={name} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20, padding: "5px 12px", cursor: "pointer" }}>
                                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                                               <span style={{ color: "white", fontSize: 12 }}>{name}</span>
-                                              <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>→</span>
+                                              <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}>→</span>
                                             </div>
                                           ))}
                                         </div>
@@ -5727,7 +5727,7 @@ export default function DashboardPage() {
                                           <div style={{ width: 22, height: 22, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 2 }}>{i + 1}</div>
                                           <div>
                                             <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{f.title}</div>
-                                            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{f.desc}</div>
+                                            <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{f.desc}</div>
                                             <span style={{ display: "inline-block", marginTop: 6, background: f.impactBg, color: f.impactColor, borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>{f.impact}</span>
                                           </div>
                                         </div>
@@ -5744,7 +5744,7 @@ export default function DashboardPage() {
                                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={f.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                                           <div style={{ flex: 1 }}>
                                             <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{f.name}</div>
-                                            <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>{f.size}</div>
+                                            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}>{f.size}</div>
                                           </div>
                                           <button style={{ padding: "4px 10px", background: "rgba(255,255,255,0.1)", border: "none", borderRadius: 6, color: "rgba(255,255,255,0.5)", fontSize: 11, cursor: "pointer" }}>Ver preview</button>
                                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ cursor: "pointer" }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -5756,7 +5756,7 @@ export default function DashboardPage() {
                                   {/* NOTAS TAB */}
                                   {resDetailTab === "Notas" && (
                                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                                      <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>Notas internas de la investigación</div>
+                                      <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>Notas internas de la investigación</div>
                                       <textarea placeholder="Escribí tus notas aquí..." style={{ width: "100%", minHeight: 180, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, color: "white", fontSize: 13, padding: "12px 14px", resize: "vertical" as const, outline: "none", boxSizing: "border-box" as const, fontFamily: "inherit" }} />
                                     </div>
                                   )}
@@ -5796,7 +5796,7 @@ export default function DashboardPage() {
                                   alignItems: 'center',
                                   justifyContent: 'center',
                                   padding: '32px',
-                                  color: 'rgba(255,255,255,0.3)',
+                                  color: 'rgba(255,255,255,0.6)',
                                   fontSize: '13px',
                                   gap: '8px',
                                 }}>
@@ -5815,7 +5815,7 @@ export default function DashboardPage() {
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexShrink: 0 }}>
                                 <div>
                                   <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Investigaciones</div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>{`${realResearch.length} investigaciones · ${researchInProgress} en proceso`}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 2 }}>{`${realResearch.length} investigaciones · ${researchInProgress} en proceso`}</div>
                                 </div>
                                 <button onClick={() => setMktView("newresearch")} style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Nueva investigación +</button>
                               </div>
@@ -5835,11 +5835,11 @@ export default function DashboardPage() {
                                       {/* Center */}
                                       <div style={{ flex: 1, minWidth: 0 }}>
                                         <div style={{ color: "white", fontSize: 14, fontWeight: 500, marginBottom: 3 }}>{r.title}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 6 }}>{r.type} · {r.author} · {r.date}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, lineHeight: 1.5, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>{r.desc}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginBottom: 6 }}>{r.type} · {r.author} · {r.date}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.75)", fontSize: 12, lineHeight: 1.5, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>{r.desc}</div>
                                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" as const, marginTop: 8 }}>
                                           {r.tags.map(tag => (
-                                            <span key={tag} style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "2px 8px", fontSize: 11, color: "rgba(255,255,255,0.5)" }}>{tag}</span>
+                                            <span key={tag} style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "2px 8px", fontSize: 11, color: "rgba(255,255,255,0.8)" }}>{tag}</span>
                                           ))}
                                         </div>
                                       </div>
@@ -5848,7 +5848,7 @@ export default function DashboardPage() {
                                         <span style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}`, borderRadius: 20, padding: "2px 10px", fontSize: 11 }}>{r.status}</span>
                                         <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
                                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                          <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>{r.files} {r.files === 1 ? "archivo" : "archivos"}</span>
+                                          <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}>{r.files} {r.files === 1 ? "archivo" : "archivos"}</span>
                                         </div>
                                         {r.ai && <span style={{ color: "#2563EB", fontSize: 11 }}>✦ Analizado por Pupi</span>}
                                       </div>
@@ -5874,7 +5874,7 @@ export default function DashboardPage() {
                               alignItems: 'center',
                               justifyContent: 'center',
                               padding: '32px',
-                              color: 'rgba(255,255,255,0.3)',
+                              color: 'rgba(255,255,255,0.6)',
                               fontSize: '13px',
                               gap: '8px',
                               marginBottom: 16,
@@ -5899,7 +5899,7 @@ export default function DashboardPage() {
                               { label: "Costo por cliente",     value: `$${Math.round(avgCostPerClient).toLocaleString()}`,  valueColor: "white",   sub: "↓ $40 vs mes anterior",       subColor: "#22c55e" },
                             ].map(c => (
                               <div key={c.label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px 16px" }}>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 6 }}>{c.label}</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginBottom: 6 }}>{c.label}</div>
                                 <div style={{ color: c.valueColor, fontSize: 20, fontWeight: 600 }}>{c.value}</div>
                                 <div style={{ color: c.subColor, fontSize: 11, marginTop: 4 }}>{c.sub}</div>
                               </div>
@@ -5920,12 +5920,12 @@ export default function DashboardPage() {
                                 <div style={{ width: 32, height: 32, borderRadius: "50%", background: ch.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{ch.icon}</div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                   <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{ch.label}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{ch.campañas} {ch.campañas === 1 ? "campaña" : "campañas"}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{ch.campañas} {ch.campañas === 1 ? "campaña" : "campañas"}</div>
                                 </div>
                                 <div style={{ flex: 1, maxWidth: 180, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
                                   <div style={{ width: `${ch.barPct}%`, height: "100%", background: ch.color, borderRadius: 2, minWidth: ch.barPct > 0 ? 4 : 0 }} />
                                 </div>
-                                <div style={{ width: 52, textAlign: "right" as const, flexShrink: 0, color: ch.roi > 0 ? "#22c55e" : ch.roi < 0 ? "#ef4444" : "rgba(255,255,255,0.3)", fontSize: 13, fontWeight: 500 }}>{ch.roi > 0 ? `+${ch.roi}%` : ch.roi < 0 ? `${ch.roi}%` : "—"}</div>
+                                <div style={{ width: 52, textAlign: "right" as const, flexShrink: 0, color: ch.roi > 0 ? "#22c55e" : ch.roi < 0 ? "#ef4444" : "rgba(255,255,255,0.6)", fontSize: 13, fontWeight: 500 }}>{ch.roi > 0 ? `+${ch.roi}%` : ch.roi < 0 ? `${ch.roi}%` : "—"}</div>
                               </div>
                             ))}
                           </div>
@@ -5943,10 +5943,10 @@ export default function DashboardPage() {
                               ].map(seg => (
                                 <div key={seg.name} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 16 }}>
                                   <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{seg.name}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 12 }}>{seg.count}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginBottom: 12 }}>{seg.count}</div>
                                   {seg.stats.map(([k, v]) => (
                                     <div key={k} style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                                      <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>{k}</span>
+                                      <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}>{k}</span>
                                       <span style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{v}</span>
                                     </div>
                                   ))}
@@ -5974,7 +5974,7 @@ export default function DashboardPage() {
                                   <div>
                                     <div style={{ color: r.pct, fontSize: 10, marginBottom: 3 }}>{r.prio}</div>
                                     <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 3 }}>{r.title}</div>
-                                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{r.body}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 12 }}>{r.body}</div>
                                   </div>
                                 </div>
                               ))}
@@ -6016,7 +6016,7 @@ export default function DashboardPage() {
                             return (
                               <div>
                                 <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>✦ Estacionalidad detectada</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 20 }}>Basado en historial de ventas de los últimos 12 meses</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 20 }}>Basado en historial de ventas de los últimos 12 meses</div>
 
                                 {/* Calendar grid */}
                                 <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 6, marginBottom: 12 }}>
@@ -6037,13 +6037,13 @@ export default function DashboardPage() {
                                         {/* Tooltip */}
                                         <div className="seas-tooltip" style={{ position: "absolute" as const, bottom: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)", background: "rgba(10,10,20,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", width: 170, zIndex: 50, opacity: 0, pointerEvents: "none", transition: "opacity 0.15s", textAlign: "left" as const, whiteSpace: "nowrap" as const }}>
                                           <div style={{ color: "white", fontSize: 12, fontWeight: 500, marginBottom: 2 }}>{tip.label}</div>
-                                          <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginBottom: 2 }}>{tip.avg} promedio histórico</div>
+                                          <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, marginBottom: 2 }}>{tip.avg} promedio histórico</div>
                                           <div style={{ color: tip.vs.startsWith("↑") ? "#22c55e" : "#ef4444", fontSize: 11 }}>{tip.vs}</div>
                                         </div>
                                         {/* Peak indicator */}
                                         {m.peak && <div style={{ fontSize: 9, marginBottom: 2, color: "#eab308" }}>★</div>}
                                         {/* Month name */}
-                                        <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, marginBottom: m.peak ? 2 : 6 }}>{m.abbr}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 10, marginBottom: m.peak ? 2 : 6 }}>{m.abbr}</div>
                                         {m.current && <div style={{ color: "#2563EB", fontSize: 9, marginBottom: 3 }}>Hoy</div>}
                                         {/* Intensity bar */}
                                         <div style={{ width: "100%", height: 32, borderRadius: 3, background: m.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -6063,7 +6063,7 @@ export default function DashboardPage() {
                                   ].map(l => (
                                     <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                                       <div style={{ width: 10, height: 10, borderRadius: 2, background: l.bg, flexShrink: 0 }} />
-                                      <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{l.label}</span>
+                                      <span style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{l.label}</span>
                                     </div>
                                   ))}
                                 </div>
@@ -6076,7 +6076,7 @@ export default function DashboardPage() {
                                       <span style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Pico principal</span>
                                     </div>
                                     <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Mayo — Noviembre</div>
-                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5, marginTop: 6 }}>Estos meses concentran el 42% de las ventas anuales. Preparar campañas con 6 semanas de anticipación.</div>
+                                    <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, lineHeight: 1.5, marginTop: 6 }}>Estos meses concentran el 42% de las ventas anuales. Preparar campañas con 6 semanas de anticipación.</div>
                                   </div>
                                   <div style={{ flex: 1, background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)", borderRadius: 10, padding: 16 }}>
                                     <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
@@ -6084,7 +6084,7 @@ export default function DashboardPage() {
                                       <span style={{ color: "#ef4444", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>Temporada baja</span>
                                     </div>
                                     <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Julio — Agosto</div>
-                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5, marginTop: 6 }}>Ventas caen un 35% en estos meses. Ideal para campañas de fidelización y reactivación de clientes tibios.</div>
+                                    <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, lineHeight: 1.5, marginTop: 6 }}>Ventas caen un 35% en estos meses. Ideal para campañas de fidelización y reactivación de clientes tibios.</div>
                                   </div>
                                 </div>
 
@@ -6100,7 +6100,7 @@ export default function DashboardPage() {
                                       <div>
                                         <div style={{ color: r.pColor, fontSize: 10, marginBottom: 3 }}>{r.prio}</div>
                                         <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 3 }}>{r.title}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{r.body}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 12 }}>{r.body}</div>
                                       </div>
                                     </div>
                                   ))}
@@ -6135,7 +6135,7 @@ export default function DashboardPage() {
                                   <div style={{ display: "flex", gap: 3 }}>
                                     {[1,2,3,4,5].map(i => <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: i <= filled ? "#2563EB" : "rgba(255,255,255,0.1)" }} />)}
                                   </div>
-                                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 3 }}>{score.toFixed(1)}/5</div>
+                                  <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 3 }}>{score.toFixed(1)}/5</div>
                                 </div>
                               )
                             }
@@ -6148,14 +6148,14 @@ export default function DashboardPage() {
                             return (
                               <div>
                                 <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>✦ Atribución de campañas</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 20 }}>Qué campañas generan los clientes más rentables</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 20 }}>Qué campañas generan los clientes más rentables</div>
 
                                 {/* Attribution table */}
                                 <div style={{ marginBottom: 24 }}>
                                   <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: "8px 8px 0 0" }}>
                                     <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", padding: "10px 16px" }}>
                                       {["CAMPAÑA","CLIENTES","TICKET PROM","LTV EST","CALIDAD"].map(h => (
-                                        <span key={h} style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{h}</span>
+                                        <span key={h} style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.04em" }}>{h}</span>
                                       ))}
                                     </div>
                                   </div>
@@ -6168,19 +6168,19 @@ export default function DashboardPage() {
                                         {chIcon(r.ch)}
                                         <div>
                                           <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{r.name}</div>
-                                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{r.chLabel}</div>
+                                          <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{r.chLabel}</div>
                                         </div>
                                       </div>
                                       <div>
                                         <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{r.clientes}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>nuevos clientes</div>
+                                        <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10 }}>nuevos clientes</div>
                                       </div>
                                       <div>
                                         <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{r.ticket}</div>
                                         <div style={{ color: r.tickUp ? "#22c55e" : "#ef4444", fontSize: 10 }}>{r.tickUp ? "↑ vs promedio" : "↓ vs promedio"}</div>
                                       </div>
                                       <div>
-                                        <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, marginBottom: 2 }}>Lifetime value est.</div>
+                                        <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, marginBottom: 2 }}>Lifetime value est.</div>
                                         <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{r.ltv}</div>
                                       </div>
                                       <Stars score={r.score} />
@@ -6201,7 +6201,7 @@ export default function DashboardPage() {
                                 {/* CRM connection */}
                                 <div style={{ marginBottom: 24 }}>
                                   <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Clientes generados por campaña</div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Conectado con CRM en tiempo real</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 16 }}>Conectado con CRM en tiempo real</div>
                                   <div style={{ display: "flex", gap: 12 }}>
                                     {CLIENTS.map(c => {
                                       const tc = tempColor(c.temp)
@@ -6211,11 +6211,11 @@ export default function DashboardPage() {
                                             <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{c.initials}</div>
                                             <div style={{ minWidth: 0 }}>
                                               <div style={{ color: "white", fontSize: 13, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
-                                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.company}</div>
+                                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.company}</div>
                                             </div>
                                           </div>
-                                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>Origen: <span style={{ color: "#2563EB" }}>{c.camp}</span></div>
-                                          <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginTop: 4 }}>Ticket: {c.ticket}</div>
+                                          <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>Origen: <span style={{ color: "#2563EB" }}>{c.camp}</span></div>
+                                          <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, marginTop: 4 }}>Ticket: {c.ticket}</div>
                                           <span style={{ display: "inline-block", marginTop: 6, background: tc.bg, color: tc.color, border: `1px solid ${tc.border}`, borderRadius: 20, padding: "1px 8px", fontSize: 10 }}>{c.temp}</span>
                                           <div><button style={{ marginTop: 8, background: "none", border: "none", color: "#2563EB", fontSize: 11, cursor: "pointer", padding: 0 }}>Ver en CRM →</button></div>
                                         </div>
@@ -6232,7 +6232,7 @@ export default function DashboardPage() {
                           {/* Ideal client profile */}
                           <div>
                             <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>✦ Perfil del cliente ideal</div>
-                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Generado desde datos reales de conversión</div>
+                            <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 16 }}>Generado desde datos reales de conversión</div>
                             <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 12, padding: 20 }}>
                               <div style={{ display: "flex", gap: 24 }}>
                                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0, minWidth: 80 }}>
@@ -6240,7 +6240,7 @@ export default function DashboardPage() {
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                                   </div>
                                   <div style={{ color: "white", fontSize: 14, fontWeight: 500, marginTop: 10, textAlign: "center" as const }}>Cliente ideal</div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textAlign: "center" as const }}>Top 15% de conversión</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, textAlign: "center" as const }}>Top 15% de conversión</div>
                                 </div>
                                 <div style={{ flex: 1 }}>
                                   {[
@@ -6252,7 +6252,7 @@ export default function DashboardPage() {
                                     ["MEJOR MOMENTO",    "Martes 10am"],
                                   ].map(([k, v]) => (
                                     <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                                      <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{k}</span>
+                                      <span style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>{k}</span>
                                       <span style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{v}</span>
                                     </div>
                                   ))}
@@ -6295,7 +6295,7 @@ export default function DashboardPage() {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 padding: '32px',
-                                color: 'rgba(255,255,255,0.3)',
+                                color: 'rgba(255,255,255,0.6)',
                                 fontSize: '13px',
                                 gap: '8px',
                               }}>
@@ -6314,7 +6314,7 @@ export default function DashboardPage() {
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexShrink: 0 }}>
                               <div>
                                 <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Campañas</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>{`${realCampaigns.length} campañas · ${activeCampaignCount} activas`}</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 2 }}>{`${realCampaigns.length} campañas · ${activeCampaignCount} activas`}</div>
                               </div>
                               <button onClick={() => setMktView("new")} style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Nueva campaña +</button>
                             </div>
@@ -6332,11 +6332,11 @@ export default function DashboardPage() {
                                     <div style={{ width: 36, height: 36, borderRadius: "50%", background: ch.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{ch.icon}</div>
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                       <div style={{ color: "white", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{camp.name}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{camp.channel} · {camp.date}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 2 }}>{camp.channel} · {camp.date}</div>
                                     </div>
                                     <span style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}`, borderRadius: 20, padding: "2px 8px", fontSize: 11, flexShrink: 0 }}>{camp.status}</span>
                                     <span style={{ color: ROI_COLOR[camp.roiDir], fontSize: 12, fontWeight: 500, width: 64, textAlign: "right" as const, flexShrink: 0 }}>{camp.roi}</span>
-                                    <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, width: 56, textAlign: "right" as const, flexShrink: 0 }}>{camp.budget}</span>
+                                    <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, width: 56, textAlign: "right" as const, flexShrink: 0 }}>{camp.budget}</span>
                                   </div>
                                 )
                               })}
@@ -6395,9 +6395,9 @@ export default function DashboardPage() {
                   const STATUS_STYLE: Record<EmpStatus, { bg: string; color: string; border: string }> = {
                     Activo:   { bg: "rgba(34,197,94,0.1)",    color: "#22c55e", border: "rgba(34,197,94,0.2)"  },
                     Licencia: { bg: "rgba(234,179,8,0.1)",    color: "#eab308", border: "rgba(234,179,8,0.2)"  },
-                    Baja:     { bg: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.3)", border: "rgba(255,255,255,0.1)" },
+                    Baja:     { bg: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.6)", border: "rgba(255,255,255,0.1)" },
                   }
-                  const filterLabel: React.CSSProperties = { color: "rgba(255,255,255,0.3)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
+                  const filterLabel: React.CSSProperties = { color: "rgba(255,255,255,0.6)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
                   const ScoreDots = ({ score }: { score: number }) => {
                     const filled = Math.round(score)
                     return (
@@ -6405,7 +6405,7 @@ export default function DashboardPage() {
                         <div style={{ display: "flex", gap: 3 }}>
                           {[1,2,3,4,5].map(i => <div key={i} style={{ width: 7, height: 7, borderRadius: "50%", background: i <= filled ? "#2563EB" : "rgba(255,255,255,0.1)" }} />)}
                         </div>
-                        <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, marginTop: 2 }}>{score.toFixed(1)}/5</div>
+                        <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, marginTop: 2 }}>{score.toFixed(1)}/5</div>
                       </div>
                     )
                   }
@@ -6429,7 +6429,7 @@ export default function DashboardPage() {
                     const riskColor = emp.alert === "Riesgo renuncia" ? "#ef4444" : emp.alert === "Bajo desempeño" ? "#ef4444" : emp.alert === "Sobrecargado" ? "#eab308" : "#22c55e"
                     const riskLabel = emp.alert === "Riesgo renuncia" ? "Alto" : emp.alert === "Bajo desempeño" ? "Medio" : emp.alert === "Sobrecargado" ? "Medio" : "Bajo"
                     const aiCard: React.CSSProperties = { background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }
-                    const aiCardLabel: React.CSSProperties = { color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
+                    const aiCardLabel: React.CSSProperties = { color: "rgba(255,255,255,0.8)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }
                     const divider = <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "16px 0" }} />
                     const realEmp = realEmployees.find(e => e.id === emp.id)
                     const info = realEmp ? {
@@ -6513,7 +6513,7 @@ export default function DashboardPage() {
                             justifyContent: 'center',
                             background: 'rgba(13,13,20,0.6)',
                             zIndex: 10,
-                            color: 'rgba(255,255,255,0.3)',
+                            color: 'rgba(255,255,255,0.6)',
                             fontSize: '13px',
                             gap: '8px',
                           }}>
@@ -6534,7 +6534,7 @@ export default function DashboardPage() {
                           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                             <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 20, fontWeight: 500 }}>{emp.initials}</div>
                             <div style={{ color: "white", fontSize: 16, fontWeight: 500, textAlign: "center" as const, marginTop: 12 }}>{emp.name}</div>
-                            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, textAlign: "center" as const }}>{emp.role} · {emp.area}</div>
+                            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, textAlign: "center" as const }}>{emp.role} · {emp.area}</div>
                             <span style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}`, borderRadius: 20, padding: "2px 8px", fontSize: 11, marginTop: 6 }}>{emp.status}</span>
                           </div>
 
@@ -6551,7 +6551,7 @@ export default function DashboardPage() {
                             ["SUELDO BASE",   info.salary],
                           ] as [string, string][]).map(([label, val]) => (
                             <div key={label} style={{ marginBottom: 12 }}>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 2 }}>{label}</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 2 }}>{label}</div>
                               <div style={{ color: "white", fontSize: 13 }}>{val}</div>
                             </div>
                           ))}
@@ -6559,17 +6559,17 @@ export default function DashboardPage() {
                           {divider}
 
                           {/* Performance */}
-                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>DESEMPEÑO GENERAL</div>
+                          <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>DESEMPEÑO GENERAL</div>
                           <div style={{ display: "flex", justifyContent: "center", alignItems: "baseline", gap: 4, marginBottom: 8 }}>
                             <span style={{ color: "white", fontSize: 32, fontWeight: 600 }}>{emp.score.toFixed(1)}</span>
-                            <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 16 }}>/5</span>
+                            <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 16 }}>/5</span>
                           </div>
                           <div style={{ display: "flex", justifyContent: "center", gap: 3, marginBottom: 6 }}>
                             {[1,2,3,4,5].map(i => (
                               <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill={i <= filledStars ? "#2563EB" : "rgba(255,255,255,0.1)"} stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                             ))}
                           </div>
-                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textAlign: "center" as const, marginTop: 6 }}>Top 10% del equipo</div>
+                          <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, textAlign: "center" as const, marginTop: 6 }}>Top 10% del equipo</div>
 
                           {divider}
 
@@ -6590,7 +6590,7 @@ export default function DashboardPage() {
                             const goalColor = (p: number) => p >= 80 ? "#22c55e" : p >= 50 ? "#eab308" : "#ef4444"
                             return (
                               <>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Metas del mes</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Metas del mes</div>
                                 {goals.map(g => {
                                   const c = goalColor(g.pct)
                                   return (
@@ -6602,7 +6602,7 @@ export default function DashboardPage() {
                                       <div style={{ height: 3, borderRadius: 2, background: "rgba(255,255,255,0.06)", overflow: "hidden", marginBottom: 5 }}>
                                         <div style={{ height: "100%", width: `${g.pct}%`, background: c, borderRadius: 2 }} />
                                       </div>
-                                      <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Actual: {g.actual} / Meta: {g.meta}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 10 }}>Actual: {g.actual} / Meta: {g.meta}</div>
                                     </div>
                                   )
                                 })}
@@ -6613,14 +6613,14 @@ export default function DashboardPage() {
                           })()}
 
                           {/* Vacaciones */}
-                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>VACACIONES</div>
+                          <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>VACACIONES</div>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                             <span style={{ color: "white", fontSize: 13 }}>Días disponibles</span>
                             <span style={{ color: "white", fontSize: 13 }}>{info.vacLeft} días</span>
                           </div>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                            <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>Días tomados</span>
-                            <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{info.vacUsed} días</span>
+                            <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 13 }}>Días tomados</span>
+                            <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 13 }}>{info.vacUsed} días</span>
                           </div>
                           <div style={{ height: 6, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
                             <div style={{ height: "100%", width: `${Math.round(info.vacUsed / 20 * 100)}%`, background: "rgba(37,99,235,0.5)", borderRadius: 3 }} />
@@ -6637,7 +6637,7 @@ export default function DashboardPage() {
                               <span style={aiCardLabel}>Tendencia de desempeño</span>
                             </div>
                             <div style={{ color: "#22c55e", fontSize: 13, fontWeight: 500 }}>En crecimiento</div>
-                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 3 }}>+0.3 puntos vs mes anterior</div>
+                            <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 3 }}>+0.3 puntos vs mes anterior</div>
                           </div>
 
                           <div style={aiCard}>
@@ -6662,7 +6662,7 @@ export default function DashboardPage() {
                               <span style={aiCardLabel}>Recomendación</span>
                             </div>
                             <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 3 }}>Candidato para ascenso</div>
-                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>Alto desempeño sostenido por 3 meses consecutivos</div>
+                            <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>Alto desempeño sostenido por 3 meses consecutivos</div>
                           </div>
 
                           {divider}
@@ -6701,7 +6701,7 @@ export default function DashboardPage() {
                                     <div style={{ width: 28, height: 28, borderRadius: "50%", background: `${item.color}15`, border: `1px solid ${item.color}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>
                                     <div>
                                       <div style={{ color: "white", fontSize: 13 }}>{item.title}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 3 }}>{item.when}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 3 }}>{item.when}</div>
                                     </div>
                                   </div>
                                 ))}
@@ -6719,7 +6719,7 @@ export default function DashboardPage() {
                                     { label: "Completadas", count: taskCount("Completada"), color: "#22c55e" },
                                   ].map(c => (
                                     <div key={c.label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, padding: "10px 12px" }}>
-                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginBottom: 4 }}>{c.label}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, marginBottom: 4 }}>{c.label}</div>
                                       <div style={{ color: c.color, fontSize: 18, fontWeight: 600 }}>{c.count}</div>
                                     </div>
                                   ))}
@@ -6748,7 +6748,7 @@ export default function DashboardPage() {
                                         <div style={{ color: "white", fontSize: 13, fontWeight: 500, opacity: isDone ? 0.4 : 1, textDecoration: isDone ? "line-through" : "none", marginBottom: 6 }}>{task.name}</div>
                                         <div style={{ display: "flex", gap: 5, flexWrap: "wrap" as const, alignItems: "center" }}>
                                           {/* Due date */}
-                                          <span style={{ display: "flex", alignItems: "center", gap: 3, background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.4)", borderRadius: 20, padding: "2px 8px", fontSize: 10 }}>
+                                          <span style={{ display: "flex", alignItems: "center", gap: 3, background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.7)", borderRadius: 20, padding: "2px 8px", fontSize: 10 }}>
                                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                             {task.due}
                                           </span>
@@ -6760,7 +6760,7 @@ export default function DashboardPage() {
                                       </div>
                                       {/* Right: assigned by + menu */}
                                       <div style={{ display: "flex", flexDirection: "column" as const, alignItems: "flex-end", gap: 6, flexShrink: 0 }}>
-                                        <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Por: {task.by}</span>
+                                        <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 10 }}>Por: {task.by}</span>
                                         <div style={{ position: "relative" as const }}>
                                           <button onClick={e => { e.stopPropagation(); setTaskMenuOpenId(taskMenuOpenId === task.id ? null : task.id) }} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.2)", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "0 4px" }}
                                             onMouseEnter={e => (e.currentTarget.style.color = "white")}
@@ -6813,9 +6813,9 @@ export default function DashboardPage() {
                                     <div key={i} style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }}>
                                       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
                                         {rec.icon}
-                                        <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{rec.title}</span>
+                                        <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{rec.title}</span>
                                       </div>
-                                      <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5, marginBottom: 6 }}>{rec.body}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, lineHeight: 1.5, marginBottom: 6 }}>{rec.body}</div>
                                       <div style={{ color: "#2563EB", fontSize: 11, cursor: "pointer" }}>{rec.cta}</div>
                                     </div>
                                   ))}
@@ -6835,20 +6835,20 @@ export default function DashboardPage() {
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
                                       <div>
                                         <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{ev.title}</div>
-                                        <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{ev.date}</div>
+                                        <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 2 }}>{ev.date}</div>
                                       </div>
                                       <span style={{ background: "rgba(37,99,235,0.1)", color: "#2563EB", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 6, padding: "2px 8px", fontSize: 12, fontWeight: 500 }}>{ev.score}</span>
                                     </div>
                                     {(ev.criteria as [string, number][]).map(([label, val]) => (
                                       <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                                        <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, width: 120, flexShrink: 0 }}>{label}</span>
+                                        <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, width: 120, flexShrink: 0 }}>{label}</span>
                                         <div style={{ width: 80, height: 3, borderRadius: 2, background: "rgba(255,255,255,0.06)", overflow: "hidden", flexShrink: 0 }}>
                                           <div style={{ height: "100%", width: `${val / 5 * 100}%`, background: "rgba(37,99,235,0.6)", borderRadius: 2 }} />
                                         </div>
-                                        <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>{val.toFixed(1)}</span>
+                                        <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 11 }}>{val.toFixed(1)}</span>
                                       </div>
                                     ))}
-                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, fontStyle: "italic" as const, marginTop: 8 }}>{ev.comment}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, fontStyle: "italic" as const, marginTop: 8 }}>{ev.comment}</div>
                                   </div>
                                 ))}
                               </div>
@@ -6867,9 +6867,9 @@ export default function DashboardPage() {
                                     <div style={{ width: 10, height: 10, borderRadius: "50%", background: tr.status === "done" ? "#22c55e" : tr.status === "inprogress" ? "#2563EB" : "rgba(255,255,255,0.2)", flexShrink: 0 }} />
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                       <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{tr.name}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{tr.duration} · {tr.date}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 2 }}>{tr.duration} · {tr.date}</div>
                                     </div>
-                                    <span style={{ background: tr.status === "done" ? "rgba(34,197,94,0.1)" : tr.status === "inprogress" ? "rgba(37,99,235,0.1)" : "rgba(255,255,255,0.05)", color: tr.status === "done" ? "#22c55e" : tr.status === "inprogress" ? "#2563EB" : "rgba(255,255,255,0.3)", borderRadius: 6, padding: "2px 8px", fontSize: 11, flexShrink: 0 }}>{tr.pct}%</span>
+                                    <span style={{ background: tr.status === "done" ? "rgba(34,197,94,0.1)" : tr.status === "inprogress" ? "rgba(37,99,235,0.1)" : "rgba(255,255,255,0.05)", color: tr.status === "done" ? "#22c55e" : tr.status === "inprogress" ? "#2563EB" : "rgba(255,255,255,0.6)", borderRadius: 6, padding: "2px 8px", fontSize: 11, flexShrink: 0 }}>{tr.pct}%</span>
                                   </div>
                                 ))}
                                 <button style={{ marginTop: 16, padding: "7px 14px", fontSize: 13, background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.25)", borderRadius: 8, color: "#2563EB", cursor: "pointer" }}>+ Asignar capacitación</button>
@@ -6888,7 +6888,7 @@ export default function DashboardPage() {
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                                     <div style={{ flex: 1 }}>
                                       <div style={{ color: "white", fontSize: 13 }}>{doc.name}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{doc.size}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 2 }}>{doc.size}</div>
                                     </div>
                                     <button style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6, padding: "4px 10px", color: "rgba(255,255,255,0.5)", fontSize: 11, cursor: "pointer" }}>↓</button>
                                   </div>
@@ -6907,11 +6907,11 @@ export default function DashboardPage() {
                                   <div key={i} style={{ paddingBottom: 16, marginBottom: 16, borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                                     <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
                                       <div style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 9, fontWeight: 500 }}>{fb.fromInit.slice(0,2)}</div>
-                                      <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{fb.from}</span>
-                                      <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>→</span>
+                                      <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 12 }}>{fb.from}</span>
+                                      <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>→</span>
                                       <div style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 9, fontWeight: 500 }}>{fb.to.slice(0,2)}</div>
-                                      <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{fb.to}</span>
-                                      <span style={{ marginLeft: "auto", color: "rgba(255,255,255,0.25)", fontSize: 11 }}>{fb.when}</span>
+                                      <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 12 }}>{fb.to}</span>
+                                      <span style={{ marginLeft: "auto", color: "rgba(255,255,255,0.55)", fontSize: 11 }}>{fb.when}</span>
                                     </div>
                                     <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, paddingLeft: 26 }}>{fb.text}</div>
                                   </div>
@@ -6926,7 +6926,7 @@ export default function DashboardPage() {
                                 <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
                                   {[["Ausencias","2 este mes"],["Tardanzas","0 este mes"],["Licencias","0 activas"]].map(([label, val]) => (
                                     <div key={label} style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, padding: "10px 12px" }}>
-                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 4 }}>{label}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 4 }}>{label}</div>
                                       <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{val}</div>
                                     </div>
                                   ))}
@@ -6939,7 +6939,7 @@ export default function DashboardPage() {
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                     <div style={{ flex: 1 }}>
                                       <div style={{ color: "white", fontSize: 13 }}>{ab.type}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{ab.date} · {ab.duration}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 2 }}>{ab.date} · {ab.duration}</div>
                                     </div>
                                     <span style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>{ab.status}</span>
                                   </div>
@@ -7012,7 +7012,7 @@ export default function DashboardPage() {
                           <div style={{ ...nodeBase, background: "rgba(37,99,235,0.15)", border: "1px solid rgba(37,99,235,0.4)", padding: "14px 20px", minWidth: 160 }}>
                             <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(37,99,235,0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 14, fontWeight: 500, margin: "0 auto" }}>D</div>
                             <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginTop: 8 }}>Propietario</div>
-                            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>Dueño del negocio</div>
+                            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 2 }}>Dueño del negocio</div>
                             <span style={{ display: "inline-block", background: "rgba(37,99,235,0.2)", color: "#2563EB", fontSize: 10, borderRadius: 20, padding: "2px 8px", marginTop: 6 }}>Dueño</span>
                           </div>
                         )
@@ -7028,7 +7028,7 @@ export default function DashboardPage() {
                               {dot && <div title={emp?.alert} style={{ position: "absolute", top: -4, right: -4, width: 8, height: 8, borderRadius: "50%", background: dot, border: "2px solid #0D0D14" }} />}
                               <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 14, fontWeight: 500, margin: "0 auto" }}>{area.leader.initials}</div>
                               <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginTop: 8 }}>{area.leader.name}</div>
-                              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>{area.label}</div>
+                              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 2 }}>{area.label}</div>
                               <span style={{ display: "inline-block", background: "rgba(37,99,235,0.15)", color: "#2563EB", fontSize: 10, borderRadius: 20, padding: "2px 8px", marginTop: 6 }}>Líder</span>
                             </div>
                           )
@@ -7046,7 +7046,7 @@ export default function DashboardPage() {
                               {dot && <div title={m.alert} style={{ position: "absolute", top: -4, right: -4, width: 8, height: 8, borderRadius: "50%", background: dot, border: "2px solid #0D0D14" }} />}
                               <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(37,99,235,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 11, fontWeight: 500, margin: "0 auto" }}>{m.initials}</div>
                               <div style={{ color: "white", fontSize: 12, fontWeight: 500, marginTop: 6 }}>{m.name}</div>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginTop: 2 }}>{m.role}</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, marginTop: 2 }}>{m.role}</div>
                               {isLicencia && <span style={{ display: "inline-block", background: "rgba(234,179,8,0.1)", color: "#eab308", fontSize: 9, borderRadius: 20, padding: "1px 6px", marginTop: 4 }}>Licencia</span>}
                             </div>
                           )
@@ -7054,7 +7054,7 @@ export default function DashboardPage() {
                         const VacantNode = () => (
                           <div style={{ ...nodeBase, background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 14px", minWidth: 130, cursor: "pointer" }}>
                             <div style={{ color: "rgba(255,255,255,0.15)", fontSize: 20, lineHeight: 1 }}>+</div>
-                            <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 11, marginTop: 6 }}>Posición vacante</div>
+                            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginTop: 6 }}>Posición vacante</div>
                             <div style={{ color: "#2563EB", fontSize: 10, marginTop: 4 }}>Buscar candidato →</div>
                           </div>
                         )
@@ -7072,7 +7072,7 @@ export default function DashboardPage() {
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
                               <div>
                                 <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Organigrama</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Estructura actual del equipo</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 2 }}>Estructura actual del equipo</div>
                               </div>
                               <button style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(255,255,255,0.5)", fontSize: 12, borderRadius: 6, padding: "6px 14px", cursor: "pointer" }}>
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -7116,7 +7116,7 @@ export default function DashboardPage() {
                                         </div>
                                       </>
                                     ) : (
-                                      <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 11, fontStyle: "italic" as const, marginTop: 20, paddingTop: 4 }}>Sin equipo a cargo</div>
+                                      <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, fontStyle: "italic" as const, marginTop: 20, paddingTop: 4 }}>Sin equipo a cargo</div>
                                     )}
                                   </div>
                                 ))}
@@ -7140,7 +7140,7 @@ export default function DashboardPage() {
                               ].map(({ sample, label }) => (
                                 <div key={label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                                   {sample}
-                                  <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{label}</span>
+                                  <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>{label}</span>
                                 </div>
                               ))}
                             </div>
@@ -7168,7 +7168,7 @@ export default function DashboardPage() {
                           { initials: "SR", name: "Sofía Reyes",     score: 8.6, trend: "↑" },
                         ]
                         const dimColor = (s: number) => s >= 8 ? "#22c55e" : s >= 6 ? "#2563EB" : "#ef4444"
-                        const trendColor = (t: string) => t === "↑" ? "#22c55e" : t === "↓" ? "#ef4444" : "rgba(255,255,255,0.3)"
+                        const trendColor = (t: string) => t === "↑" ? "#22c55e" : t === "↓" ? "#ef4444" : "rgba(255,255,255,0.6)"
                         // SVG chart points — 6 weeks: 6.8 7.1 7.4 7.2 7.6 7.8 scaled to viewBox 500x60
                         const weeks = [6.8, 7.1, 7.4, 7.2, 7.6, 7.8]
                         const minV = 6.5, maxV = 8.0
@@ -7188,7 +7188,7 @@ export default function DashboardPage() {
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
                               <div>
                                 <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Clima laboral</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Última actualización: hoy</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 2 }}>Última actualización: hoy</div>
                               </div>
                               <button style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Enviar encuesta</button>
                             </div>
@@ -7199,10 +7199,10 @@ export default function DashboardPage() {
                                 <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 8 }}>✦ Índice de clima laboral</div>
                                 <div style={{ lineHeight: 1 }}>
                                   <span style={{ color: "white", fontSize: 48, fontWeight: 600 }}>7.8</span>
-                                  <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 24, marginLeft: 4 }}>/10</span>
+                                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 24, marginLeft: 4 }}>/10</span>
                                 </div>
                                 <div style={{ color: "#22c55e", fontSize: 12, marginTop: 6 }}>↑ 0.4 vs semana anterior</div>
-                                <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, marginTop: 4 }}>Clima positivo</div>
+                                <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, marginTop: 4 }}>Clima positivo</div>
                               </div>
                               <div style={{ position: "relative", width: 80, height: 80, borderRadius: "50%", background: "conic-gradient(#2563EB 0deg 281deg, rgba(255,255,255,0.06) 281deg 360deg)", flexShrink: 0 }}>
                                 <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 60, height: 60, borderRadius: "50%", background: "#0D0D14", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 14, fontWeight: 500 }}>78%</div>
@@ -7238,7 +7238,7 @@ export default function DashboardPage() {
                                   <div style={{ flexShrink: 0, marginTop: 1 }}>{alert.icon}</div>
                                   <div>
                                     <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{alert.title}</div>
-                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{alert.body}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{alert.body}</div>
                                     <div style={{ color: alert.color, fontSize: 11, marginTop: 8, cursor: "pointer" }}>{alert.cta}</div>
                                   </div>
                                 </div>
@@ -7248,7 +7248,7 @@ export default function DashboardPage() {
                             {/* Team satisfaction table */}
                             <div style={{ marginBottom: 24 }}>
                               <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Satisfacción por empleado</div>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Basado en últimas encuestas</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 16 }}>Basado en últimas encuestas</div>
                               {EMP_SAT.map(e => {
                                 const c = dimColor(e.score)
                                 return (
@@ -7268,21 +7268,21 @@ export default function DashboardPage() {
                             {/* Productivity correlation */}
                             <div style={{ marginBottom: 24 }}>
                               <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>✦ Correlación satisfacción vs productividad</div>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Detectada por Pupi AI</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 16 }}>Detectada por Pupi AI</div>
                               <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 10, padding: 16 }}>
                                 <div style={{ display: "flex", gap: 24, marginBottom: 16 }}>
                                   <div style={{ flex: 1 }}>
-                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Empleados satisfechos (+7/10)</div>
+                                    <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Empleados satisfechos (+7/10)</div>
                                     <div style={{ color: "#22c55e", fontSize: 24, fontWeight: 600 }}>94%</div>
-                                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>cumplimiento de metas</div>
+                                    <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 2 }}>cumplimiento de metas</div>
                                   </div>
                                   <div style={{ flex: 1 }}>
-                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Empleados insatisfechos (-6/10)</div>
+                                    <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Empleados insatisfechos (-6/10)</div>
                                     <div style={{ color: "#ef4444", fontSize: 24, fontWeight: 600 }}>61%</div>
-                                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>cumplimiento de metas</div>
+                                    <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 2 }}>cumplimiento de metas</div>
                                   </div>
                                 </div>
-                                <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 12, color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.6 }}>
+                                <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 12, color: "rgba(255,255,255,0.8)", fontSize: 12, lineHeight: 1.6 }}>
                                   Los empleados con mayor satisfacción tienen un 54% más de cumplimiento de metas. Mejorar el clima laboral impacta directamente en resultados.
                                 </div>
                               </div>
@@ -7298,7 +7298,7 @@ export default function DashboardPage() {
                                 </svg>
                                 <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 4 }}>
                                   {["Sem 1","Sem 2","Sem 3","Sem 4","Sem 5","Sem 6"].map(l => (
-                                    <span key={l} style={{ color: "rgba(255,255,255,0.2)", fontSize: 10, flex: 1, textAlign: "center" as const }}>{l}</span>
+                                    <span key={l} style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, flex: 1, textAlign: "center" as const }}>{l}</span>
                                   ))}
                                 </div>
                               </div>
@@ -7307,7 +7307,7 @@ export default function DashboardPage() {
                             {/* Pulse survey section */}
                             <div style={{ marginBottom: 24 }}>
                               <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Última encuesta enviada</div>
-                              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginBottom: 16 }}>Hace 3 días · 7 de 8 respondieron</div>
+                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 16 }}>Hace 3 días · 7 de 8 respondieron</div>
                               {[
                                 { q: "¿Cómo te sentiste esta semana en el trabajo?", score: 7.6 },
                                 { q: "¿Sentís que tu trabajo es valorado?",           score: 7.1 },
@@ -7386,7 +7386,7 @@ export default function DashboardPage() {
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
                               <div>
                                 <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Sueldos y liquidación</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Mayo 2026</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 2 }}>Mayo 2026</div>
                               </div>
                               <div style={{ display: "flex", gap: 8 }}>
                                 <button onClick={() => setShowPayrollConfigModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(255,255,255,0.5)", fontSize: 12, borderRadius: 6, padding: "6px 14px", cursor: "pointer" }}>
@@ -7401,9 +7401,9 @@ export default function DashboardPage() {
                             <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 24 }}>
                               {summaryCards.map(c => (
                                 <div key={c.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 6 }}>{c.label}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginBottom: 6 }}>{c.label}</div>
                                   <div style={{ color: "white", fontSize: 20, fontWeight: 600 }}>{c.value}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 4 }}>{c.sub}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 4 }}>{c.sub}</div>
                                 </div>
                               ))}
                             </div>
@@ -7413,7 +7413,7 @@ export default function DashboardPage() {
                               {/* Header */}
                               <div style={{ display: "grid", gridTemplateColumns: gridCols, background: "rgba(255,255,255,0.03)", borderRadius: "8px 8px 0 0", padding: "10px 16px" }}>
                                 {["EMPLEADO","CARGO","SUELDO BRUTO","DEDUCCIONES","NETO","COMISIONES","ESTADO"].map(h => (
-                                  <span key={h} style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{h}</span>
+                                  <span key={h} style={{ color: "rgba(255,255,255,0.6)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>{h}</span>
                                 ))}
                               </div>
                               {/* Rows */}
@@ -7434,15 +7434,15 @@ export default function DashboardPage() {
                                       <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{row.name}</span>
                                     </div>
                                     {/* Cargo */}
-                                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, alignSelf: "center" }}>{row.role}</span>
+                                    <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, alignSelf: "center" }}>{row.role}</span>
                                     {/* Bruto */}
                                     <span style={{ color: "white", fontSize: 13, fontWeight: 500, alignSelf: "center" }}>{fmt(row.bruto)}</span>
                                     {/* Deducciones */}
-                                    <span title={`Jubilación: ${fmt(c.jub)}\nObra social: ${fmt(c.obra)}\nPAMI: ${fmt(c.pami)}`} style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, alignSelf: "center", cursor: "help" }}>{fmt(d)}</span>
+                                    <span title={`Jubilación: ${fmt(c.jub)}\nObra social: ${fmt(c.obra)}\nPAMI: ${fmt(c.pami)}`} style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, alignSelf: "center", cursor: "help" }}>{fmt(d)}</span>
                                     {/* Neto */}
                                     <span style={{ color: "#22c55e", fontSize: 13, fontWeight: 500, alignSelf: "center" }}>{fmt(n)}</span>
                                     {/* Comisiones */}
-                                    <span style={{ color: row.comision > 0 ? "#2563EB" : "rgba(255,255,255,0.3)", fontSize: 12, alignSelf: "center" }}>{row.comision > 0 ? fmt(row.comision) : "—"}</span>
+                                    <span style={{ color: row.comision > 0 ? "#2563EB" : "rgba(255,255,255,0.6)", fontSize: 12, alignSelf: "center" }}>{row.comision > 0 ? fmt(row.comision) : "—"}</span>
                                     {/* Estado */}
                                     <div style={{ alignSelf: "center" }}>
                                       <span style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}`, borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>{payrollStatuses[row.id] ?? "Pendiente"}</span>
@@ -7458,10 +7458,10 @@ export default function DashboardPage() {
                                 <div style={{ background: "#0f1623", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: 24, width: 420, maxHeight: "80vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
                                   <div style={{ marginBottom: 16 }}>
                                     <div style={{ color: "white", fontSize: 16, fontWeight: 500 }}>{selRow.name}</div>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Liquidación Mayo 2026</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 2 }}>Liquidación Mayo 2026</div>
                                   </div>
                                   {/* HABERES */}
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Haberes</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Haberes</div>
                                   {[["Sueldo básico", fmt(selRow.bruto)],["Antigüedad", fmt(selCalc.ant)],["Presentismo", fmt(selCalc.pres)]].map(([k,v]) => (
                                     <div key={k} style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                                       <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>{k}</span>
@@ -7474,30 +7474,30 @@ export default function DashboardPage() {
                                     <span style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{fmt(selCalc.totalH)}</span>
                                   </div>
                                   {/* DEDUCCIONES */}
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Deducciones</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Deducciones</div>
                                   {[["Jubilación (11%)", fmt(selCalc.jub)],["Obra social (3%)", fmt(selCalc.obra)],["PAMI (3%)", fmt(selCalc.pami)],["Sindicato (2%)", fmt(selCalc.sind)]].map(([k,v]) => (
                                     <div key={k} style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                                      <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{k}</span>
-                                      <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{v}</span>
+                                      <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 13 }}>{k}</span>
+                                      <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 13 }}>{v}</span>
                                     </div>
                                   ))}
                                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "10px 0" }} />
                                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-                                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>Total deducciones</span>
-                                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, fontWeight: 500 }}>{fmt(selCalc.totalD)}</span>
+                                    <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 13 }}>Total deducciones</span>
+                                    <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, fontWeight: 500 }}>{fmt(selCalc.totalD)}</span>
                                   </div>
                                   {/* ADICIONALES */}
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Adicionales</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 10 }}>Adicionales</div>
                                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                                     <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>Comisiones Mayo</span>
-                                    <span style={{ color: selRow.comision > 0 ? "#2563EB" : "rgba(255,255,255,0.3)", fontSize: 13 }}>{selRow.comision > 0 ? fmt(selRow.comision) : "$0"}</span>
+                                    <span style={{ color: selRow.comision > 0 ? "#2563EB" : "rgba(255,255,255,0.6)", fontSize: 13 }}>{selRow.comision > 0 ? fmt(selRow.comision) : "$0"}</span>
                                   </div>
                                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
                                     <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>Horas extra</span>
-                                    <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>$0</span>
+                                    <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>$0</span>
                                   </div>
                                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "16px 0" }} />
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Neto a cobrar</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 6 }}>Neto a cobrar</div>
                                   <div style={{ color: "#22c55e", fontSize: 24, fontWeight: 600 }}>{fmt(selCalc.netoF)}</div>
                                   {/* Footer */}
                                   <div style={{ display: "flex", gap: 8, marginTop: 24, justifyContent: "flex-end" }}>
@@ -7525,8 +7525,8 @@ export default function DashboardPage() {
                                   {/* Toggles */}
                                   <div style={{ marginTop: 20 }}>
                                     {[
-                                      { label: "Incluir antigüedad automática", on: payrollAntiguedadOn, toggle: () => setPayrollAntiguedadOn(v => !v), extra: <><span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginLeft: 8 }}>%/año:</span><input type="number" value={payrollAntiguedadPct} onChange={e => setPayrollAntiguedadPct(e.target.value)} style={{ width: 56, marginLeft: 4, padding: "3px 6px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "white", fontSize: 12, outline: "none" }} /></> },
-                                      { label: "Incluir presentismo", on: payrollPresentismoOn, toggle: () => setPayrollPresentismoOn(v => !v), extra: <><span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginLeft: 8 }}>$:</span><input type="number" value={payrollPresentismoAmt} onChange={e => setPayrollPresentismoAmt(e.target.value)} style={{ width: 80, marginLeft: 4, padding: "3px 6px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "white", fontSize: 12, outline: "none" }} /></> },
+                                      { label: "Incluir antigüedad automática", on: payrollAntiguedadOn, toggle: () => setPayrollAntiguedadOn(v => !v), extra: <><span style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, marginLeft: 8 }}>%/año:</span><input type="number" value={payrollAntiguedadPct} onChange={e => setPayrollAntiguedadPct(e.target.value)} style={{ width: 56, marginLeft: 4, padding: "3px 6px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "white", fontSize: 12, outline: "none" }} /></> },
+                                      { label: "Incluir presentismo", on: payrollPresentismoOn, toggle: () => setPayrollPresentismoOn(v => !v), extra: <><span style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, marginLeft: 8 }}>$:</span><input type="number" value={payrollPresentismoAmt} onChange={e => setPayrollPresentismoAmt(e.target.value)} style={{ width: 80, marginLeft: 4, padding: "3px 6px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "white", fontSize: 12, outline: "none" }} /></> },
                                       { label: "Cargas sociales automáticas (30%)", on: payrollCargasOn, toggle: () => setPayrollCargasOn(v => !v), extra: null },
                                     ].map(item => (
                                       <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
@@ -7581,7 +7581,7 @@ export default function DashboardPage() {
                                                          : a === "Sobrecargado"   ? { bg:"rgba(234,179,8,0.1)",  color:"#eab308", border:"rgba(234,179,8,0.2)"  }
                                                          : a === "Bajo desempeño" ? { bg:"rgba(239,68,68,0.1)",  color:"#ef4444", border:"rgba(239,68,68,0.2)"  }
                                                          :                          { bg:"rgba(34,197,94,0.1)",   color:"#22c55e", border:"rgba(34,197,94,0.2)"  }
-                        const trendColor = (t: string) => t.startsWith("↑") ? "#22c55e" : t.startsWith("↓") ? "#ef4444" : "rgba(255,255,255,0.3)"
+                        const trendColor = (t: string) => t.startsWith("↑") ? "#22c55e" : t.startsWith("↓") ? "#ef4444" : "rgba(255,255,255,0.6)"
                         const TASK_ROWS = [
                           { initials:"JP", name:"Juan Pérez",    done:12, inprog:2, pend:1 },
                           { initials:"CA", name:"Carlos Acosta", done:6,  inprog:2, pend:12 },
@@ -7606,12 +7606,12 @@ export default function DashboardPage() {
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
                               <div>
                                 <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Resumen semanal del equipo</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>Semana del 19 al 25 de Mayo 2026</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 2 }}>Semana del 19 al 25 de Mayo 2026</div>
                               </div>
                               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 0, border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, overflow: "hidden" }}>
                                   <button style={{ padding: "6px 10px", background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 14 }}>←</button>
-                                  <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, padding: "0 4px" }}>Sem 20</span>
+                                  <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, padding: "0 4px" }}>Sem 20</span>
                                   <button style={{ padding: "6px 10px", background: "transparent", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 14 }}>→</button>
                                 </div>
                                 <button style={{ display: "flex", alignItems: "center", gap: 6, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(255,255,255,0.5)", fontSize: 12, borderRadius: 6, padding: "6px 14px", cursor: "pointer" }}>
@@ -7646,17 +7646,17 @@ export default function DashboardPage() {
                                   <div key={e.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 14, textAlign: "center" as const }}>
                                     <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 12, fontWeight: 500, margin: "0 auto" }}>{e.initials}</div>
                                     <div style={{ color: "white", fontSize: 12, fontWeight: 500, marginTop: 8 }}>{e.name}</div>
-                                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, marginTop: 2 }}>{e.role}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 10, marginTop: 2 }}>{e.role}</div>
                                     {e.score >= 0 ? (
                                       <>
                                         <div style={{ marginTop: 8, lineHeight: 1 }}>
                                           <span style={{ color: "white", fontSize: 20, fontWeight: 600 }}>{e.score.toFixed(1)}</span>
-                                          <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }}>/5</span>
+                                          <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>/5</span>
                                         </div>
                                         <div style={{ color: trendColor(e.trend), fontSize: 11, marginTop: 4 }}>{e.trend}</div>
                                       </>
                                     ) : (
-                                      <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 11, marginTop: 8 }}>Licencia</div>
+                                      <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, marginTop: 8 }}>Licencia</div>
                                     )}
                                     {e.alert && (() => {
                                       const ac = alertColor(e.alert)
@@ -7676,7 +7676,7 @@ export default function DashboardPage() {
                                 { label: "Metas en riesgo",     value: "2",     sub: "CA y Diego por debajo del 50%",  valueColor: "#eab308"  },
                               ].map(c => (
                                 <div key={c.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 16px" }}>
-                                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 6 }}>{c.label}</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginBottom: 6 }}>{c.label}</div>
                                   <div style={{ color: c.valueColor, fontSize: 20, fontWeight: 600 }}>{c.value}</div>
                                   <div style={{ color: c.subColor ?? "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 4 }}>{c.sub}</div>
                                 </div>
@@ -7697,7 +7697,7 @@ export default function DashboardPage() {
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
                                     <div>
                                       <div style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{a.title}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>{a.detail}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 2 }}>{a.detail}</div>
                                     </div>
                                   </div>
                                 ))}
@@ -7713,7 +7713,7 @@ export default function DashboardPage() {
                                   <div key={i} style={{ display: "flex", gap: 12, background: "rgba(255,255,255,0.02)", borderLeft: `3px solid ${al.color}`, borderTop: "1px solid rgba(255,255,255,0.06)", borderRight: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", borderRadius: "0 8px 8px 0", padding: "12px 14px", marginBottom: 6 }}>
                                     <div>
                                       <div style={{ color: "white", fontSize: 12, fontWeight: 500 }}>{al.title}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, lineHeight: 1.5, marginTop: 3 }}>{al.body}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, lineHeight: 1.5, marginTop: 3 }}>{al.body}</div>
                                       <div style={{ color: al.color, fontSize: 11, marginTop: 6, cursor: "pointer" }}>{al.cta}</div>
                                     </div>
                                   </div>
@@ -7751,7 +7751,7 @@ export default function DashboardPage() {
                                       <div style={{ width: `${donePct}%`, background: "#22c55e" }} />
                                       <div style={{ width: `${inpPct}%`, background: "#2563EB" }} />
                                     </div>
-                                    <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, width: 36, textAlign: "right" as const, flexShrink: 0 }}>{r.done}/{total}</span>
+                                    <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, width: 36, textAlign: "right" as const, flexShrink: 0 }}>{r.done}/{total}</span>
                                   </div>
                                 )
                               })}
@@ -7766,12 +7766,12 @@ export default function DashboardPage() {
                                     <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 11, fontWeight: 500, flexShrink: 0 }}>{ab.initials}</div>
                                     <div>
                                       <div style={{ color: "white", fontSize: 13 }}>{ab.name}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 1 }}>{ab.reason}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 1 }}>{ab.reason}</div>
                                     </div>
                                   </div>
                                   <div style={{ textAlign: "center" as const }}>
-                                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{ab.dates}</div>
-                                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, marginTop: 1 }}>{ab.dur}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>{ab.dates}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginTop: 1 }}>{ab.dur}</div>
                                   </div>
                                   <span style={{ background: ab.sc.bg, color: ab.sc.color, border: `1px solid ${ab.sc.border}`, borderRadius: 20, padding: "2px 8px", fontSize: 11 }}>{ab.status}</span>
                                 </div>
@@ -7786,7 +7786,7 @@ export default function DashboardPage() {
                                   <span style={{ background: `${r.pColor}20`, color: r.pColor, borderRadius: 20, padding: "1px 7px", fontSize: 9, flexShrink: 0, marginTop: 1 }}>{r.priority}</span>
                                   <div>
                                     <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>{r.title}</div>
-                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, lineHeight: 1.5 }}>{r.body}</div>
+                                    <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, lineHeight: 1.5 }}>{r.body}</div>
                                   </div>
                                 </div>
                               ))}
@@ -7826,7 +7826,7 @@ export default function DashboardPage() {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 padding: '32px',
-                                color: 'rgba(255,255,255,0.3)',
+                                color: 'rgba(255,255,255,0.6)',
                                 fontSize: '13px',
                                 gap: '8px',
                               }}>
@@ -7845,7 +7845,7 @@ export default function DashboardPage() {
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexShrink: 0 }}>
                               <div>
                                 <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Empleados</div>
-                                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 2 }}>{`${realEmployees.length} empleados · ${onLeaveCount} en licencia`}</div>
+                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 2 }}>{`${realEmployees.length} empleados · ${onLeaveCount} en licencia`}</div>
                               </div>
                               <button style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Nuevo empleado +</button>
                             </div>
@@ -7879,7 +7879,7 @@ export default function DashboardPage() {
                                     {/* Name + role */}
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                       <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{emp.name}</div>
-                                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{emp.role} · {emp.area}</div>
+                                      <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, marginTop: 2 }}>{emp.role} · {emp.area}</div>
                                     </div>
                                     {/* Status badge */}
                                     <span style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}`, borderRadius: 20, padding: "2px 8px", fontSize: 11, flexShrink: 0 }}>{emp.status}</span>
@@ -7892,7 +7892,7 @@ export default function DashboardPage() {
                                       {emp.alert === "Bajo desempeño"  && <span style={{ color: "#ef4444", fontSize: 11 }}>⚠ Bajo desempeño</span>}
                                     </div>
                                     {/* Seniority */}
-                                    <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, flexShrink: 0, width: 56, textAlign: "right" as const }}>{emp.seniority}</span>
+                                    <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, flexShrink: 0, width: 56, textAlign: "right" as const }}>{emp.seniority}</span>
                                   </div>
                                 )
                               })}
@@ -7995,7 +7995,7 @@ export default function DashboardPage() {
                       (mv.type === 'expense' && mv.amount > avgExpense * 2),
                   }))
                   const aiCard: React.CSSProperties = { background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:10, padding:"12px 14px", marginBottom:0 }
-                  const aiLabel: React.CSSProperties = { color:"rgba(255,255,255,0.5)", fontSize:10, textTransform:"uppercase" as const, letterSpacing:"0.05em" }
+                  const aiLabel: React.CSSProperties = { color:"rgba(255,255,255,0.8)", fontSize:10, textTransform:"uppercase" as const, letterSpacing:"0.05em" }
                   return (
                     <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
                       {/* Secondary nav */}
@@ -8027,7 +8027,7 @@ export default function DashboardPage() {
                               alignItems: 'center',
                               justifyContent: 'center',
                               padding: '32px',
-                              color: 'rgba(255,255,255,0.3)',
+                              color: 'rgba(255,255,255,0.6)',
                               fontSize: '13px',
                               gap: '8px',
                             }}>
@@ -8066,7 +8066,7 @@ export default function DashboardPage() {
                               { label:"Flujo de caja",      value:fmtContab(cashFlow),  valueColor:"white",   sub:"Disponible actual",       subColor:"rgba(255,255,255,0.35)", accent:"#2563EB" },
                             ].map(c => (
                               <div key={c.label} style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderTop:`2px solid ${c.accent}`, borderRadius:10, padding:"16px 18px", boxShadow:"0 2px 10px rgba(0,0,0,0.2)" }}>
-                                <div style={{ color:"rgba(255,255,255,0.4)", fontSize:10, textTransform:"uppercase" as const, letterSpacing:"0.05em", marginBottom:8 }}>{c.label}</div>
+                                <div style={{ color:"rgba(255,255,255,0.7)", fontSize:10, textTransform:"uppercase" as const, letterSpacing:"0.05em", marginBottom:8 }}>{c.label}</div>
                                 <div style={{ color:c.valueColor, fontSize:22, fontWeight:600, marginBottom:4 }}>{c.value}</div>
                                 <div style={{ color:c.subColor, fontSize:11 }}>{c.sub}</div>
                               </div>
@@ -8078,7 +8078,7 @@ export default function DashboardPage() {
                             <div style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:12, overflow:"hidden" }}>
                               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 18px 12px", borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
                                 <div style={{ color:"white", fontSize:13, fontWeight:500 }}>Ingresos vs Gastos</div>
-                                <div style={{ color:"rgba(255,255,255,0.3)", fontSize:11 }}>Últimos 6 meses</div>
+                                <div style={{ color:"rgba(255,255,255,0.6)", fontSize:11 }}>Últimos 6 meses</div>
                               </div>
                               <div style={{ padding:"16px 18px" }}>
                               <div style={{ display:"flex", alignItems:"flex-end", gap:12, height:barH }}>
@@ -8091,7 +8091,7 @@ export default function DashboardPage() {
                               </div>
                               <div style={{ display:"flex", gap:12, marginTop:8 }}>
                                 {MONTHS.map(mo => (
-                                  <div key={mo.m} style={{ flex:1, textAlign:"center" as const, color:"rgba(255,255,255,0.25)", fontSize:10 }}>{mo.m}</div>
+                                  <div key={mo.m} style={{ flex:1, textAlign:"center" as const, color:"rgba(255,255,255,0.55)", fontSize:10 }}>{mo.m}</div>
                                 ))}
                               </div>
                               <div style={{ display:"flex", gap:16, marginTop:10 }}>
@@ -8116,8 +8116,8 @@ export default function DashboardPage() {
                                   <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:5 }}>
                                     <div style={{ width:8, height:8, borderRadius:"50%", background:cat.color, flexShrink:0 }} />
                                     <span style={{ color:"white", fontSize:12, flex:1 }}>{cat.name}</span>
-                                    <span style={{ color:"rgba(255,255,255,0.5)", fontSize:12 }}>{cat.amt}</span>
-                                    <span style={{ color:"rgba(255,255,255,0.3)", fontSize:11, width:28, textAlign:"right" as const }}>{cat.pct}%</span>
+                                    <span style={{ color:"rgba(255,255,255,0.8)", fontSize:12 }}>{cat.amt}</span>
+                                    <span style={{ color:"rgba(255,255,255,0.6)", fontSize:11, width:28, textAlign:"right" as const }}>{cat.pct}%</span>
                                   </div>
                                   <div style={{ height:3, background:"rgba(255,255,255,0.05)", borderRadius:2, overflow:"hidden" }}>
                                     <div style={{ height:"100%", width:`${cat.pct}%`, background:cat.color, borderRadius:2, opacity:0.8 }} />
@@ -8128,21 +8128,21 @@ export default function DashboardPage() {
                             {/* Pending */}
                             <div style={{ flex:1, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:12, padding:"16px 18px" }}>
                               <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:14 }}>Pendientes</div>
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase" as const, letterSpacing:"0.05em", marginBottom:8 }}>Por cobrar</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase" as const, letterSpacing:"0.05em", marginBottom:8 }}>Por cobrar</div>
                               {COBRAR.map(r => (
                                 <div key={r.name} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
                                   <span style={{ color:"white", fontSize:12 }}>{r.name}</span>
-                                  <span style={{ color:"rgba(255,255,255,0.5)", fontSize:12 }}>{r.amt}</span>
+                                  <span style={{ color:"rgba(255,255,255,0.8)", fontSize:12 }}>{r.amt}</span>
                                   <span style={{ color:r.urgColor, fontSize:10 }}>{r.days}</span>
                                 </div>
                               ))}
                               <div style={{ color:"white", fontSize:12, fontWeight:500, marginTop:8, marginBottom:12 }}>$55.900 por cobrar</div>
                               <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", marginBottom:12 }} />
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase" as const, letterSpacing:"0.05em", marginBottom:8 }}>Por pagar</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase" as const, letterSpacing:"0.05em", marginBottom:8 }}>Por pagar</div>
                               {PAGAR.map(r => (
                                 <div key={r.name} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
                                   <span style={{ color:"white", fontSize:12 }}>{r.name}</span>
-                                  <span style={{ color:"rgba(255,255,255,0.5)", fontSize:12 }}>{r.amt}</span>
+                                  <span style={{ color:"rgba(255,255,255,0.8)", fontSize:12 }}>{r.amt}</span>
                                   <span style={{ color:r.urgColor, fontSize:10 }}>{r.days}</span>
                                 </div>
                               ))}
@@ -8160,7 +8160,7 @@ export default function DashboardPage() {
                                   <span style={aiLabel}>Tendencia financiera</span>
                                 </div>
                                 <div style={{ color:"#22c55e", fontSize:13, fontWeight:500 }}>Positiva</div>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:3 }}>Ingresos crecen 28% vs mes anterior</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11, marginTop:3 }}>Ingresos crecen 28% vs mes anterior</div>
                               </div>
                               <div style={aiCard}>
                                 <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
@@ -8168,7 +8168,7 @@ export default function DashboardPage() {
                                   <span style={aiLabel}>Anomalía detectada</span>
                                 </div>
                                 <div style={{ color:"#ef4444", fontSize:13, fontWeight:500 }}>Gasto inusual</div>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:3 }}>Marketing +180% vs promedio histórico</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11, marginTop:3 }}>Marketing +180% vs promedio histórico</div>
                               </div>
                               <div style={aiCard}>
                                 <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
@@ -8176,7 +8176,7 @@ export default function DashboardPage() {
                                   <span style={aiLabel}>Mes de baja recurrente</span>
                                 </div>
                                 <div style={{ color:"white", fontSize:13 }}>Julio — Agosto</div>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:3 }}>Historial muestra caída del 35% en esos meses</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11, marginTop:3 }}>Historial muestra caída del 35% en esos meses</div>
                               </div>
                               <div style={aiCard}>
                                 <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
@@ -8184,7 +8184,7 @@ export default function DashboardPage() {
                                   <span style={aiLabel}>Recomendación</span>
                                 </div>
                                 <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:3 }}>Cobrar Tech Solutions</div>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11 }}>Vence en 3 días y es el mayor monto pendiente</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11 }}>Vence en 3 días y es el mayor monto pendiente</div>
                               </div>
                             </div>
                           </div>
@@ -8209,7 +8209,7 @@ export default function DashboardPage() {
                                   </div>
                                   <div style={{ flex:1, minWidth:0 }}>
                                     <div style={{ color:"white", fontSize:13 }}>{mv.desc}</div>
-                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>{mv.cat} · {mv.when}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11, marginTop:2 }}>{mv.cat} · {mv.when}</div>
                                   </div>
                                   <div style={{ display:"flex", alignItems:"center", gap:6 }}>
                                     {mv.auto && <span style={{ background:"rgba(37,99,235,0.1)", color:"#2563EB", borderRadius:20, padding:"1px 6px", fontSize:10 }}>Auto</span>}
@@ -8280,13 +8280,13 @@ export default function DashboardPage() {
                                 onChange={e => setMovSearch(e.target.value)}
                                 style={{ ...inputStyle, marginBottom:0 }}
                               />
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:20, marginBottom:8 }}>Tipo</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:20, marginBottom:8 }}>Tipo</div>
                               {["Todos","Ingresos 🟢","Gastos 🔴"].map(v => sideBtn(v, movTipoFilter===v, ()=>setMovTipoFilter(v)))}
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Categoría</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Categoría</div>
                               {["Todas","Ventas","Sueldos","Marketing","Operaciones","Servicios","Impuestos","Otros"].map(v => sideBtn(v, movCatFilter===v, ()=>setMovCatFilter(v)))}
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Período</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Período</div>
                               {["Este mes","Mes anterior","Último trimestre","Este año"].map(v => sideBtn(v, movPeriodoFilter===v, ()=>setMovPeriodoFilter(v)))}
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Origen</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Origen</div>
                               {["Todos","Automático","Manual"].map(v => sideBtn(v, movOrigenFilter===v, ()=>setMovOrigenFilter(v)))}
                             </div>
 
@@ -8298,7 +8298,7 @@ export default function DashboardPage() {
                                   alignItems: 'center',
                                   justifyContent: 'center',
                                   padding: '32px',
-                                  color: 'rgba(255,255,255,0.3)',
+                                  color: 'rgba(255,255,255,0.6)',
                                   fontSize: '13px',
                                   gap: '8px',
                                 }}>
@@ -8318,7 +8318,7 @@ export default function DashboardPage() {
                               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexShrink:0 }}>
                                 <div>
                                   <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Movimientos</div>
-                                  <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2 }}>Mayo 2026</div>
+                                  <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginTop:2 }}>Mayo 2026</div>
                                 </div>
                                 <div style={{ display:"flex", gap:8 }}>
                                   <button onClick={e=>{e.stopPropagation();setShowRegGasto(v=>!v);setShowRegIngreso(false)}} style={{ padding:"6px 14px", fontSize:12, background:"none", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, color:"rgba(255,255,255,0.5)", cursor:"pointer" }}>+ Registrar gasto</button>
@@ -8332,29 +8332,29 @@ export default function DashboardPage() {
                                   <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:14 }}>Nuevo gasto</div>
                                   <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:10 }}>
                                     <div>
-                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Descripción</div>
+                                      <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:4 }}>Descripción</div>
                                       <input placeholder="Ej: Alquiler oficina" value={regDesc} onChange={e=>setRegDesc(e.target.value)} style={inputStyle} />
                                     </div>
                                     <div>
-                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Monto</div>
+                                      <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:4 }}>Monto</div>
                                       <div style={{ position:"relative" }}>
-                                        <span style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", color:"rgba(255,255,255,0.4)", fontSize:12 }}>$</span>
+                                        <span style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", color:"rgba(255,255,255,0.7)", fontSize:12 }}>$</span>
                                         <input placeholder="0" type="number" value={regMonto} onChange={e=>setRegMonto(e.target.value)} style={{ ...inputStyle, paddingLeft:22 }} />
                                       </div>
                                     </div>
                                     <div>
-                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Categoría</div>
+                                      <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:4 }}>Categoría</div>
                                       <select value={regCat} onChange={e=>setRegCat(e.target.value)} style={selectStyle}>
                                         {["Operaciones","Sueldos","Marketing","Servicios","Impuestos","Otros"].map(c=><option key={c} value={c}>{c}</option>)}
                                       </select>
                                       <div style={{ color:"#2563EB", fontSize:10, marginTop:4 }}>✦ IA sugiere: Operaciones</div>
                                     </div>
                                     <div>
-                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Fecha</div>
+                                      <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:4 }}>Fecha</div>
                                       <input type="date" value={regFecha} onChange={e=>setRegFecha(e.target.value)} style={inputStyle} />
                                     </div>
                                   </div>
-                                  <div style={{ border:"1px dashed rgba(255,255,255,0.1)", borderRadius:6, padding:8, textAlign:"center", color:"rgba(255,255,255,0.3)", fontSize:11, marginBottom:12, cursor:"pointer" }}>+ Adjuntar comprobante</div>
+                                  <div style={{ border:"1px dashed rgba(255,255,255,0.1)", borderRadius:6, padding:8, textAlign:"center", color:"rgba(255,255,255,0.6)", fontSize:11, marginBottom:12, cursor:"pointer" }}>+ Adjuntar comprobante</div>
                                   <div style={{ display:"flex", justifyContent:"flex-end", gap:8 }}>
                                     <button onClick={()=>setShowRegGasto(false)} style={{ padding:"6px 14px", fontSize:12, background:"none", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, color:"rgba(255,255,255,0.4)", cursor:"pointer" }}>Cancelar</button>
                                     <button onClick={handleSaveExpense} style={{ padding:"6px 14px", fontSize:12, background:"#2563EB", border:"none", borderRadius:6, color:"white", cursor:"pointer" }}>Guardar</button>
@@ -8368,23 +8368,23 @@ export default function DashboardPage() {
                                   <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:14 }}>Nuevo ingreso</div>
                                   <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:10 }}>
                                     <div>
-                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Descripción</div>
+                                      <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:4 }}>Descripción</div>
                                       <input placeholder="Ej: Venta a cliente" value={regDescIn} onChange={e=>setRegDescIn(e.target.value)} style={inputStyle} />
                                     </div>
                                     <div>
-                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Monto</div>
+                                      <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:4 }}>Monto</div>
                                       <div style={{ position:"relative" }}>
-                                        <span style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", color:"rgba(255,255,255,0.4)", fontSize:12 }}>$</span>
+                                        <span style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", color:"rgba(255,255,255,0.7)", fontSize:12 }}>$</span>
                                         <input placeholder="0" type="number" value={regMontoIn} onChange={e=>setRegMontoIn(e.target.value)} style={{ ...inputStyle, paddingLeft:22 }} />
                                       </div>
                                     </div>
                                     <div>
-                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Categoría</div>
+                                      <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:4 }}>Categoría</div>
                                       <select value={regCatIn} onChange={e=>setRegCatIn(e.target.value)} style={selectStyle}>
                                         {["Ventas","Otros"].map(c=><option key={c} value={c}>{c}</option>)}
                                       </select>
                                       <div style={{ display:"flex", alignItems:"center", gap:8, marginTop:8 }}>
-                                        <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11 }}>Vincular a cliente</div>
+                                        <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11 }}>Vincular a cliente</div>
                                         <div onClick={()=>setRegVincularCliente(v=>!v)} style={{ width:32, height:18, borderRadius:9, background:regVincularCliente?"#2563EB":"rgba(255,255,255,0.1)", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
                                           <div style={{ position:"absolute", top:2, left:regVincularCliente?14:2, width:14, height:14, borderRadius:"50%", background:"white", transition:"left 0.2s" }} />
                                         </div>
@@ -8396,7 +8396,7 @@ export default function DashboardPage() {
                                       )}
                                     </div>
                                     <div>
-                                      <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Fecha</div>
+                                      <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:4 }}>Fecha</div>
                                       <input type="date" value={regFechaIn} onChange={e=>setRegFechaIn(e.target.value)} style={inputStyle} />
                                     </div>
                                   </div>
@@ -8418,11 +8418,11 @@ export default function DashboardPage() {
 
                               {/* Movement groups */}
                               {groups.length === 0 && (
-                                <div style={{ color:"rgba(255,255,255,0.2)", fontSize:13, textAlign:"center", marginTop:40 }}>Sin movimientos</div>
+                                <div style={{ color:"rgba(255,255,255,0.5)", fontSize:13, textAlign:"center", marginTop:40 }}>Sin movimientos</div>
                               )}
                               {groups.map((grp, gi) => (
                                 <div key={grp}>
-                                  <div style={{ color:"rgba(255,255,255,0.3)", fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", padding:"8px 0", marginTop: gi===0 ? 0 : 20 }}>{grp}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.6)", fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", padding:"8px 0", marginTop: gi===0 ? 0 : 20 }}>{grp}</div>
                                   {(groupedMovements[grp] ?? []).map(mov => {
                                     const meta = catMeta[mov.cat] ?? catMeta["Otros"]
                                     const isMenuOpen = movMenuOpenId === mov.id
@@ -8470,7 +8470,7 @@ export default function DashboardPage() {
                       {contabNavTab === "Análisis" && (() => {
                         const fmtA = (n: number) => "$" + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
                         const varRow = (concepto: string, actual: string, anterior: string, varPct: string, dir: "up"|"down"|"flat", anomaly?: boolean) => {
-                          const varColor = dir==="up" ? "#22c55e" : dir==="down" ? "#ef4444" : "rgba(255,255,255,0.3)"
+                          const varColor = dir==="up" ? "#22c55e" : dir==="down" ? "#ef4444" : "rgba(255,255,255,0.6)"
                           const varArrow = dir==="up" ? "↑" : dir==="down" ? "↓" : "→"
                           return (
                             <div key={concepto} style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", padding:"12px 16px", borderBottom:"1px solid rgba(255,255,255,0.04)", borderLeft: anomaly ? "2px solid #ef4444" : "2px solid transparent", background: anomaly ? "rgba(239,68,68,0.02)" : "transparent" }}>
@@ -8479,7 +8479,7 @@ export default function DashboardPage() {
                                 {anomaly && <div style={{ color:"#ef4444", fontSize:10, marginTop:3 }}>⚠ Variación significativa</div>}
                               </div>
                               <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{actual}</div>
-                              <div style={{ color:"rgba(255,255,255,0.5)", fontSize:13 }}>{anterior}</div>
+                              <div style={{ color:"rgba(255,255,255,0.8)", fontSize:13 }}>{anterior}</div>
                               <div style={{ color:varColor, fontSize:13 }}>{varArrow} {varPct}</div>
                             </div>
                           )
@@ -8528,7 +8528,7 @@ export default function DashboardPage() {
                             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24 }}>
                               <div>
                                 <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Análisis financiero</div>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2 }}>Comparativos y rentabilidad</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginTop:2 }}>Comparativos y rentabilidad</div>
                               </div>
                               <div style={{ display:"flex", gap:4 }}>
                                 {["Este mes","Trimestre","Este año"].map(p => (
@@ -8541,7 +8541,7 @@ export default function DashboardPage() {
                             <div style={{ marginBottom:24 }}>
                               <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Comparativo de períodos</div>
                               <div style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, overflow:"hidden" }}>
-                                <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", padding:"10px 16px", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.3)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>
+                                <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", padding:"10px 16px", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.6)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>
                                   <div>Concepto</div><div>Este mes</div><div>Mes anterior</div><div>Variación</div>
                                 </div>
                                 {varRow("Ingresos totales",    "$105.370","$88.200","19.5%", "up")}
@@ -8556,7 +8556,7 @@ export default function DashboardPage() {
                             {/* Product margins */}
                             <div style={{ marginBottom:24 }}>
                               <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Margen por producto</div>
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Rentabilidad real por línea</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:16 }}>Rentabilidad real por línea</div>
                               {PRODUCTS.map(p => {
                                 const mc = marginColor(p.margin)
                                 return (
@@ -8564,7 +8564,7 @@ export default function DashboardPage() {
                                     <div style={{ width:10, height:10, borderRadius:"50%", background:p.color, flexShrink:0 }} />
                                     <div style={{ flex:1, minWidth:0 }}>
                                       <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{p.name}</div>
-                                      <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>{fmtA(p.ing)} ingresos · {fmtA(p.cost)} costo</div>
+                                      <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11, marginTop:2 }}>{fmtA(p.ing)} ingresos · {fmtA(p.cost)} costo</div>
                                     </div>
                                     <div style={{ width:80, height:4, background:"rgba(255,255,255,0.06)", borderRadius:2, flexShrink:0 }}>
                                       <div style={{ width:`${p.margin}%`, height:"100%", background:mc, borderRadius:2 }} />
@@ -8582,7 +8582,7 @@ export default function DashboardPage() {
                             {/* Area profitability */}
                             <div style={{ marginBottom:24 }}>
                               <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Rentabilidad por área</div>
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Ingresos generados vs costos del área</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:16 }}>Ingresos generados vs costos del área</div>
                               <div style={{ display:"flex", gap:12 }}>
                                 {AREAS.map(a => (
                                   <div key={a.name} style={{ flex:1, background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:16, textAlign:"center" }}>
@@ -8592,8 +8592,8 @@ export default function DashboardPage() {
                                         <span style={{ color:"white", fontSize:12, fontWeight:500 }}>{a.pct}%</span>
                                       </div>
                                     </div>
-                                    <div style={{ color:"rgba(255,255,255,0.5)", fontSize:10 }}>Ingresos: {fmtA(a.ing)}</div>
-                                    <div style={{ color:"rgba(255,255,255,0.4)", fontSize:10, marginTop:2 }}>Costos: {fmtA(a.cost)}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.8)", fontSize:10 }}>Ingresos: {fmtA(a.ing)}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.7)", fontSize:10, marginTop:2 }}>Costos: {fmtA(a.cost)}</div>
                                     <div style={{ color:a.labelColor, fontSize:11, marginTop:8 }}>{a.label}</div>
                                   </div>
                                 ))}
@@ -8603,11 +8603,11 @@ export default function DashboardPage() {
                             {/* Low billing calendar */}
                             <div style={{ marginBottom:24 }}>
                               <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>✦ Meses de baja facturación</div>
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Detectados por Pupi en historial de 12 meses</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:16 }}>Detectados por Pupi en historial de 12 meses</div>
                               <div style={{ display:"grid", gridTemplateColumns:"repeat(6, 1fr)", gap:8 }}>
                                 {CALENDAR.map(c => (
                                   <div key={c.m} style={{ background:calBg(c.level), border: c.peak ? "1px solid rgba(34,197,94,0.3)" : c.low ? "1px solid rgba(239,68,68,0.3)" : "1px solid rgba(255,255,255,0.04)", borderRadius:8, padding:"10px 8px", textAlign:"center" }}>
-                                    <div style={{ color:"rgba(255,255,255,0.4)", fontSize:10, marginBottom:4 }}>{c.m}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.7)", fontSize:10, marginBottom:4 }}>{c.m}</div>
                                     <div style={{ color:calText(c.level), fontSize:12, fontWeight:500 }}>${c.v}k</div>
                                     {c.low  && <div style={{ color:"#ef4444", fontSize:9, marginTop:4 }}>Baja recurrente</div>}
                                     {c.peak && <div style={{ color:"#22c55e", fontSize:9, marginTop:4 }}>Pico</div>}
@@ -8625,7 +8625,7 @@ export default function DashboardPage() {
                                     <span style={{ background:prioColor(r.prio)+"22", color:prioColor(r.prio), fontSize:10, borderRadius:20, padding:"1px 8px" }}>{r.prio}</span>
                                     <span style={{ color:"white", fontSize:13, fontWeight:500 }}>{r.title}</span>
                                   </div>
-                                  <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.5 }}>{r.body}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.8)", fontSize:12, lineHeight:1.5 }}>{r.body}</div>
                                 </div>
                               ))}
                             </div>
@@ -8687,7 +8687,7 @@ export default function DashboardPage() {
                           { prio:"Media",   title:"Crear reserva de $30.000",                     body:"Con el flujo actual es posible apartar $30.000 en mayo para cubrir julio y agosto sin estrés financiero." },
                           { prio:"Baja",    title:"Aumentar precios en noviembre",                body:"El pico de noviembre es ideal para probar aumentos del 8-10% sin afectar la demanda." },
                         ]
-                        const prioColor = (p: string) => p==="Urgente" ? "#ef4444" : p==="Alta" ? "#f97316" : p==="Media" ? "#eab308" : "rgba(255,255,255,0.3)"
+                        const prioColor = (p: string) => p==="Urgente" ? "#ef4444" : p==="Alta" ? "#f97316" : p==="Media" ? "#eab308" : "rgba(255,255,255,0.6)"
                         const aiCard: React.CSSProperties = { background:"rgba(37,99,235,0.06)", border:"1px solid rgba(37,99,235,0.15)", borderRadius:8, padding:"12px 14px", marginBottom:8 }
                         const metricCard: React.CSSProperties = { flex:1, background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:"16px 20px" }
                         return (
@@ -8696,7 +8696,7 @@ export default function DashboardPage() {
                             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24 }}>
                               <div>
                                 <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Proyecciones financieras</div>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2 }}>Próximos 6 meses</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginTop:2 }}>Próximos 6 meses</div>
                               </div>
                               <div style={{ display:"flex", gap:4 }}>
                                 {["6 meses","12 meses"].map(p => (
@@ -8708,26 +8708,26 @@ export default function DashboardPage() {
                             {/* Cash flow summary cards */}
                             <div style={{ display:"flex", gap:12, marginBottom:24 }}>
                               <div style={metricCard}>
-                                <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:6 }}>Flujo de caja actual</div>
+                                <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:6 }}>Flujo de caja actual</div>
                                 <div style={{ color:"white", fontSize:20, fontWeight:600 }}>$52.180</div>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:4 }}>Disponible hoy</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11, marginTop:4 }}>Disponible hoy</div>
                               </div>
                               <div style={metricCard}>
-                                <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:6 }}>Proyección próximo mes</div>
+                                <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:6 }}>Proyección próximo mes</div>
                                 <div style={{ color:"#eab308", fontSize:20, fontWeight:600 }}>$38.420</div>
                                 <div style={{ color:"#eab308", fontSize:11, marginTop:4 }}>↓ Julio es mes bajo</div>
                               </div>
                               <div style={metricCard}>
-                                <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:6 }}>Proyección 6 meses</div>
+                                <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:6 }}>Proyección 6 meses</div>
                                 <div style={{ color:"#22c55e", fontSize:20, fontWeight:600 }}>$284.500</div>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:4 }}>Acumulado estimado</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11, marginTop:4 }}>Acumulado estimado</div>
                               </div>
                             </div>
 
                             {/* Cash flow chart */}
                             <div style={{ marginBottom:24 }}>
                               <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Flujo de caja proyectado</div>
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:12 }}>Línea real + proyección IA</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:12 }}>Línea real + proyección IA</div>
                               <div style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:"16px 16px 8px" }}>
                                 <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width:"100%", display:"block" }}>
                                   {/* Danger zone Jul-Ago */}
@@ -8758,8 +8758,8 @@ export default function DashboardPage() {
                                 </svg>
                                 {/* Legend */}
                                 <div style={{ display:"flex", gap:16, marginTop:4, paddingLeft:padL }}>
-                                  <span style={{ color:"rgba(255,255,255,0.35)", fontSize:11, display:"flex", alignItems:"center", gap:6 }}><span style={{ display:"inline-block", width:20, height:2, background:"#22c55e", borderRadius:1 }} />Real</span>
-                                  <span style={{ color:"rgba(255,255,255,0.35)", fontSize:11, display:"flex", alignItems:"center", gap:6 }}><span style={{ display:"inline-block", width:20, height:0, borderTop:"2px dashed rgba(37,99,235,0.7)" }} />Proyectado</span>
+                                  <span style={{ color:"rgba(255,255,255,0.65)", fontSize:11, display:"flex", alignItems:"center", gap:6 }}><span style={{ display:"inline-block", width:20, height:2, background:"#22c55e", borderRadius:1 }} />Real</span>
+                                  <span style={{ color:"rgba(255,255,255,0.65)", fontSize:11, display:"flex", alignItems:"center", gap:6 }}><span style={{ display:"inline-block", width:20, height:0, borderTop:"2px dashed rgba(37,99,235,0.7)" }} />Proyectado</span>
                                 </div>
                               </div>
                             </div>
@@ -8768,14 +8768,14 @@ export default function DashboardPage() {
                             <div style={{ marginBottom:24 }}>
                               <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Detalle mensual proyectado</div>
                               <div style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, overflow:"hidden" }}>
-                                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr", padding:"10px 16px", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.3)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>
+                                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr", padding:"10px 16px", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.6)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>
                                   <div>Mes</div><div>Ingresos est.</div><div>Gastos est.</div><div>Resultado</div><div>Alerta</div>
                                 </div>
                                 {MONTHS_PROJ.map(row => (
                                   <div key={row.m} style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr", padding:"12px 16px", borderBottom:"1px solid rgba(255,255,255,0.04)", borderLeft: row.alert==="def" ? "2px solid #ef4444" : "2px solid transparent", background: row.alert==="def" ? "rgba(239,68,68,0.02)" : "transparent" }}>
                                     <div style={{ color:"white", fontSize:13 }}>{row.m}</div>
                                     <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{fmtP(row.ing)}</div>
-                                    <div style={{ color:"rgba(255,255,255,0.5)", fontSize:13 }}>{fmtP(row.gas)}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.8)", fontSize:13 }}>{fmtP(row.gas)}</div>
                                     <div style={{ color: row.result >= 0 ? "#22c55e" : "#ef4444", fontSize:13, fontWeight:500 }}>{row.result >= 0 ? "+" : ""}{fmtP(Math.abs(row.result))}</div>
                                     <div style={{ color:alertColor(row.alert), fontSize:11 }}>{alertLabel(row.alert)}</div>
                                   </div>
@@ -8800,7 +8800,7 @@ export default function DashboardPage() {
                             {/* Scenario analysis */}
                             <div style={{ marginBottom:24 }}>
                               <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Análisis de escenarios</div>
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Qué pasa si las condiciones cambian</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:16 }}>Qué pasa si las condiciones cambian</div>
                               {SCENARIOS.map(s => (
                                 <div key={s.name} style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:16, marginBottom:8, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                                   <div>
@@ -8808,7 +8808,7 @@ export default function DashboardPage() {
                                       <span style={{ color:s.iconColor, fontSize:16, fontWeight:700 }}>{s.icon}</span>
                                       <span style={{ color:"white", fontSize:13, fontWeight:500 }}>{s.name}</span>
                                     </div>
-                                    <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12 }}>{s.desc}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.7)", fontSize:12 }}>{s.desc}</div>
                                   </div>
                                   <div style={{ color:s.rc, fontSize:16, fontWeight:600, flexShrink:0, marginLeft:16 }}>{s.result}</div>
                                 </div>
@@ -8824,7 +8824,7 @@ export default function DashboardPage() {
                                     <span style={{ background:prioColor(r.prio)+"22", color:prioColor(r.prio), fontSize:10, borderRadius:20, padding:"1px 8px" }}>{r.prio}</span>
                                     <span style={{ color:"white", fontSize:13, fontWeight:500 }}>{r.title}</span>
                                   </div>
-                                  <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.5 }}>{r.body}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.8)", fontSize:12, lineHeight:1.5 }}>{r.body}</div>
                                 </div>
                               ))}
                             </div>
@@ -8889,14 +8889,14 @@ export default function DashboardPage() {
                             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:24 }}>
                               <div>
                                 <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Historial y exportación</div>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2 }}>Registro completo desde el inicio de la empresa en Pupi</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginTop:2 }}>Registro completo desde el inicio de la empresa en Pupi</div>
                               </div>
                               <button style={{ padding:"8px 16px", fontSize:13, background:"#2563EB", border:"none", borderRadius:6, color:"white", cursor:"pointer", fontWeight:500 }}>Exportar para contador →</button>
                             </div>
 
                             {/* Section 1 — Historial */}
                             <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Historial financiero completo</div>
-                            <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:20 }}>Desde el onboarding — todos los movimientos registrados</div>
+                            <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:20 }}>Desde el onboarding — todos los movimientos registrados</div>
 
                             {/* Timeline milestone cards */}
                             <div style={{ display:"flex", gap:12, marginBottom:24 }}>
@@ -8907,9 +8907,9 @@ export default function DashboardPage() {
                               ].map(c => (
                                 <div key={c.label} style={{ flex:1, background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:16, textAlign:"center" }}>
                                   <div style={{ fontSize:20, color:c.iconColor }}>{c.icon}</div>
-                                  <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginTop:8 }}>{c.label}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginTop:8 }}>{c.label}</div>
                                   <div style={{ color:c.valueColor ?? "white", fontSize: c.valueColor ? 18 : 14, fontWeight: c.valueColor ? 600 : 500, marginTop:4 }}>{c.value}</div>
-                                  <div style={{ color:"rgba(255,255,255,0.3)", fontSize:11, marginTop:4 }}>{c.sub}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.6)", fontSize:11, marginTop:4 }}>{c.sub}</div>
                                 </div>
                               ))}
                             </div>
@@ -8918,7 +8918,7 @@ export default function DashboardPage() {
                             <div style={{ marginBottom:24 }}>
                               <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Resumen por período</div>
                               <div style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, overflow:"hidden" }}>
-                                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr", padding:"10px 16px", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.3)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>
+                                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr", padding:"10px 16px", background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.6)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>
                                   <div>Período</div><div>Ingresos</div><div>Gastos</div><div>Resultado</div><div>Movimientos</div>
                                 </div>
                                 {PERIOD_TABLE.map(r => (
@@ -8930,7 +8930,7 @@ export default function DashboardPage() {
                                     <div style={{ color:"#22c55e", fontSize:13, fontWeight:500 }}>{fmtE(r.ing)}</div>
                                     <div style={{ color:"#ef4444", fontSize:13 }}>{fmtE(r.gas)}</div>
                                     <div style={{ color:"#22c55e", fontSize:13, fontWeight:500 }}>+{fmtE(r.res)}</div>
-                                    <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12 }}>{r.cnt}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.7)", fontSize:12 }}>{r.cnt}</div>
                                   </div>
                                 ))}
                                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr", padding:"12px 16px", background:"rgba(255,255,255,0.04)" }}>
@@ -8938,7 +8938,7 @@ export default function DashboardPage() {
                                   <div style={{ color:"#22c55e", fontSize:13, fontWeight:500 }}>$440.000</div>
                                   <div style={{ color:"#ef4444", fontSize:13, fontWeight:500 }}>$306.000</div>
                                   <div style={{ color:"#22c55e", fontSize:13, fontWeight:500 }}>+$134.000</div>
-                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12, fontWeight:500 }}>109</div>
+                                  <div style={{ color:"rgba(255,255,255,0.7)", fontSize:12, fontWeight:500 }}>109</div>
                                 </div>
                               </div>
                             </div>
@@ -8965,7 +8965,7 @@ export default function DashboardPage() {
                                     <div style={{ flex:1, minWidth:0 }}>
                                       <div style={{ color:"white", fontSize:12, fontWeight:500 }}>{mov.desc}</div>
                                       <div style={{ display:"flex", gap:6, marginTop:3, alignItems:"center" }}>
-                                        <span style={{ color:"rgba(255,255,255,0.3)", fontSize:10 }}>{mov.month}</span>
+                                        <span style={{ color:"rgba(255,255,255,0.6)", fontSize:10 }}>{mov.month}</span>
                                         <span style={{ background:meta.color+"1a", color:meta.color, borderRadius:20, padding:"1px 6px", fontSize:9 }}>{mov.cat}</span>
                                         {mov.auto && <span style={{ background:"rgba(37,99,235,0.1)", color:"#2563EB", borderRadius:20, padding:"1px 6px", fontSize:9 }}>✦ Auto</span>}
                                         {mov.anomaly && <span style={{ background:"rgba(239,68,68,0.1)", color:"#ef4444", borderRadius:20, padding:"1px 6px", fontSize:9 }}>⚠ Inusual</span>}
@@ -8991,7 +8991,7 @@ export default function DashboardPage() {
                                   { label:"Crecimiento",     value:"+28% mensual" },
                                 ].map((s, i, arr) => (
                                   <div key={s.label} style={{ flex:1, borderRight: i < arr.length-1 ? "1px solid rgba(255,255,255,0.08)" : "none", paddingRight:16, paddingLeft: i>0 ? 16 : 0 }}>
-                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>{s.label}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em" }}>{s.label}</div>
                                     <div style={{ color:"white", fontSize:18, fontWeight:600, marginTop:4 }}>{s.value}</div>
                                   </div>
                                 ))}
@@ -9001,13 +9001,13 @@ export default function DashboardPage() {
                             {/* Divider */}
                             <div style={{ display:"flex", alignItems:"center", gap:12, margin:"32px 0" }}>
                               <div style={{ flex:1, height:1, background:"rgba(255,255,255,0.06)" }} />
-                              <span style={{ color:"rgba(255,255,255,0.2)", fontSize:12 }}>Exportación</span>
+                              <span style={{ color:"rgba(255,255,255,0.5)", fontSize:12 }}>Exportación</span>
                               <div style={{ flex:1, height:1, background:"rgba(255,255,255,0.06)" }} />
                             </div>
 
                             {/* Section 2 — Export for accountant */}
                             <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Exportar para contador</div>
-                            <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:20 }}>Generá reportes listos para tu contador externo</div>
+                            <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:20 }}>Generá reportes listos para tu contador externo</div>
 
                             {/* Export option cards */}
                             {EXPORT_CARDS.map(c => (
@@ -9016,7 +9016,7 @@ export default function DashboardPage() {
                                   <div style={{ width:40, height:40, borderRadius:"50%", background:c.color+"1a", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>{c.icon}</div>
                                   <div>
                                     <div style={{ color:"white", fontSize:14, fontWeight:500 }}>{c.title}</div>
-                                    <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12, marginTop:4 }}>{c.desc}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.7)", fontSize:12, marginTop:4 }}>{c.desc}</div>
                                   </div>
                                 </div>
                                 <button style={{ padding:"6px 16px", fontSize:12, background:"none", border:`1px solid ${c.color}4d`, borderRadius:6, color:c.color, cursor:"pointer", flexShrink:0 }}>{c.btn}</button>
@@ -9028,15 +9028,15 @@ export default function DashboardPage() {
                               <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:16 }}>Exportación personalizada</div>
                               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:16 }}>
                                 <div>
-                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Desde</div>
+                                  <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:4 }}>Desde</div>
                                   <input type="date" value={exportCustomFrom2} onChange={e=>setExportCustomFrom2(e.target.value)} style={{ ...inputStyle, width:"100%" }} />
                                 </div>
                                 <div>
-                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:4 }}>Hasta</div>
+                                  <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:4 }}>Hasta</div>
                                   <input type="date" value={exportCustomTo2} onChange={e=>setExportCustomTo2(e.target.value)} style={{ ...inputStyle, width:"100%" }} />
                                 </div>
                               </div>
-                              <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:8 }}>Incluir</div>
+                              <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:8 }}>Incluir</div>
                               <div style={{ display:"flex", flexWrap:"wrap", gap:12, marginBottom:16 }}>
                                 {CHECK_LABELS.map(lbl => {
                                   const key = CHECK_KEYS[lbl]
@@ -9046,12 +9046,12 @@ export default function DashboardPage() {
                                       <div style={{ width:18, height:18, borderRadius:4, background:checked?"#2563EB":"none", border:checked?"none":"1px solid rgba(255,255,255,0.2)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                                         {checked && <span style={{ color:"white", fontSize:11 }}>✓</span>}
                                       </div>
-                                      <span style={{ color:checked?"white":"rgba(255,255,255,0.4)", fontSize:12 }}>{lbl}</span>
+                                      <span style={{ color:checked?"white":"rgba(255,255,255,0.7)", fontSize:12 }}>{lbl}</span>
                                     </div>
                                   )
                                 })}
                               </div>
-                              <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:8 }}>Formato</div>
+                              <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:8 }}>Formato</div>
                               <div style={{ display:"flex", gap:4, marginBottom:16 }}>
                                 {["Excel","PDF","CSV"].map(f => (
                                   <button key={f} onClick={()=>setExportCustomFmt(f)} style={{ padding:"5px 14px", fontSize:12, borderRadius:20, border:"none", cursor:"pointer", background:exportCustomFmt===f?"#2563EB":"rgba(255,255,255,0.06)", color:exportCustomFmt===f?"white":"rgba(255,255,255,0.4)" }}>{f}</button>
@@ -9079,8 +9079,8 @@ export default function DashboardPage() {
 
                             {/* Accountant note */}
                             <div style={{ display:"flex", gap:10, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, padding:14, marginTop:20 }}>
-                              <span style={{ color:"rgba(255,255,255,0.3)", fontSize:16, flexShrink:0 }}>ℹ</span>
-                              <span style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.6 }}>Los reportes exportados son compatibles con los principales software contables. Si tu contador necesita un formato específico, podés exportar el detalle completo en Excel y él lo adapta.</span>
+                              <span style={{ color:"rgba(255,255,255,0.6)", fontSize:16, flexShrink:0 }}>ℹ</span>
+                              <span style={{ color:"rgba(255,255,255,0.8)", fontSize:12, lineHeight:1.6 }}>Los reportes exportados son compatibles con los principales software contables. Si tu contador necesita un formato específico, podés exportar el detalle completo en Excel y él lo adapta.</span>
                             </div>
                           </div>
                         )
@@ -9129,7 +9129,7 @@ export default function DashboardPage() {
                     { label:"Tareas pendientes",  value:"4",        color:"#eab308" },
                     { label:"Alertas activas",    value:"3",        color:"#ef4444" },
                   ]
-                  const prioColor = (p: string) => p==="Alta" ? "#ef4444" : p==="Media" ? "#eab308" : p==="done" ? "#22c55e" : "rgba(255,255,255,0.3)"
+                  const prioColor = (p: string) => p==="Alta" ? "#ef4444" : p==="Media" ? "#eab308" : p==="done" ? "#22c55e" : "rgba(255,255,255,0.6)"
                   const cardStyle: React.CSSProperties = { background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:"14px 16px" }
                   const renderReportIcon = (icon: WorkspaceReportIcon, color: string, size = 18) => {
                     const iconMap = { "trending-up": TrendingUp, users: Users, calculator: Calculator, megaphone: Megaphone, "bar-chart-2": BarChart2, "file-text": FileText }
@@ -9155,7 +9155,7 @@ export default function DashboardPage() {
                   }
                   const selectedTemplate = WS_REPORT_TEMPLATES.find(t => t.id === wsSelectedReportTemplate)
                   const selectedIncludeOptions = reportIncludeOptions(wsSelectedReportTemplate)
-                  const pillStyle: React.CSSProperties = { background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.4)", borderRadius:20, padding:"2px 8px", fontSize:10 }
+                  const pillStyle: React.CSSProperties = { background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.7)", borderRadius:20, padding:"2px 8px", fontSize:10 }
                   const Toggle = ({ on, onToggle }: { on: boolean; onToggle: () => void }) => (
                     <button onClick={onToggle} style={{ width:36, height:20, borderRadius:10, background:on ? "#2563EB" : "rgba(255,255,255,0.1)", border:"none", cursor:"pointer", position:"relative", flexShrink:0, transition:"background 0.2s" }}>
                       <span style={{ width:16, height:16, borderRadius:"50%", background:"white", position:"absolute", top:2, left:on ? 18 : 2, transition:"left 0.2s" }} />
@@ -9248,7 +9248,7 @@ export default function DashboardPage() {
                               alignItems: 'center',
                               justifyContent: 'center',
                               padding: '32px',
-                              color: 'rgba(255,255,255,0.3)',
+                              color: 'rgba(255,255,255,0.6)',
                               fontSize: '13px',
                               gap: '8px',
                             }}>
@@ -9266,7 +9266,7 @@ export default function DashboardPage() {
                           {/* Greeting */}
                           <div style={{ marginBottom:24 }}>
                             <div style={{ color:"white", fontSize:20, fontWeight:600 }}>Buenos días, Nacho 👋</div>
-                            <div style={{ color:"rgba(255,255,255,0.35)", fontSize:13, marginTop:4 }}>Lunes 25 de Mayo, 2026</div>
+                            <div style={{ color:"rgba(255,255,255,0.65)", fontSize:13, marginTop:4 }}>Lunes 25 de Mayo, 2026</div>
                           </div>
 
                           {/* AI daily summary */}
@@ -9292,7 +9292,7 @@ export default function DashboardPage() {
                                 <span style={{ color:a.color, fontSize:16, flexShrink:0 }}>●</span>
                                 <div style={{ flex:1, minWidth:0 }}>
                                   <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{a.title}</div>
-                                  <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>{a.sub}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11, marginTop:2 }}>{a.sub}</div>
                                 </div>
                                 <span style={{ color:a.color, fontSize:11, flexShrink:0 }}>Ver →</span>
                               </div>
@@ -9302,7 +9302,7 @@ export default function DashboardPage() {
                           {/* Today's tasks */}
                           <div style={{ marginBottom:24 }}>
                             <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Mis tareas de hoy</div>
-                            <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:12 }}>Generadas por Pupi según prioridad y contexto</div>
+                            <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:12 }}>Generadas por Pupi según prioridad y contexto</div>
                             {TASKS.map(t => {
                               const done = wsTasks[t.id] ?? false
                               const pc = prioColor(done ? "done" : t.prio)
@@ -9313,7 +9313,7 @@ export default function DashboardPage() {
                                   </div>
                                   <div style={{ flex:1, minWidth:0 }}>
                                     <div style={{ color:done?"rgba(255,255,255,0.35)":"white", fontSize:13, textDecoration:done?"line-through":"none" }}>{t.text}</div>
-                                    <div style={{ color:"rgba(255,255,255,0.3)", fontSize:10, marginTop:2 }}>{t.sub}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.6)", fontSize:10, marginTop:2 }}>{t.sub}</div>
                                   </div>
                                   <span style={{ background:pc+"22", color:pc, fontSize:10, borderRadius:20, padding:"1px 8px", flexShrink:0 }}>{done?"Completada":t.prio}</span>
                                 </div>
@@ -9330,7 +9330,7 @@ export default function DashboardPage() {
                                   <span style={{ fontSize:16, flexShrink:0 }}>{m.icon}</span>
                                   <div style={{ flex:1, minWidth:0 }}>
                                     <div style={{ color:"white", fontSize:12, fontWeight:500 }}>{m.name}</div>
-                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, marginTop:2 }}>{m.status}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, marginTop:2 }}>{m.status}</div>
                                   </div>
                                   <div style={{ width:8, height:8, borderRadius:"50%", background:m.dot, flexShrink:0 }} />
                                 </div>
@@ -9342,7 +9342,7 @@ export default function DashboardPage() {
                           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12 }}>
                             {QUICK_STATS.map(s => (
                               <div key={s.label} style={cardStyle}>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:6 }}>{s.label}</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:6 }}>{s.label}</div>
                                 <div style={{ color:s.color, fontSize:20, fontWeight:600 }}>{s.value}</div>
                               </div>
                             ))}
@@ -9384,16 +9384,16 @@ export default function DashboardPage() {
                             {/* LEFT SIDEBAR */}
                             <div style={{ width:"25%", minWidth:160, borderRight:"1px solid rgba(255,255,255,0.06)", padding:"20px 16px", display:"flex", flexDirection:"column", overflowY:"auto" }}>
                               <input placeholder="Buscar en historial..." value={histSearch} onChange={e=>setHistSearch(e.target.value)} style={inputStyle} />
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:20, marginBottom:8 }}>Módulo</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:20, marginBottom:8 }}>Módulo</div>
                               {["Todos","CRM","Ventas","Marketing","RRHH","Contabilidad"].map(v => sideBtn(v, histModulo===v, ()=>setHistModulo(v)))}
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Tipo</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Tipo</div>
                               {["Todos","Ventas cerradas","Clientes nuevos","Alertas","Movimientos","Cambios de equipo","Campañas"].map(v => sideBtn(v, histTipo===v, ()=>setHistTipo(v)))}
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Período</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginTop:16, marginBottom:8 }}>Período</div>
                               {["Hoy","Esta semana","Este mes","Todo el historial"].map(v => sideBtn(v, histPeriodo===v, ()=>setHistPeriodo(v)))}
                               {/* AI summary */}
                               <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", marginTop:20, paddingTop:16 }}>
                                 <div style={{ color:"#2563EB", fontSize:11, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:10 }}>✦ Resumen Pupi</div>
-                                <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.6, marginBottom:12 }}>Esta semana hubo 14 eventos. 3 alertas generadas, 2 ventas cerradas y 1 empleado nuevo.</div>
+                                <div style={{ color:"rgba(255,255,255,0.8)", fontSize:12, lineHeight:1.6, marginBottom:12 }}>Esta semana hubo 14 eventos. 3 alertas generadas, 2 ventas cerradas y 1 empleado nuevo.</div>
                                 <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
                                   <span style={{ color:"white", fontSize:13 }}>14 eventos</span>
                                   <span style={{ color:"#ef4444", fontSize:13 }}>3 alertas</span>
@@ -9408,18 +9408,18 @@ export default function DashboardPage() {
                               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexShrink:0 }}>
                                 <div>
                                   <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Historial de la empresa</div>
-                                  <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2 }}>Todo lo que pasó en Pupi</div>
+                                  <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginTop:2 }}>Todo lo que pasó en Pupi</div>
                                 </div>
                                 <button style={{ padding:"6px 14px", fontSize:12, background:"none", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, color:"rgba(255,255,255,0.5)", cursor:"pointer" }}>↓ Exportar</button>
                               </div>
 
                               {/* Timeline */}
                               {groups.length === 0 && (
-                                <div style={{ color:"rgba(255,255,255,0.2)", fontSize:13, textAlign:"center", marginTop:40 }}>Sin eventos</div>
+                                <div style={{ color:"rgba(255,255,255,0.5)", fontSize:13, textAlign:"center", marginTop:40 }}>Sin eventos</div>
                               )}
                               {groups.map((grp, gi) => (
                                 <div key={grp}>
-                                  <div style={{ color:"rgba(255,255,255,0.3)", fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", padding:"8px 0", marginTop: gi===0 ? 0 : 16 }}>{grp}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.6)", fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", padding:"8px 0", marginTop: gi===0 ? 0 : 16 }}>{grp}</div>
                                   {filtered.filter(e=>e.group===grp).map(evt => {
                                     const mc = modColor[evt.mod] ?? "#2563EB"
                                     const mi = modIcon[evt.mod] ?? "●"
@@ -9435,9 +9435,9 @@ export default function DashboardPage() {
                                           <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:3 }}>{evt.title}</div>
                                           <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
                                             <span style={{ background:mc+"22", color:mc, borderRadius:20, padding:"1px 8px", fontSize:10 }}>{evt.mod}</span>
-                                            <span style={{ color:"rgba(255,255,255,0.35)", fontSize:11 }}>{evt.time}</span>
+                                            <span style={{ color:"rgba(255,255,255,0.65)", fontSize:11 }}>{evt.time}</span>
                                           </div>
-                                          <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.5 }}>{evt.detail}</div>
+                                          <div style={{ color:"rgba(255,255,255,0.8)", fontSize:12, lineHeight:1.5 }}>{evt.detail}</div>
                                         </div>
                                         {/* Module icon */}
                                         <div style={{ width:28, height:28, borderRadius:"50%", background:mc+"22", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, flexShrink:0, marginTop:2 }}>{mi}</div>
@@ -9460,7 +9460,7 @@ export default function DashboardPage() {
                           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
                             <div>
                               <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Reportes automáticos</div>
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:3 }}>Generados por Pupi AI<br />listos para presentar</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginTop:3 }}>Generados por Pupi AI<br />listos para presentar</div>
                             </div>
                             <button onClick={() => openReportModal(null)} style={{ padding:"7px 14px", fontSize:13, background:"#2563EB", color:"white", border:"none", borderRadius:8, cursor:"pointer", fontWeight:500 }}>+ Nuevo reporte</button>
                           </div>
@@ -9480,7 +9480,7 @@ export default function DashboardPage() {
                                     {renderReportIcon(template.icon, template.color)}
                                   </div>
                                   <div style={{ color:"white", fontSize:13, fontWeight:500, textAlign:"center", marginTop:10 }}>{template.title}</div>
-                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:11, textAlign:"center", marginTop:4, lineHeight:1.5 }}>{template.description}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.7)", fontSize:11, textAlign:"center", marginTop:4, lineHeight:1.5 }}>{template.description}</div>
                                   <div style={{ display:"flex", justifyContent:"center", gap:6, marginTop:10 }}>
                                     {template.tags.map(tag => <span key={tag} style={pillStyle}>{tag}</span>)}
                                   </div>
@@ -9491,7 +9491,7 @@ export default function DashboardPage() {
 
                           <div style={{ marginTop:32 }}>
                             <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Reportes generados</div>
-                            <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Historial de reportes<br />creados automáticamente</div>
+                            <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:16 }}>Historial de reportes<br />creados automáticamente</div>
                             {displayReports.map(report => {
                               const downloadState = wsDownloadStates[report.id] || "idle"
                               return (
@@ -9506,13 +9506,13 @@ export default function DashboardPage() {
                                   </div>
                                   <div style={{ flex:1, minWidth:0 }}>
                                     <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{report.name}</div>
-                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:4 }}>{report.generated}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11, marginTop:4 }}>{report.generated}</div>
                                     <div style={{ display:"flex", gap:6, marginTop:6 }}>
                                       <span style={pillStyle}>{report.period}</span>
                                       <span style={pillStyle}>{report.format}</span>
                                     </div>
                                   </div>
-                                  <div style={{ color:"rgba(255,255,255,0.3)", fontSize:11, flexShrink:0 }}>{report.size}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.6)", fontSize:11, flexShrink:0 }}>{report.size}</div>
                                   <div style={{ display:"flex", gap:8, flexShrink:0 }}>
                                     <button style={{ border:"1px solid rgba(255,255,255,0.1)", background:"transparent", color:"rgba(255,255,255,0.5)", fontSize:11, borderRadius:6, padding:"4px 10px", cursor:"pointer" }}>Ver</button>
                                     <button
@@ -9539,7 +9539,7 @@ export default function DashboardPage() {
 
                           <div style={{ marginTop:32 }}>
                             <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Reportes programados</div>
-                            <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Se generan automáticamente</div>
+                            <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:16 }}>Se generan automáticamente</div>
                             {SCHEDULED_REPORTS.map(report => (
                               <div key={report.id} style={{ display:"flex", alignItems:"center", gap:12, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:"14px 16px", marginBottom:8 }}>
                                 <div style={{ width:36, height:36, borderRadius:"50%", background:report.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
@@ -9547,7 +9547,7 @@ export default function DashboardPage() {
                                 </div>
                                 <div style={{ flex:1, minWidth:0 }}>
                                   <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{report.name}</div>
-                                  <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:3 }}>{report.schedule}</div>
+                                  <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11, marginTop:3 }}>{report.schedule}</div>
                                 </div>
                                 <Toggle on={wsScheduledOn[report.id]} onToggle={() => setWsScheduledOn(prev => ({ ...prev, [report.id]: !prev[report.id] }))} />
                                 <button style={{ background:"none", border:"none", color:"rgba(255,255,255,0.3)", fontSize:11, marginLeft:12, cursor:"pointer" }}>Editar</button>
@@ -9559,9 +9559,9 @@ export default function DashboardPage() {
                             <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.65)", zIndex:300, display:"flex", alignItems:"center", justifyContent:"center" }} onClick={() => setShowWsReportModal(false)}>
                               <div style={{ background:"#0f1e35", border:"1px solid rgba(255,255,255,0.1)", borderRadius:16, padding:24, width:480, maxHeight:"88vh", overflowY:"auto" }} onClick={e => e.stopPropagation()}>
                                 <div style={{ color:"white", fontSize:16, fontWeight:500 }}>{selectedTemplate?.title || "Nuevo reporte"}</div>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2, marginBottom:20 }}>Generado por Pupi AI</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginTop:2, marginBottom:20 }}>Generado por Pupi AI</div>
 
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:12 }}>Período</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:12 }}>Período</div>
                                 <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:wsReportPeriod === "Personalizado" ? 12 : 0 }}>
                                   {["Esta semana", "Este mes", "Último trimestre", "Personalizado"].map(period => (
                                     <button key={period} onClick={() => setWsReportPeriod(period)} style={{ padding:"6px 12px", fontSize:12, borderRadius:6, border:`1px solid ${wsReportPeriod === period ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`, background:wsReportPeriod === period ? "rgba(37,99,235,0.1)" : "transparent", color:wsReportPeriod === period ? "#2563EB" : "rgba(255,255,255,0.4)", cursor:"pointer", transition:"all 0.15s" }}>{period}</button>
@@ -9574,7 +9574,7 @@ export default function DashboardPage() {
                                   </div>
                                 )}
 
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:12, marginTop:20 }}>Incluir</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:12, marginTop:20 }}>Incluir</div>
                                 {selectedIncludeOptions.map(label => (
                                   <div key={label} onClick={() => setWsReportChecks(prev => ({ ...prev, [label]: !(prev[label] ?? true) }))} style={{ display:"flex", alignItems:"center", gap:10, padding:"7px 0", borderBottom:"1px solid rgba(255,255,255,0.04)", cursor:"pointer" }}>
                                     <div style={{ width:16, height:16, borderRadius:4, border:`1px solid ${(wsReportChecks[label] ?? true) ? "#2563EB" : "rgba(255,255,255,0.2)"}`, background:(wsReportChecks[label] ?? true) ? "#2563EB" : "transparent", display:"flex", alignItems:"center", justifyContent:"center", color:"white", fontSize:10 }}>✓</div>
@@ -9582,15 +9582,15 @@ export default function DashboardPage() {
                                   </div>
                                 ))}
 
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:12, marginTop:20 }}>Formato</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:12, marginTop:20 }}>Formato</div>
                                 <div style={{ display:"flex", gap:8 }}>
                                   {["PDF", "Excel", "PowerPoint"].map(format => (
                                     <button key={format} onClick={() => setWsReportFormat(format)} style={{ flex:1, padding:"8px 12px", fontSize:12, borderRadius:8, border:`1px solid ${wsReportFormat === format ? "rgba(37,99,235,0.4)" : "rgba(255,255,255,0.08)"}`, background:wsReportFormat === format ? "rgba(37,99,235,0.1)" : "rgba(255,255,255,0.02)", color:wsReportFormat === format ? "#2563EB" : "rgba(255,255,255,0.45)", cursor:"pointer" }}>{format}</button>
                                   ))}
                                 </div>
 
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:8, marginTop:20 }}>Destinatario</div>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginBottom:5 }}>Título del reporte</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:8, marginTop:20 }}>Destinatario</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11, marginBottom:5 }}>Título del reporte</div>
                                 <input type="text" value={wsReportTitle} onChange={e => setWsReportTitle(e.target.value)} placeholder={"Ej: Reporte ejecutivo\nMayo 2026"} style={{ width:"100%", padding:"8px 12px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:8, color:"white", fontSize:13, outline:"none", boxSizing:"border-box" }} />
                                 <div style={{ display:"flex", alignItems:"center", gap:12, marginTop:14 }}>
                                   <Toggle on={wsReportBrand} onToggle={() => setWsReportBrand(v => !v)} />
@@ -9637,8 +9637,8 @@ export default function DashboardPage() {
                       {wsView === "settings" && (() => {
                         const markDirty = () => setWsSettingsDirty(true)
                         const settingsInput: React.CSSProperties = { background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:8, padding:"8px 12px", color:"white", fontSize:13, width:"100%", outline:"none", boxSizing:"border-box" }
-                        const settingsLabel: React.CSSProperties = { color:"rgba(255,255,255,0.4)", fontSize:11, marginBottom:6, display:"block" }
-                        const sectionLabel: React.CSSProperties = { color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:16 }
+                        const settingsLabel: React.CSSProperties = { color:"rgba(255,255,255,0.7)", fontSize:11, marginBottom:6, display:"block" }
+                        const sectionLabel: React.CSSProperties = { color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:16 }
                         const SETTINGS_TABS: { key: WsSettingsTab; label: string }[] = [
                           { key:"roles", label:"Roles y permisos" },
                           { key:"empresa", label:"Empresa" },
@@ -9724,7 +9724,7 @@ export default function DashboardPage() {
                             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
                               <div>
                                 <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Configuración</div>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:3 }}>Roles, permisos y preferencias</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginTop:3 }}>Roles, permisos y preferencias</div>
                               </div>
                               <button
                                 disabled={!wsSettingsDirty}
@@ -9756,14 +9756,14 @@ export default function DashboardPage() {
                                       <div style={{ display:"flex", alignItems:"center" }}>
                                         <RoleIcon type={role.icon} color={role.color} bg={role.bg} />
                                         <span style={{ color:"white", fontSize:14, fontWeight:500, marginLeft:10 }}>{role.name}</span>
-                                        <span style={{ marginLeft:10, background:"rgba(255,255,255,0.08)", color:"rgba(255,255,255,0.4)", borderRadius:20, padding:"2px 8px", fontSize:11 }}>{role.count} {role.count === 1 ? "usuario" : "usuarios"}</span>
+                                        <span style={{ marginLeft:10, background:"rgba(255,255,255,0.08)", color:"rgba(255,255,255,0.7)", borderRadius:20, padding:"2px 8px", fontSize:11 }}>{role.count} {role.count === 1 ? "usuario" : "usuarios"}</span>
                                       </div>
                                       <button onClick={() => openPermModal(role.id)} style={{ background:"none", border:"none", color:"#2563EB", fontSize:12, cursor:"pointer" }}>Editar permisos</button>
                                     </div>
                                     <div style={{ marginTop:14 }}>
                                       <div style={{ display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:6 }}>
                                         {WS_PERM_MODULES.map(m => (
-                                          <div key={m.key} style={{ color:"rgba(255,255,255,0.3)", fontSize:10, textAlign:"center", marginBottom:4 }}>{m.label}</div>
+                                          <div key={m.key} style={{ color:"rgba(255,255,255,0.6)", fontSize:10, textAlign:"center", marginBottom:4 }}>{m.label}</div>
                                         ))}
                                         {WS_PERM_MODULES.map(m => (
                                           <div key={`dot-${m.key}`}>{permDot((wsRolePerms[role.id] || WS_DEFAULT_ROLE_PERMS.dueno)[m.key])}</div>
@@ -9772,7 +9772,7 @@ export default function DashboardPage() {
                                       <div style={{ display:"flex", gap:12, marginTop:10 }}>
                                         <span style={{ color:"#22c55e", fontSize:10 }}>● Acceso completo</span>
                                         <span style={{ color:"#eab308", fontSize:10 }}>● Acceso parcial</span>
-                                        <span style={{ color:"rgba(255,255,255,0.3)", fontSize:10 }}>○ Sin acceso</span>
+                                        <span style={{ color:"rgba(255,255,255,0.6)", fontSize:10 }}>○ Sin acceso</span>
                                       </div>
                                     </div>
                                   </div>
@@ -9789,13 +9789,13 @@ export default function DashboardPage() {
                                         style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 16px", background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, cursor:"pointer" }}
                                       >
                                         <span style={{ color:"white", fontSize:13, fontWeight:500 }}>{role.name}</span>
-                                        <span style={{ color:"rgba(255,255,255,0.4)", fontSize:12 }}>{users.length} {expanded ? "▲" : "▼"}</span>
+                                        <span style={{ color:"rgba(255,255,255,0.7)", fontSize:12 }}>{users.length} {expanded ? "▲" : "▼"}</span>
                                       </div>
                                       {expanded && (
                                         <div style={{ borderLeft:"1px solid rgba(255,255,255,0.06)", marginLeft:8, marginTop:4 }}>
                                           {users.length === 0 ? (
                                             <div style={{ padding:"12px 16px", display:"flex", alignItems:"center", gap:8 }}>
-                                              <span style={{ color:"rgba(255,255,255,0.25)", fontSize:12, fontStyle:"italic" }}>Sin gerentes asignados</span>
+                                              <span style={{ color:"rgba(255,255,255,0.55)", fontSize:12, fontStyle:"italic" }}>Sin gerentes asignados</span>
                                               {role.id === "gerente" && <button onClick={markDirty} style={{ background:"none", border:"none", color:"#2563EB", fontSize:11, cursor:"pointer" }}>+ Asignar gerente</button>}
                                             </div>
                                           ) : users.map(u => (
@@ -9803,7 +9803,7 @@ export default function DashboardPage() {
                                               <div style={{ width:28, height:28, borderRadius:"50%", background:"rgba(37,99,235,0.2)", color:"#2563EB", fontSize:11, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{getInitials(u.name)}</div>
                                               <div style={{ flex:1, minWidth:0 }}>
                                                 <div style={{ color:"white", fontSize:13 }}>{u.name}</div>
-                                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11 }}>{u.email}</div>
+                                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11 }}>{u.email}</div>
                                               </div>
                                               <button onClick={markDirty} style={{ background:"none", border:"none", color:"#2563EB", fontSize:11, cursor:"pointer", marginLeft:"auto", flexShrink:0 }}>Cambiar rol</button>
                                             </div>
@@ -9844,8 +9844,8 @@ export default function DashboardPage() {
                                 <div style={{ width:200, flexShrink:0 }}>
                                   <label style={settingsLabel}>Logo</label>
                                   <div onClick={markDirty} style={{ width:80, height:80, borderRadius:"50%", background:"rgba(255,255,255,0.05)", border:"1px dashed rgba(255,255,255,0.1)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", cursor:"pointer", marginBottom:24 }}>
-                                    <Camera size={24} style={{ color:"rgba(255,255,255,0.2)" }} />
-                                    <span style={{ color:"rgba(255,255,255,0.3)", fontSize:11, marginTop:6 }}>Subir logo</span>
+                                    <Camera size={24} style={{ color:"rgba(255,255,255,0.5)" }} />
+                                    <span style={{ color:"rgba(255,255,255,0.6)", fontSize:11, marginTop:6 }}>Subir logo</span>
                                   </div>
                                   <label style={settingsLabel}>Color de marca</label>
                                   <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
@@ -9927,7 +9927,7 @@ export default function DashboardPage() {
                                       <div style={{ width:40, height:40, borderRadius:"50%", background:integ.bg, color:integ.color, fontSize:16, fontWeight:600, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{integ.letter}</div>
                                       <div style={{ flex:1, minWidth:0 }}>
                                         <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{integ.name}</div>
-                                        <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12, marginTop:2 }}>{integ.desc}</div>
+                                        <div style={{ color:"rgba(255,255,255,0.7)", fontSize:12, marginTop:2 }}>{integ.desc}</div>
                                       </div>
                                       {connected ? (
                                         <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:4, flexShrink:0 }}>
@@ -9940,7 +9940,7 @@ export default function DashboardPage() {
                                     </div>
                                   )
                                 })}
-                                <div style={{ color:"rgba(255,255,255,0.2)", fontSize:12, textAlign:"center", marginTop:16 }}>Más integraciones próximamente</div>
+                                <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, textAlign:"center", marginTop:16 }}>Más integraciones próximamente</div>
                               </div>
                             )}
 
@@ -10017,7 +10017,7 @@ export default function DashboardPage() {
                         const onbInput: React.CSSProperties = { background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:8, padding:"8px 12px", color:"white", fontSize:13, width:"100%", outline:"none", boxSizing:"border-box" }
                         const onbField = (label: string, child: React.ReactNode) => (
                           <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
-                            <span style={{ color:"rgba(255,255,255,0.4)", fontSize:11 }}>{label}</span>
+                            <span style={{ color:"rgba(255,255,255,0.7)", fontSize:11 }}>{label}</span>
                             {child}
                           </div>
                         )
@@ -10032,7 +10032,7 @@ export default function DashboardPage() {
                         const togglePill = (label: string, map: Record<string, boolean>, setMap: React.Dispatch<React.SetStateAction<Record<string, boolean>>>, sel: { bg: string; color: string; border: string }) => {
                           const on = !!map[label]
                           return (
-                            <span key={label} onClick={() => setMap(prev => ({ ...prev, [label]: !prev[label] }))} style={{ borderRadius:8, padding:"8px 14px", fontSize:12, cursor:"pointer", background:on ? sel.bg : "rgba(255,255,255,0.04)", color:on ? sel.color : "rgba(255,255,255,0.4)", border:`1px solid ${on ? sel.border : "rgba(255,255,255,0.08)"}` }}>{label}</span>
+                            <span key={label} onClick={() => setMap(prev => ({ ...prev, [label]: !prev[label] }))} style={{ borderRadius:8, padding:"8px 14px", fontSize:12, cursor:"pointer", background:on ? sel.bg : "rgba(255,255,255,0.04)", color:on ? sel.color : "rgba(255,255,255,0.7)", border:`1px solid ${on ? sel.border : "rgba(255,255,255,0.08)"}` }}>{label}</span>
                           )
                         }
                         const UPLOAD_ZONES = [
@@ -10076,8 +10076,8 @@ export default function DashboardPage() {
                                   return (
                                     <div key={n} style={{ display:"flex", alignItems:"flex-start", flex:1 }}>
                                       <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:6, flexShrink:0 }}>
-                                        <div style={{ width:20, height:20, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:600, background:isActive?"#2563EB":isDone?"rgba(37,99,235,0.2)":"rgba(255,255,255,0.06)", color:isActive?"white":isDone?"#2563EB":"rgba(255,255,255,0.3)" }}>{n}</div>
-                                        <div style={{ fontSize:11, color:isActive?"white":"rgba(255,255,255,0.3)", whiteSpace:"nowrap" }}>{n}. {label}</div>
+                                        <div style={{ width:20, height:20, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:600, background:isActive?"#2563EB":isDone?"rgba(37,99,235,0.2)":"rgba(255,255,255,0.06)", color:isActive?"white":isDone?"#2563EB":"rgba(255,255,255,0.6)" }}>{n}</div>
+                                        <div style={{ fontSize:11, color:isActive?"white":"rgba(255,255,255,0.6)", whiteSpace:"nowrap" }}>{n}. {label}</div>
                                       </div>
                                       {idx < onbSteps.length - 1 && <div style={{ flex:1, height:1, background:"rgba(255,255,255,0.08)", marginTop:10, marginLeft:8, marginRight:8 }} />}
                                     </div>
@@ -10088,7 +10088,7 @@ export default function DashboardPage() {
                               {wsOnbStage === "form" && (
                                 <>
                                   <div style={{ color:"white", fontSize:18, fontWeight:500, marginBottom:4 }}>Contanos sobre tu empresa</div>
-                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:13, marginBottom:28 }}>Esta información permite a Pupi entender tu negocio desde el primer día</div>
+                                  <div style={{ color:"rgba(255,255,255,0.7)", fontSize:13, marginBottom:28 }}>Esta información permite a Pupi entender tu negocio desde el primer día</div>
                                   <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24 }}>
                                     <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
                                       <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Tu negocio</div>
@@ -10101,7 +10101,7 @@ export default function DashboardPage() {
                                       {onbField("Cantidad de empleados", <input type="number" style={onbInput} placeholder="Ej: 8" value={wsOnbEmpleados} onChange={e=>setWsOnbEmpleados(e.target.value)} />)}
                                       {onbField("Cantidad de vendedores", <input type="number" style={onbInput} placeholder="Ej: 3" value={wsOnbVendedores} onChange={e=>setWsOnbVendedores(e.target.value)} />)}
                                       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                                        <span style={{ color:"rgba(255,255,255,0.4)", fontSize:11 }}>¿Tenés sucursales?</span>
+                                        <span style={{ color:"rgba(255,255,255,0.7)", fontSize:11 }}>¿Tenés sucursales?</span>
                                         <Toggle on={wsOnbSucursales} onToggle={()=>setWsOnbSucursales(v=>!v)} />
                                       </div>
                                       {wsOnbSucursales && onbField("¿Cuántas?", <input type="number" style={onbInput} placeholder="Ej: 2" value={wsOnbSucursalesCount} onChange={e=>setWsOnbSucursalesCount(e.target.value)} />)}
@@ -10109,17 +10109,17 @@ export default function DashboardPage() {
                                     <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
                                       <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Tus clientes</div>
                                       {onbField("Perfil del cliente típico", <select value={wsOnbPerfilCliente} onChange={e=>setWsOnbPerfilCliente(e.target.value)} style={{ ...onbInput, appearance:"none" as const }}>{["Empresas (B2B)","Consumidor final (B2C)","Ambos"].map(o=><option key={o}>{o}</option>)}</select>)}
-                                      {onbField("Ticket promedio", <div style={{ position:"relative" }}><span style={{ position:"absolute", left:12, top:9, color:"rgba(255,255,255,0.3)", fontSize:13 }}>$</span><input type="number" style={{ ...onbInput, paddingLeft:24 }} placeholder="0" value={wsOnbTicket} onChange={e=>setWsOnbTicket(e.target.value)} /></div>)}
+                                      {onbField("Ticket promedio", <div style={{ position:"relative" }}><span style={{ position:"absolute", left:12, top:9, color:"rgba(255,255,255,0.6)", fontSize:13 }}>$</span><input type="number" style={{ ...onbInput, paddingLeft:24 }} placeholder="0" value={wsOnbTicket} onChange={e=>setWsOnbTicket(e.target.value)} /></div>)}
                                       {onbField("Frecuencia de compra promedio", <select value={wsOnbFrecuencia} onChange={e=>setWsOnbFrecuencia(e.target.value)} style={{ ...onbInput, appearance:"none" as const }}>{["Diaria","Semanal","Quincenal","Mensual","Trimestral","Variable"].map(o=><option key={o}>{o}</option>)}</select>)}
                                       {onbField("Zona geográfica", <input style={onbInput} placeholder="Ej: Montevideo, todo Uruguay, América Latina" value={wsOnbZona} onChange={e=>setWsOnbZona(e.target.value)} />)}
                                       <div style={{ color:"white", fontSize:13, fontWeight:500, marginTop:8 }}>Tus dolores actuales</div>
-                                      <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:4 }}>Seleccioná los que apliquen</div>
+                                      <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:4 }}>Seleccioná los que apliquen</div>
                                       <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>{painPoints.map(p=>togglePill(p,wsOnbPainPoints,setWsOnbPainPoints,{ bg:"rgba(239,68,68,0.1)", color:"#ef4444", border:"rgba(239,68,68,0.3)" }))}</div>
                                       <div style={{ color:"white", fontSize:13, fontWeight:500, marginTop:8 }}>Tus objetivos</div>
-                                      <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:4 }}>¿Qué querés lograr en 6 meses?</div>
+                                      <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:4 }}>¿Qué querés lograr en 6 meses?</div>
                                       <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>{goals.map(g=>togglePill(g,wsOnbGoals,setWsOnbGoals,{ bg:"rgba(34,197,94,0.1)", color:"#22c55e", border:"rgba(34,197,94,0.3)" }))}</div>
                                       <div style={{ color:"white", fontSize:13, fontWeight:500, marginTop:8 }}>Herramientas actuales</div>
-                                      <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:4 }}>¿Qué usás hoy para gestionar?</div>
+                                      <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:4 }}>¿Qué usás hoy para gestionar?</div>
                                       <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>{tools.map(t=>togglePill(t,wsOnbTools,setWsOnbTools,{ bg:"rgba(37,99,235,0.1)", color:"#2563EB", border:"rgba(37,99,235,0.3)" }))}</div>
                                     </div>
                                   </div>
@@ -10129,7 +10129,7 @@ export default function DashboardPage() {
                               {wsOnbStage === "upload" && (
                                 <>
                                   <div style={{ color:"white", fontSize:18, fontWeight:500, marginBottom:4 }}>Cargá tu historial</div>
-                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:13, marginBottom:28 }}>Pupi analizará todo lo que tenés y lo convertirá en insights desde el día uno</div>
+                                  <div style={{ color:"rgba(255,255,255,0.7)", fontSize:13, marginBottom:28 }}>Pupi analizará todo lo que tenés y lo convertirá en insights desde el día uno</div>
                                   {UPLOAD_ZONES.map(z => {
                                     const Icon = z.icon
                                     const file = wsOnbUploads[z.id]
@@ -10139,16 +10139,16 @@ export default function DashboardPage() {
                                         <div style={{ flex:1, minWidth:0 }}>
                                           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                                             <span style={{ color:"white", fontSize:13, fontWeight:500 }}>{z.title}</span>
-                                            {!z.required && <span style={{ color:"rgba(255,255,255,0.3)", fontSize:10, border:"1px solid rgba(255,255,255,0.1)", borderRadius:20, padding:"1px 6px" }}>Opcional</span>}
+                                            {!z.required && <span style={{ color:"rgba(255,255,255,0.6)", fontSize:10, border:"1px solid rgba(255,255,255,0.1)", borderRadius:20, padding:"1px 6px" }}>Opcional</span>}
                                           </div>
-                                          <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12, marginTop:2 }}>{z.desc}</div>
-                                          <div style={{ color:"rgba(255,255,255,0.2)", fontSize:10, marginTop:2 }}>{z.formats}</div>
+                                          <div style={{ color:"rgba(255,255,255,0.7)", fontSize:12, marginTop:2 }}>{z.desc}</div>
+                                          <div style={{ color:"rgba(255,255,255,0.5)", fontSize:10, marginTop:2 }}>{z.formats}</div>
                                         </div>
                                         {file ? (
                                           <div style={{ display:"flex", alignItems:"center", gap:10, flexShrink:0 }}>
                                             <div style={{ textAlign:"right" }}>
                                               <div style={{ color:"white", fontSize:12 }}>{file.name}</div>
-                                              <div style={{ color:"rgba(255,255,255,0.3)", fontSize:10 }}>{file.size}</div>
+                                              <div style={{ color:"rgba(255,255,255,0.6)", fontSize:10 }}>{file.size}</div>
                                             </div>
                                             <button onClick={()=>setWsOnbUploads(prev=>({...prev,[z.id]:null}))} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.4)", cursor:"pointer", fontSize:14 }}>✕</button>
                                           </div>
@@ -10168,15 +10168,15 @@ export default function DashboardPage() {
                               {wsOnbStage === "diagnosis" && (
                                 <>
                                   <div style={{ color:"#2563EB", fontSize:18, fontWeight:500, marginBottom:4 }}>✦ Diagnóstico inicial de Pupi</div>
-                                  <div style={{ color:"rgba(255,255,255,0.4)", fontSize:13, marginBottom:28 }}>Basado en todo lo que cargaste — actualizado en tiempo real</div>
+                                  <div style={{ color:"rgba(255,255,255,0.7)", fontSize:13, marginBottom:28 }}>Basado en todo lo que cargaste — actualizado en tiempo real</div>
                                   <div style={{ background:"rgba(37,99,235,0.06)", border:"1px solid rgba(37,99,235,0.15)", borderRadius:14, padding:22, marginBottom:24 }}>
-                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", marginBottom:12 }}>RESUMEN DE TU NEGOCIO</div>
+                                    <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", marginBottom:12 }}>RESUMEN DE TU NEGOCIO</div>
                                     <div style={{ color:"white", fontSize:14, lineHeight:1.8 }}>Distribuidora Norte es una empresa con 5 años en el mercado en el sector de distribución mayorista. Cuenta con 8 empleados y 3 vendedores. Tu base tiene 284 clientes con un ticket promedio de $4.200 y frecuencia de compra mensual. Las ventas muestran estacionalidad en mayo y noviembre.</div>
                                     <div style={{ display:"flex", borderTop:"1px solid rgba(255,255,255,0.06)", marginTop:16, paddingTop:16 }}>
                                       {[{v:"284",l:"CLIENTES"},{v:"$4.200",l:"TICKET PROM"},{v:"8",l:"EMPLEADOS"},{v:"5 años",l:"TRAYECTORIA"}].map((s,i,a)=>(
                                         <div key={s.l} style={{ flex:1, textAlign:"center", borderRight:i<a.length-1?"1px solid rgba(255,255,255,0.06)":"none" }}>
                                           <div style={{ color:"white", fontSize:20, fontWeight:600 }}>{s.v}</div>
-                                          <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", marginTop:4 }}>{s.l}</div>
+                                          <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", marginTop:4 }}>{s.l}</div>
                                         </div>
                                       ))}
                                     </div>
@@ -10195,7 +10195,7 @@ export default function DashboardPage() {
                                           <div key={f.title} style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:16 }}>
                                             <FIcon size={16} style={{ color:f.color }} />
                                             <div style={{ color:"white", fontSize:13, fontWeight:500, marginTop:8 }}>{f.title}</div>
-                                            <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.5, marginTop:6 }}>{f.detail}</div>
+                                            <div style={{ color:"rgba(255,255,255,0.8)", fontSize:12, lineHeight:1.5, marginTop:6 }}>{f.detail}</div>
                                             <span style={{ display:"inline-block", marginTop:10, background:f.bColor+"22", color:f.bColor, border:`1px solid ${f.bColor}44`, borderRadius:20, padding:"2px 8px", fontSize:10 }}>{f.badge}</span>
                                           </div>
                                         )
@@ -10216,14 +10216,14 @@ export default function DashboardPage() {
                                           <span style={{ background:prioColor(r.priority)+"22", color:prioColor(r.priority), fontSize:10, borderRadius:20, padding:"1px 8px" }}>{r.priority}</span>
                                           <span style={{ color:"white", fontSize:13, fontWeight:500 }}>{r.title}</span>
                                         </div>
-                                        <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, lineHeight:1.5 }}>{r.body}</div>
+                                        <div style={{ color:"rgba(255,255,255,0.8)", fontSize:12, lineHeight:1.5 }}>{r.body}</div>
                                         <div style={{ color:"#22c55e", fontSize:11, marginTop:6 }}>{r.impact}</div>
                                       </div>
                                     ))}
                                   </div>
                                   <div style={{ marginBottom:24 }}>
                                     <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>KPIs establecidos como base</div>
-                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Pupi medirá tu progreso contra estos números</div>
+                                    <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:16 }}>Pupi medirá tu progreso contra estos números</div>
                                     <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10 }}>
                                       {(companyMemory?.kpis ? [
                                         { v:`$${Number(companyMemory.kpis.monthly_revenue || 0).toLocaleString()}`, n:"VENTAS MENSUALES" },
@@ -10242,15 +10242,15 @@ export default function DashboardPage() {
                                       ]).map(k=>(
                                         <div key={k.n} style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, padding:14, textAlign:"center" }}>
                                           <div style={{ color:"white", fontSize:18, fontWeight:600 }}>{k.v}</div>
-                                          <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", marginTop:6 }}>{k.n}</div>
-                                          <div style={{ color:"rgba(255,255,255,0.2)", fontSize:10, marginTop:2 }}>Baseline hoy</div>
+                                          <div style={{ color:"rgba(255,255,255,0.65)", fontSize:10, textTransform:"uppercase", marginTop:6 }}>{k.n}</div>
+                                          <div style={{ color:"rgba(255,255,255,0.5)", fontSize:10, marginTop:2 }}>Baseline hoy</div>
                                         </div>
                                       ))}
                                     </div>
                                   </div>
                                   <div style={{ background:"rgba(37,99,235,0.08)", border:"1px solid rgba(37,99,235,0.2)", borderRadius:14, padding:24, textAlign:"center", marginTop:8 }}>
                                     <div style={{ color:"white", fontSize:18, fontWeight:500 }}>🎉 ¡Tu empresa está lista en Pupi!</div>
-                                    <div style={{ color:"rgba(255,255,255,0.5)", fontSize:13, marginTop:8, lineHeight:1.6 }}>Todo está configurado y analizado. Pupi ya conoce tu negocio y está listo para ayudarte.</div>
+                                    <div style={{ color:"rgba(255,255,255,0.8)", fontSize:13, marginTop:8, lineHeight:1.6 }}>Todo está configurado y analizado. Pupi ya conoce tu negocio y está listo para ayudarte.</div>
                                     <button onClick={()=>{ closePanel(); setWsView("home") }} style={{ marginTop:20, background:"#2563EB", color:"white", border:"none", borderRadius:10, padding:"12px 32px", fontSize:14, fontWeight:500, cursor:"pointer" }}>Ir al dashboard →</button>
                                   </div>
                                 </>
@@ -10260,7 +10260,7 @@ export default function DashboardPage() {
                               <div style={{ flexShrink:0, background:"#0D0D14", borderTop:"1px solid rgba(255,255,255,0.06)", padding:"16px 24px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                                 <div style={{ display:"flex", alignItems:"center", gap:16 }}>
                                   {wsOnbStage === "upload" && <button onClick={()=>setWsOnbStage("form")} style={{ background:"none", border:"none", color:"rgba(255,255,255,0.4)", fontSize:13, cursor:"pointer" }}>← Volver</button>}
-                                  <span style={{ color:"rgba(255,255,255,0.3)", fontSize:12 }}>Paso {stepNum} de 3</span>
+                                  <span style={{ color:"rgba(255,255,255,0.6)", fontSize:12 }}>Paso {stepNum} de 3</span>
                                 </div>
                                 {wsOnbStage === "form" ? (
                                   <button onClick={()=>setWsOnbStage("upload")} style={{ background:"#2563EB", color:"white", border:"none", borderRadius:8, padding:"9px 20px", fontSize:13, fontWeight:500, cursor:"pointer" }}>Siguiente →</button>
@@ -10367,18 +10367,18 @@ export default function DashboardPage() {
                             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
                               <div>
                                 <div style={{ color:"white", fontSize:15, fontWeight:500 }}>Memoria empresarial</div>
-                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginTop:2 }}>Lo que Pupi conoce y aprende sobre tu empresa</div>
+                                <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginTop:2 }}>Lo que Pupi conoce y aprende sobre tu empresa</div>
                               </div>
-                              <span style={{ background:"rgba(255,255,255,0.08)", color:"rgba(255,255,255,0.35)", fontSize:11, borderRadius:20, padding:"4px 12px" }}>Actualizado hace 2 horas</span>
+                              <span style={{ background:"rgba(255,255,255,0.08)", color:"rgba(255,255,255,0.65)", fontSize:11, borderRadius:20, padding:"4px 12px" }}>Actualizado hace 2 horas</span>
                             </div>
                             <div style={{ background:"rgba(37,99,235,0.06)", border:"1px solid rgba(37,99,235,0.15)", borderRadius:14, padding:20, marginBottom:24, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                               <div>
                                 <div style={{ color:"#2563EB", fontSize:11, textTransform:"uppercase", marginBottom:8 }}>✦ Salud de la memoria</div>
                                 <div>
                                   <span style={{ color:"white", fontSize:36, fontWeight:600 }}>92%</span>
-                                  <span style={{ color:"rgba(255,255,255,0.4)", fontSize:13, marginLeft:8 }}>completada</span>
+                                  <span style={{ color:"rgba(255,255,255,0.7)", fontSize:13, marginLeft:8 }}>completada</span>
                                 </div>
-                                <div style={{ color:"rgba(255,255,255,0.5)", fontSize:12, marginTop:8 }}>Pupi tiene suficiente información para generar insights precisos</div>
+                                <div style={{ color:"rgba(255,255,255,0.8)", fontSize:12, marginTop:8 }}>Pupi tiene suficiente información para generar insights precisos</div>
                               </div>
                               <div style={{ width:80, height:80, borderRadius:"50%", background:"conic-gradient(#2563EB 0deg 331deg, rgba(255,255,255,0.06) 331deg)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                                 <div style={{ width:60, height:60, borderRadius:"50%", background:"#0D0D14", display:"flex", alignItems:"center", justifyContent:"center", color:"white", fontSize:13, fontWeight:500 }}>92%</div>
@@ -10398,8 +10398,8 @@ export default function DashboardPage() {
                                         </div>
                                         <span style={badgeStyle(k.status)}>{k.status}</span>
                                       </div>
-                                      <div style={{ color:"rgba(255,255,255,0.45)", fontSize:11, lineHeight:1.5, marginTop:8 }}>{k.detail}</div>
-                                      <div style={{ color:"rgba(255,255,255,0.25)", fontSize:10, marginTop:8 }}>{k.count}</div>
+                                      <div style={{ color:"rgba(255,255,255,0.75)", fontSize:11, lineHeight:1.5, marginTop:8 }}>{k.detail}</div>
+                                      <div style={{ color:"rgba(255,255,255,0.55)", fontSize:10, marginTop:8 }}>{k.count}</div>
                                     </div>
                                   )
                                 })}
@@ -10414,7 +10414,7 @@ export default function DashboardPage() {
                                     <PIcon size={14} style={{ color:p.color, flexShrink:0 }} />
                                     <div style={{ flex:1, minWidth:0 }}>
                                       <div style={{ color:"white", fontSize:13 }}>{p.desc}</div>
-                                      <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>{p.source}</div>
+                                      <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11, marginTop:2 }}>{p.source}</div>
                                     </div>
                                     <span style={{ color:p.confColor, fontSize:10, borderRadius:20, padding:"2px 8px", border:`1px solid ${p.confColor}44`, flexShrink:0 }}>{p.conf}</span>
                                   </div>
@@ -10428,15 +10428,15 @@ export default function DashboardPage() {
                                   <div style={{ width:8, height:8, borderRadius:"50%", background:"#22c55e", flexShrink:0, animation:"memPulse 2s infinite" }} />
                                   <div style={{ flex:1, minWidth:0 }}>
                                     <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{m.title}</div>
-                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>{m.freq}</div>
+                                    <div style={{ color:"rgba(255,255,255,0.65)", fontSize:11, marginTop:2 }}>{m.freq}</div>
                                   </div>
-                                  <span style={{ color:"rgba(255,255,255,0.25)", fontSize:10, flexShrink:0 }}>{m.last}</span>
+                                  <span style={{ color:"rgba(255,255,255,0.55)", fontSize:10, flexShrink:0 }}>{m.last}</span>
                                 </div>
                               ))}
                             </div>
                             <div style={{ marginBottom:0 }}>
                               <div style={{ color:"white", fontSize:13, fontWeight:500, marginBottom:4 }}>Mejorá la memoria de Pupi</div>
-                              <div style={{ color:"rgba(255,255,255,0.35)", fontSize:12, marginBottom:16 }}>Más datos = mejores insights</div>
+                              <div style={{ color:"rgba(255,255,255,0.65)", fontSize:12, marginBottom:16 }}>Más datos = mejores insights</div>
                               {IMPROVE.map(im => {
                                 const IIcon = im.icon
                                 return (
@@ -10445,7 +10445,7 @@ export default function DashboardPage() {
                                       <IIcon size={16} style={{ color:im.color, flexShrink:0, marginTop:2 }} />
                                       <div>
                                         <div style={{ color:"white", fontSize:13, fontWeight:500 }}>{im.title}</div>
-                                        <div style={{ color:"rgba(255,255,255,0.4)", fontSize:12, marginTop:4, lineHeight:1.5 }}>{im.desc}</div>
+                                        <div style={{ color:"rgba(255,255,255,0.7)", fontSize:12, marginTop:4, lineHeight:1.5 }}>{im.desc}</div>
                                       </div>
                                     </div>
                                     <button onClick={goUpload} style={{ border:"1px solid rgba(255,255,255,0.1)", background:"none", color:"rgba(255,255,255,0.5)", fontSize:12, borderRadius:6, padding:"6px 14px", cursor:"pointer", flexShrink:0, whiteSpace:"nowrap" }}>{im.btn}</button>
