@@ -71,6 +71,15 @@ export async function POST(req: NextRequest) {
       company_name
     )
 
+    await supabaseAdmin.from('subscriptions').insert({
+      company_id: company.id,
+      plan: 'starter',
+      status: 'active',
+      monthly_price_usd: 79,
+      current_period_start: new Date().toISOString(),
+      current_period_end: new Date(Date.now() + 30 * 86400000).toISOString(),
+    })
+
     return NextResponse.json({
       success: true,
       message: 'Cuenta creada exitosamente',

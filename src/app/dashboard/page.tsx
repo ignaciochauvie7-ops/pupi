@@ -23,8 +23,30 @@ import {
   Target,
   Mic,
   RefreshCw,
+  Settings,
+  Building2,
+  CreditCard,
+  Bell,
+  Plug,
+  Shield,
+  Download,
+  Monitor,
+  Smartphone,
+  Check,
 } from "lucide-react"
 import { supabase } from '@/lib/supabase'
+import { useSession } from 'next-auth/react'
+import {
+  sendChatMessage as apiSendChat,
+  fetchSettings,
+  saveSettings,
+  fetchTeamUsers,
+  fetchMe,
+  saveProfile,
+  fetchCompany,
+  saveCompany,
+  fetchBilling,
+} from '@/lib/dashboard-api'
 import {
   APIProvider,
   Map,
@@ -308,6 +330,8 @@ function getInitials(name: string) {
 }
 
 export default function DashboardPage() {
+  const { data: session } = useSession()
+  const companyId = session?.user?.company_id ?? ''
   const [activeNode, setActiveNode] = useState<TimelineItem | null>(null)
   const [panelVisible, setPanelVisible] = useState(false)
   const [transformOrigin, setTransformOrigin] = useState("50% 50%")
@@ -598,8 +622,111 @@ export default function DashboardPage() {
   const [newCity, setNewCity] = useState("")
   const [newCountry, setNewCountry] = useState("")
 
-  const COMPANY_ID =
-    'a0000000-0000-0000-0000-000000000001'
+  // Settings panel state
+  const [showSettings, setShowSettings] = useState(false)
+  const [settingsTab, setSettingsTab] = useState<'users'|'profile'|'company'|'billing'|'notifications'|'integrations'|'voice'|'security'>('users')
+  const [showAddUser, setShowAddUser] = useState(false)
+  const [editingUserId, setEditingUserId] = useState<string | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [newUserEmail, setNewUserEmail] = useState('')
+  const [newUserName, setNewUserName] = useState('')
+  const [newUserRole, setNewUserRole] = useState('employee')
+  const [newUserEmailError, setNewUserEmailError] = useState('')
+  const [newUserPermissions, setNewUserPermissions] = useState<Record<string, { enabled: boolean; access: 'reader'|'editor'; sections: string[] }>>({
+    crm: { enabled: false, access: 'reader', sections: [] },
+    ventas: { enabled: false, access: 'reader', sections: [] },
+    marketing: { enabled: false, access: 'reader', sections: [] },
+    rrhh: { enabled: false, access: 'reader', sections: [] },
+    contabilidad: { enabled: false, access: 'reader', sections: [] },
+    workspace: { enabled: false, access: 'reader', sections: [] },
+  })
+  const [settingsUsers, setSettingsUsers] = useState([
+    { id: '1', name: 'Nacho', email: 'nacho@test.com', role: 'owner', avatar: 'NA', modules: 'Todo' },
+    { id: '2', name: 'Juan Pérez', email: 'jp@test.com', role: 'seller', avatar: 'JP', modules: 'CRM, Ventas' },
+    { id: '3', name: 'Carlos Acosta', email: 'ca@test.com', role: 'seller', avatar: 'CA', modules: 'CRM, Ventas' },
+    { id: '4', name: 'María Ruiz', email: 'mr@test.com', role: 'seller', avatar: 'MR', modules: 'CRM, Ventas' },
+  ])
+  const [profileName, setProfileName] = useState('Nacho')
+  const [profileEmail, setProfileEmail] = useState('')
+  const [profileCargo, setProfileCargo] = useState('Dueño')
+  const [profilePhone, setProfilePhone] = useState('')
+  const [profilePassCurrent, setProfilePassCurrent] = useState('')
+  const [profilePassNew, setProfilePassNew] = useState('')
+  const [profilePassConfirm, setProfilePassConfirm] = useState('')
+
+  const [settingsNotifAlerts, setSettingsNotifAlerts] = useState({
+    ventasCerradas: true, oportunidadesRiesgo: true, clientesSinContacto: true, anomaliasFinancieras: true,
+    alertasEquipo: true, campanasBajoRoi: true, metasRiesgo: false, resumenSemanal: true,
+  })
+  const [settingsNotifChannels, setSettingsNotifChannels] = useState({ pupi: true, email: true, whatsapp: false })
+  const [settingsNotifWhatsAppPhone, setSettingsNotifWhatsAppPhone] = useState('')
+  const [settingsNotifFreq, setSettingsNotifFreq] = useState({ diario: true, semanal: true, mensual: true })
+  const [settingsIntegrations, setSettingsIntegrations] = useState<Record<string, boolean>>({
+    mercadopago: false, fiserv: false, whatsapp: false, google: false, slack: false, zapier: false,
+  })
+  const [voiceIdioma, setVoiceIdioma] = useState('Español (Latino)')
+  const [voiceTipo, setVoiceTipo] = useState('Natural')
+  const [billingData, setBillingData] = useState<{
+    plan: { id: string; name: string; price: number; status: string; renewal: string | null }
+    usage: { users: { used: number; limit: number }; queries: { used: number; limit: number }; storage: { used_gb: number; limit_gb: number } }
+    invoices: Array<{ description: string; amount: number; status: string; date: string }>
+  } | null>(null)
+
+  // Push-to-talk state
+  const [isListening, setIsListening] = useState(false)
+  const [spaceHoldProgress, setSpaceHoldProgress] = useState(0)
+  const [spaceHoldTimer, setSpaceHoldTimer] = useState<NodeJS.Timeout | null>(null)
+  const [progressInterval, setProgressInterval] = useState<NodeJS.Timeout | null>(null)
+  const [voiceTranscript, setVoiceTranscript] = useState("")
+  const [isProcessingVoice, setIsProcessingVoice] = useState(false)
+
+  // Voice settings state
+  const [voiceSpaceEnabled, setVoiceSpaceEnabled] = useState(true)
+  const [voiceWakeEnabled, setVoiceWakeEnabled] = useState(false)
+  const [voiceResponseEnabled, setVoiceResponseEnabled] = useState(false)
+
+  const syncBackendData = useCallback(async () => {
+    if (!companyId) return
+    const [settings, team, me, company, billing] = await Promise.all([
+      fetchSettings(), fetchTeamUsers(), fetchMe(), fetchCompany(), fetchBilling(),
+    ])
+    if (settings) {
+      setSettingsNotifAlerts(prev => ({ ...prev, ...settings.notifications.alerts }))
+      setSettingsNotifChannels(prev => ({ ...prev, ...settings.notifications.channels }))
+      setSettingsNotifFreq(prev => ({ ...prev, ...settings.notifications.freq }))
+      setSettingsNotifWhatsAppPhone(settings.notifications.whatsappPhone || '')
+      const v = settings.voice
+      if (typeof v.spaceEnabled === 'boolean') setVoiceSpaceEnabled(v.spaceEnabled)
+      if (typeof v.wakeEnabled === 'boolean') setVoiceWakeEnabled(v.wakeEnabled)
+      if (typeof v.responseEnabled === 'boolean') setVoiceResponseEnabled(v.responseEnabled)
+      if (typeof v.idioma === 'string') setVoiceIdioma(v.idioma)
+      if (typeof v.tipo === 'string') setVoiceTipo(v.tipo)
+      setSettingsIntegrations(prev => ({ ...prev, ...settings.integrations }))
+    }
+    if (team?.users?.length) {
+      setSettingsUsers(team.users.map(u => ({
+        id: u.id, name: u.name, email: u.email, role: u.role,
+        avatar: u.avatar, modules: u.modules,
+      })))
+    }
+    if (me) {
+      setProfileName(me.name)
+      setProfileEmail(me.email)
+      if (me.phone) setProfilePhone(me.phone)
+      if (me.role === 'owner') setProfileCargo('Dueño')
+    }
+    if (company) {
+      setWsEmpresaNombre(company.name || '')
+      setWsEmpresaRubro(company.industry || '')
+      if (company.size) setWsEmpresaEmpleados(String(company.size))
+      if (company.anios) setWsEmpresaAnios(company.anios)
+      if (company.ciudad) setWsEmpresaCiudad(company.ciudad)
+      if (company.pais) setWsEmpresaPais(company.pais)
+      if (company.web) setWsEmpresaWeb(company.web)
+      if (company.desc) setWsEmpresaDesc(company.desc)
+    }
+    if (billing) setBillingData(billing)
+  }, [companyId])
 
   const [realClients, setRealClients] =
     useState(defaultClientsData)
@@ -627,7 +754,7 @@ export default function DashboardPage() {
           tags,
           assigned_seller_id
         `)
-        .eq('company_id', COMPANY_ID)
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -697,7 +824,7 @@ export default function DashboardPage() {
             company_name
           )
         `)
-        .eq('company_id', COMPANY_ID)
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -751,7 +878,7 @@ export default function DashboardPage() {
       const { data, error } = await supabase
         .from('movements')
         .select('*')
-        .eq('company_id', COMPANY_ID)
+        .eq('company_id', companyId)
         .order('date', { ascending: false })
 
       if (error) throw error
@@ -798,7 +925,7 @@ export default function DashboardPage() {
       const { data, error } = await supabase
         .from('employees')
         .select('*')
-        .eq('company_id', COMPANY_ID)
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -848,7 +975,7 @@ export default function DashboardPage() {
       const { data, error } = await supabase
         .from('employee_tasks')
         .select('*')
-        .eq('company_id', COMPANY_ID)
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -892,7 +1019,7 @@ export default function DashboardPage() {
       const { data, error } = await supabase
         .from('campaigns')
         .select('*')
-        .eq('company_id', COMPANY_ID)
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -945,7 +1072,7 @@ export default function DashboardPage() {
       const { data, error } = await supabase
         .from('research')
         .select('*')
-        .eq('company_id', COMPANY_ID)
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -993,7 +1120,7 @@ export default function DashboardPage() {
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
-        .eq('company_id', COMPANY_ID)
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false })
         .limit(20)
 
@@ -1032,7 +1159,7 @@ export default function DashboardPage() {
       const { data, error } = await supabase
         .from('chat_history')
         .select('*')
-        .eq('company_id', COMPANY_ID)
+        .eq('company_id', companyId)
         .order('created_at', { ascending: true })
         .limit(50)
 
@@ -1056,7 +1183,7 @@ export default function DashboardPage() {
       const { data, error } = await supabase
         .from('company_memory')
         .select('*')
-        .eq('company_id', COMPANY_ID)
+        .eq('company_id', companyId)
         .maybeSingle()
 
       if (error) throw error
@@ -1071,7 +1198,7 @@ export default function DashboardPage() {
       const { data, error } = await supabase
         .from('reports')
         .select('*')
-        .eq('company_id', COMPANY_ID)
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -1083,6 +1210,7 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
+    if (!companyId) return
     fetchClients()
     fetchOpportunities()
     fetchMovements()
@@ -1094,7 +1222,12 @@ export default function DashboardPage() {
     fetchChatHistory()
     fetchCompanyMemory()
     fetchReports()
-  }, [])
+    syncBackendData()
+  }, [companyId])
+
+  useEffect(() => {
+    if (showSettings && companyId) syncBackendData()
+  }, [showSettings, companyId, syncBackendData])
 
   useEffect(() => {
     if (chatHistory.length > 0) {
@@ -1137,7 +1270,7 @@ export default function DashboardPage() {
       const { error } = await supabase
         .from('clients')
         .insert({
-          company_id: COMPANY_ID,
+          company_id: companyId,
           name: newName.trim(),
           company_name: newCompany || null,
           email: newEmail || null,
@@ -1182,7 +1315,7 @@ export default function DashboardPage() {
       const { error } = await supabase
         .from('opportunities')
         .insert({
-          company_id: COMPANY_ID,
+          company_id: companyId,
           client_id: resolveClientId(newOppClient),
           title: newOppDesc || newOppClient || 'Nueva oportunidad',
           amount: parseFloat(
@@ -1220,7 +1353,7 @@ export default function DashboardPage() {
       const { error } = await supabase
         .from('movements')
         .insert({
-          company_id: COMPANY_ID,
+          company_id: companyId,
           type: 'expense',
           description: regDesc,
           amount: parseFloat(
@@ -1249,7 +1382,7 @@ export default function DashboardPage() {
       const { error } = await supabase
         .from('movements')
         .insert({
-          company_id: COMPANY_ID,
+          company_id: companyId,
           type: 'income',
           description: regDescIn,
           amount: parseFloat(
@@ -1278,7 +1411,7 @@ export default function DashboardPage() {
       const { error } = await supabase
         .from('employees')
         .insert({
-          company_id: COMPANY_ID,
+          company_id: companyId,
           name: newEmployeeName,
           role: newEmployeeRole,
           area: newEmployeeArea || null,
@@ -1311,7 +1444,7 @@ export default function DashboardPage() {
       const { error } = await supabase
         .from('employee_tasks')
         .insert({
-          company_id: COMPANY_ID,
+          company_id: companyId,
           employee_id: employeeId,
           title: newTaskName,
           priority: newTaskPriority === 'Alta'
@@ -1342,7 +1475,7 @@ export default function DashboardPage() {
       const { error } = await supabase
         .from('campaigns')
         .insert({
-          company_id: COMPANY_ID,
+          company_id: companyId,
           name: newCampName || 'Nueva campaña',
           channel: channelKey === 'Email'
             ? 'email'
@@ -1392,7 +1525,7 @@ export default function DashboardPage() {
       const { error } = await supabase
         .from('interactions')
         .insert({
-          company_id: COMPANY_ID,
+          company_id: companyId,
           client_id: clientId,
           type: crmRegisterType === 'Llamada'
             ? 'call'
@@ -1428,6 +1561,7 @@ export default function DashboardPage() {
         error)
     }
   }
+  const recognitionRef = useRef<any>(null)
   const wakeRecRef = useRef<SpeechRecognitionInstance | null>(null)
   const commandRecRef = useRef<SpeechRecognitionInstance | null>(null)
   const voiceModeRef = useRef<"wake" | "command" | "idle">("idle")
@@ -1497,9 +1631,12 @@ export default function DashboardPage() {
     setVoiceListening(false)
     stopCommandRecognition()
     setChatMessages(prev => [...prev, { role: "user", text }])
-    setTimeout(() => {
-      setChatMessages(prev => [...prev, { role: "assistant", text: getPupiChatReply(text) }])
-    }, 600)
+    apiSendChat(text).then(reply => {
+      setChatMessages(prev => [...prev, {
+        role: "assistant",
+        text: reply || getPupiChatReply(text),
+      }])
+    })
     startWakeRef.current?.()
   }, [stopCommandRecognition])
 
@@ -1564,9 +1701,12 @@ export default function DashboardPage() {
     if (!text) return
     setChatInput("")
     setChatMessages(prev => [...prev, { role: "user", text }])
-    setTimeout(() => {
-      setChatMessages(prev => [...prev, { role: "assistant", text: getPupiChatReply(text) }])
-    }, 600)
+    apiSendChat(text).then(reply => {
+      setChatMessages(prev => [...prev, {
+        role: "assistant",
+        text: reply || getPupiChatReply(text),
+      }])
+    })
   }, [chatInput])
 
   useEffect(() => {
@@ -1651,6 +1791,90 @@ export default function DashboardPage() {
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
   }, [])
+
+  const isUserTyping = () => {
+    const activeElement = document.activeElement
+    if (!activeElement) return false
+    const typingElements = ["INPUT", "TEXTAREA", "SELECT"]
+    if (typingElements.includes(activeElement.tagName)) return true
+    if (activeElement.getAttribute("contenteditable") === "true") return true
+    return false
+  }
+
+  const startVoiceRecognition = () => {
+    const win = window as any
+    const SR = win.SpeechRecognition || win.webkitSpeechRecognition
+    if (!SR) return
+    const recognition = new SR()
+    recognition.lang = "es-ES"
+    recognition.continuous = false
+    recognition.interimResults = true
+    recognition.maxAlternatives = 1
+    recognition.onstart = () => {
+      setIsListening(true)
+      setVoiceTranscript("")
+      setShowChatPanel(true)
+    }
+    recognition.onresult = (event: any) => {
+      const transcript = Array.from(event.results as any[])
+        .map((result: any) => result[0].transcript)
+        .join("")
+      setVoiceTranscript(transcript)
+    }
+    recognition.onend = () => {
+      setIsListening(false)
+      setIsProcessingVoice(false)
+      setVoiceTranscript(t => { if (t) setChatInput(t); return t })
+    }
+    recognition.onerror = () => {
+      setIsListening(false)
+      setIsProcessingVoice(false)
+    }
+    recognitionRef.current = recognition
+    recognition.start()
+  }
+
+  const stopVoiceRecognition = () => {
+    if (recognitionRef.current) {
+      setIsProcessingVoice(true)
+      recognitionRef.current.stop()
+    }
+  }
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== "Space") return
+      if (e.repeat) return
+      if (isUserTyping()) return
+      if (isListening) return
+      e.preventDefault()
+      setSpaceHoldProgress(0)
+      let progress = 0
+      const interval = setInterval(() => {
+        progress += 5
+        setSpaceHoldProgress(progress)
+        if (progress >= 100) clearInterval(interval)
+      }, 100)
+      setProgressInterval(interval)
+      const timer = setTimeout(() => {
+        if (!isUserTyping()) startVoiceRecognition()
+      }, 2000)
+      setSpaceHoldTimer(timer)
+    }
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code !== "Space") return
+      if (spaceHoldTimer) { clearTimeout(spaceHoldTimer); setSpaceHoldTimer(null) }
+      if (progressInterval) { clearInterval(progressInterval); setProgressInterval(null) }
+      setSpaceHoldProgress(0)
+      if (isListening) stopVoiceRecognition()
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    window.addEventListener("keyup", handleKeyUp)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+      window.removeEventListener("keyup", handleKeyUp)
+    }
+  }, [isListening, spaceHoldTimer, progressInterval])
 
   const containerSize = ORBIT_RADIUS * 2 + 160
 
@@ -1817,7 +2041,22 @@ export default function DashboardPage() {
 
         {/* Center circle */}
         <div className="relative z-10">
-          {centerHovered && !showVoiceInput && (
+          {spaceHoldProgress > 0 && spaceHoldProgress < 100 && (
+            <div style={{ position: "absolute", bottom: "calc(100% + 14px)", left: "50%", transform: "translateX(-50%)", whiteSpace: "nowrap", background: "rgba(10,10,20,0.9)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "4px 10px", fontSize: 11, color: "rgba(255,255,255,0.5)", pointerEvents: "none", zIndex: 20 }}>
+              Mantené para hablar con Pupi
+            </div>
+          )}
+          {spaceHoldProgress > 0 && (
+            <svg style={{ position: "absolute", inset: -8, width: "calc(100% + 16px)", height: "calc(100% + 16px)", transform: "rotate(-90deg)", pointerEvents: "none", zIndex: 20 }} viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="66" strokeWidth="2.5" stroke="#2563EB" fill="none"
+                strokeDasharray="415"
+                strokeDashoffset={415 - (415 * spaceHoldProgress / 100)}
+                strokeLinecap="round"
+                style={{ transition: "stroke-dashoffset 100ms linear" }}
+              />
+            </svg>
+          )}
+          {centerHovered && !showVoiceInput && spaceHoldProgress === 0 && (
             <div
               style={{
                 position: "absolute",
@@ -10129,6 +10368,29 @@ export default function DashboardPage() {
                                     )}
                                   </div>
                                 ))}
+
+                                <div style={{ color:"rgba(255,255,255,0.35)", fontSize:10, textTransform:"uppercase", letterSpacing:"0.08em", marginTop:24, marginBottom:16 }}>VOZ Y ASISTENTE</div>
+                                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+                                  <div>
+                                    <div style={{ color:"white", fontSize:13 }}>Activación por espacio</div>
+                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>Mantené ␣ 2 segundos para hablar</div>
+                                  </div>
+                                  <Toggle on={voiceSpaceEnabled} onToggle={() => setVoiceSpaceEnabled(v => !v)} />
+                                </div>
+                                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+                                  <div>
+                                    <div style={{ color:"white", fontSize:13 }}>Palabra de activación — &ldquo;Pupi&rdquo;</div>
+                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>Desactivado: solo te escucha al decir &ldquo;Pupi&rdquo;. Activá para que escuche constantemente.</div>
+                                  </div>
+                                  <Toggle on={voiceWakeEnabled} onToggle={() => setVoiceWakeEnabled(v => !v)} />
+                                </div>
+                                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+                                  <div>
+                                    <div style={{ color:"white", fontSize:13 }}>Respuesta por voz</div>
+                                    <div style={{ color:"rgba(255,255,255,0.35)", fontSize:11, marginTop:2 }}>Pupi te responde hablando</div>
+                                  </div>
+                                  <Toggle on={voiceResponseEnabled} onToggle={() => setVoiceResponseEnabled(v => !v)} />
+                                </div>
                               </div>
                             )}
 
@@ -10726,6 +10988,836 @@ export default function DashboardPage() {
           ✓ {toastMessage}
         </div>
       )}
+
+      {/* Listening indicator */}
+      {isListening && (
+        <div style={{ position: "fixed", bottom: 100, left: "50%", transform: "translateX(-50%)", zIndex: 1001 }}>
+          <div style={{ background: "rgba(10,10,20,0.95)", border: "1px solid rgba(37,99,235,0.4)", borderRadius: 30, padding: "10px 20px", display: "flex", alignItems: "center", gap: 10, backdropFilter: "blur(8px)" }}>
+            <style>{`@keyframes pttPulse { 0%,100% { opacity:1; transform:scale(1) } 50% { opacity:0.5; transform:scale(1.2) } }`}</style>
+            <Mic size={16} style={{ color: "#2563EB", animation: "pttPulse 1s infinite" }} />
+            <span style={{ color: isProcessingVoice ? "rgba(255,255,255,0.5)" : (voiceTranscript ? "white" : "rgba(255,255,255,0.7)"), fontSize: 13, fontStyle: isProcessingVoice ? "italic" : "normal", maxWidth: 300, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {isProcessingVoice ? "Procesando..." : voiceTranscript || "Escuchando..."}
+            </span>
+            {!isProcessingVoice && (
+              <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11 }}>Soltá para enviar</span>
+            )}
+          </div>
+        </div>
+      )}
+
+
+      {/* Chat panel */}
+      {showChatPanel && (
+        <div style={{ position: "fixed", bottom: 88, right: 24, width: 360, height: 480, background: "#0D0D14", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 16, zIndex: 60, display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
+          <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ color: "white", fontSize: 14, fontWeight: 500 }}>Pupi AI</span>
+            <button type="button" onClick={toggleChatPanel} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 18, cursor: "pointer", lineHeight: 1 }}>×</button>
+          </div>
+          {showWakeGreeting && (
+            <div style={{ padding: "8px 16px", background: "rgba(37,99,235,0.1)", color: "#2563EB", fontSize: 12 }}>
+              Te escucho — decime en qué te ayudo
+            </div>
+          )}
+          <div style={{ flex: 1, overflowY: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+            {chatMessages.map((msg, i) => (
+              <div key={i} style={{ alignSelf: msg.role === "user" ? "flex-end" : "flex-start", maxWidth: "85%", background: msg.role === "user" ? "#2563EB" : "rgba(255,255,255,0.06)", color: "white", fontSize: 13, lineHeight: 1.5, padding: "10px 14px", borderRadius: msg.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px" }}>
+                {msg.text}
+              </div>
+            ))}
+          </div>
+          <div style={{ padding: 12, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ display: "flex", gap: 8 }}>
+              <input
+                type="text"
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") sendChatMessage() }}
+                placeholder="Preguntale algo a Pupi..."
+                style={{ flex: 1, padding: "10px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "white", fontSize: 13, outline: "none" }}
+              />
+              <button type="button" onClick={sendChatMessage} style={{ padding: "10px 14px", background: "#2563EB", color: "white", border: "none", borderRadius: 8, fontSize: 13, cursor: "pointer" }}>→</button>
+            </div>
+            {typeof window !== "undefined" && ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) && (
+              <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 10, textAlign: "center", marginTop: 6 }}>
+                Mantené ␣ para hablar · Pupi te escucha
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Settings button — fixed bottom-right */}
+      {!showSettings && (
+      <button
+        type="button"
+        onClick={() => setShowSettings(true)}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.1)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.2)' }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.12)' }}
+        style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 999, width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 200ms' }}
+      >
+        <Settings size={18} style={{ color: 'rgba(255,255,255,0.6)' }} />
+      </button>
+      )}
+
+      {/* Settings panel overlay */}
+      {showSettings && (() => {
+        const si: React.CSSProperties = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '8px 12px', color: 'white', fontSize: 13, width: '100%', outline: 'none', boxSizing: 'border-box' }
+        const sl: React.CSSProperties = { color: 'rgba(255,255,255,0.7)', fontSize: 11, marginBottom: 6, display: 'block' }
+        const sec: React.CSSProperties = { color: 'rgba(255,255,255,0.4)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }
+
+        const modulesSections: Record<string, string[]> = {
+          crm: ['Lista de clientes', 'Ficha de cliente', 'Interacciones', 'Mapa de clientes', 'Importar clientes'],
+          ventas: ['Pipeline', 'Pronóstico', 'Comisiones', 'Vendedores', 'Productos'],
+          marketing: ['Campañas', 'Insights', 'Investigaciones'],
+          rrhh: ['Equipo', 'Organigrama', 'Clima laboral', 'Sueldos', 'Resumen semanal'],
+          contabilidad: ['Dashboard', 'Movimientos', 'Análisis', 'Proyecciones', 'Exportar'],
+          workspace: ['Inicio', 'Historial', 'Buscador', 'Reportes', 'Memoria'],
+        }
+        const moduleLabels: Record<string, string> = { crm: 'CRM', ventas: 'Ventas', marketing: 'Marketing', rrhh: 'RRHH', contabilidad: 'Contabilidad', workspace: 'Workspace' }
+        const moduleColors: Record<string, string> = { crm: '#2563EB', ventas: '#22c55e', marketing: '#a855f7', rrhh: '#f97316', contabilidad: '#eab308', workspace: 'rgba(255,255,255,0.5)' }
+        const moduleIcons: Record<string, React.ReactNode> = {
+          crm: <Users size={16} style={{ color: '#2563EB' }} />,
+          ventas: <TrendingUp size={16} style={{ color: '#22c55e' }} />,
+          marketing: <Megaphone size={16} style={{ color: '#a855f7' }} />,
+          rrhh: <UserCheck size={16} style={{ color: '#f97316' }} />,
+          contabilidad: <Calculator size={16} style={{ color: '#eab308' }} />,
+          workspace: <LayoutDashboard size={16} style={{ color: 'rgba(255,255,255,0.5)' }} />,
+        }
+
+        const applyRoleDefaults = (role: string) => {
+          const base: Record<string, { enabled: boolean; access: 'reader'|'editor'; sections: string[] }> = {
+            crm: { enabled: false, access: 'reader', sections: [] },
+            ventas: { enabled: false, access: 'reader', sections: [] },
+            marketing: { enabled: false, access: 'reader', sections: [] },
+            rrhh: { enabled: false, access: 'reader', sections: [] },
+            contabilidad: { enabled: false, access: 'reader', sections: [] },
+            workspace: { enabled: false, access: 'reader', sections: [] },
+          }
+          if (role === 'manager') {
+            Object.keys(base).forEach(k => { base[k] = { enabled: true, access: 'editor', sections: [...modulesSections[k]] } })
+          } else if (role === 'seller') {
+            base.crm = { enabled: true, access: 'reader', sections: [...modulesSections.crm] }
+            base.ventas = { enabled: true, access: 'editor', sections: [...modulesSections.ventas] }
+            base.workspace = { enabled: true, access: 'reader', sections: [...modulesSections.workspace] }
+          } else if (role === 'employee') {
+            base.workspace = { enabled: true, access: 'reader', sections: [...modulesSections.workspace] }
+          }
+          setNewUserPermissions(base)
+        }
+
+        const roleBadge = (role: string) => {
+          const map: Record<string, { label: string; bg: string; color: string }> = {
+            owner: { label: 'Dueño', bg: 'rgba(234,179,8,0.15)', color: '#eab308' },
+            manager: { label: 'Gerente', bg: 'rgba(37,99,235,0.15)', color: '#2563EB' },
+            seller: { label: 'Vendedor', bg: 'rgba(34,197,94,0.15)', color: '#22c55e' },
+            employee: { label: 'Empleado', bg: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' },
+          }
+          const s = map[role] || map.employee
+          return <span style={{ background: s.bg, color: s.color, borderRadius: 20, padding: '2px 8px', fontSize: 11, fontWeight: 500 }}>{s.label}</span>
+        }
+
+        const resetAddUser = () => {
+          setNewUserName(''); setNewUserEmail(''); setNewUserRole('employee'); setNewUserEmailError('')
+          setNewUserPermissions({ crm: { enabled: false, access: 'reader', sections: [] }, ventas: { enabled: false, access: 'reader', sections: [] }, marketing: { enabled: false, access: 'reader', sections: [] }, rrhh: { enabled: false, access: 'reader', sections: [] }, contabilidad: { enabled: false, access: 'reader', sections: [] }, workspace: { enabled: false, access: 'reader', sections: [] } })
+          setShowAddUser(false)
+          setEditingUserId(null)
+        }
+
+        const openEditUser = (u: typeof settingsUsers[0]) => {
+          setEditingUserId(u.id)
+          setNewUserName(u.name)
+          setNewUserEmail(u.email)
+          setNewUserRole(u.role === 'owner' || u.role === 'seller' || u.role === 'manager' || u.role === 'employee' ? u.role : u.role)
+          setNewUserEmailError('')
+          setNewUserPermissions({ crm: { enabled: false, access: 'reader', sections: [] }, ventas: { enabled: false, access: 'reader', sections: [] }, marketing: { enabled: false, access: 'reader', sections: [] }, rrhh: { enabled: false, access: 'reader', sections: [] }, contabilidad: { enabled: false, access: 'reader', sections: [] }, workspace: { enabled: false, access: 'reader', sections: [] } })
+          setShowAddUser(true)
+        }
+
+        const submitAddUser = async () => {
+          if (!newUserEmail.trim() || !newUserEmail.includes('@')) { setNewUserEmailError('Ingresá un email válido'); return }
+          const enabledMods = Object.entries(newUserPermissions).filter(([,v]) => v.enabled).map(([k]) => moduleLabels[k]).join(', ') || 'Sin acceso'
+          if (editingUserId) {
+            const res = await fetch('/api/users', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: editingUserId, name: newUserName, email: newUserEmail, role: newUserRole, permissions: newUserPermissions }),
+            })
+            if (res.ok) {
+              const data = await res.json()
+              setSettingsUsers(prev => prev.map(u => u.id === editingUserId ? { ...u, ...data.user, modules: enabledMods } : u))
+              showToast('Usuario actualizado')
+            } else showToast('Error al actualizar usuario')
+          } else {
+            const res = await fetch('/api/users', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name: newUserName || newUserEmail.split('@')[0], email: newUserEmail, role: newUserRole, permissions: newUserPermissions }),
+            })
+            if (res.ok) {
+              const data = await res.json()
+              setSettingsUsers(prev => [...prev, { ...data.user, modules: enabledMods }])
+              showToast('Invitación enviada a ' + newUserEmail)
+            } else {
+              const err = await res.json().catch(() => ({}))
+              setNewUserEmailError(err.error || 'Error al crear usuario')
+              return
+            }
+          }
+          resetAddUser()
+        }
+
+        const persistNotifications = async () => {
+          const ok = await saveSettings({
+            notifications: {
+              alerts: settingsNotifAlerts,
+              channels: settingsNotifChannels,
+              freq: settingsNotifFreq,
+              whatsappPhone: settingsNotifWhatsAppPhone,
+            },
+          })
+          showToast(ok ? 'Preferencias guardadas' : 'Error al guardar')
+        }
+
+        const persistVoice = async (patch: Record<string, unknown>) => {
+          await saveSettings({
+            voice: {
+              spaceEnabled: voiceSpaceEnabled,
+              wakeEnabled: voiceWakeEnabled,
+              responseEnabled: voiceResponseEnabled,
+              idioma: voiceIdioma,
+              tipo: voiceTipo,
+              ...patch,
+            },
+          })
+        }
+
+        const persistIntegration = async (provider: string, connected: boolean) => {
+          setSettingsIntegrations(prev => ({ ...prev, [provider]: connected }))
+          await saveSettings({ integrations: { ...settingsIntegrations, [provider]: connected } })
+        }
+
+        const navItems = [
+          { key: 'profile' as const, icon: <User size={16} />, label: 'Mi perfil' },
+          { key: 'company' as const, icon: <Building2 size={16} />, label: 'Empresa' },
+          { key: 'users' as const, icon: <Users size={16} />, label: 'Usuarios' },
+        ]
+        const extraNavItems = [
+          { key: 'billing' as const, icon: <CreditCard size={16} />, label: 'Facturación' },
+          { key: 'notifications' as const, icon: <Bell size={16} />, label: 'Notificaciones' },
+          { key: 'integrations' as const, icon: <Plug size={16} />, label: 'Integraciones' },
+          { key: 'voice' as const, icon: <Mic size={16} />, label: 'Voz y asistente' },
+          { key: 'security' as const, icon: <Shield size={16} />, label: 'Seguridad' },
+        ]
+        const renderSettingsNavBtn = (item: typeof navItems[number] | typeof extraNavItems[number]) => (
+          <button key={item.key} type="button" onClick={() => setSettingsTab(item.key)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', marginBottom: 4, border: 'none', background: settingsTab === item.key ? 'rgba(37,99,235,0.15)' : 'transparent', color: settingsTab === item.key ? '#2563EB' : 'rgba(255,255,255,0.6)', fontSize: 13, transition: 'background 150ms' }}
+            onMouseEnter={e => { if (settingsTab !== item.key) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.04)' }}
+            onMouseLeave={e => { if (settingsTab !== item.key) (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
+          >
+            {item.icon}
+            {item.label}
+          </button>
+        )
+        const SettingsToggle = ({ on, onToggle }: { on: boolean; onToggle: () => void }) => (
+          <div onClick={onToggle} style={{ width: 36, height: 20, borderRadius: 10, background: on ? '#2563EB' : 'rgba(255,255,255,0.1)', cursor: 'pointer', position: 'relative', flexShrink: 0, transition: 'background 200ms' }}>
+            <div style={{ position: 'absolute', top: 2, left: on ? 18 : 2, width: 16, height: 16, borderRadius: '50%', background: 'white', transition: 'left 200ms' }} />
+          </div>
+        )
+
+        return (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={e => { if (e.target === e.currentTarget) setShowSettings(false) }}>
+            <div style={{ position: 'absolute', top: 40, left: 40, right: 40, bottom: 40, background: '#0D0D14', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              {/* Header */}
+              <div style={{ height: 64, padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Settings size={18} style={{ color: '#2563EB' }} />
+                  <span style={{ color: 'white', fontSize: 16, fontWeight: 500 }}>Configuración</span>
+                </div>
+                <button type="button" onClick={() => setShowSettings(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 22, cursor: 'pointer', lineHeight: 1, padding: '4px 8px' }}>×</button>
+              </div>
+
+              {/* Body */}
+              <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+                {/* Sidebar */}
+                <div style={{ width: 220, flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.06)', padding: 16 }}>
+                  {navItems.map(item => renderSettingsNavBtn(item))}
+                  <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '12px 0' }} />
+                  {extraNavItems.map(item => renderSettingsNavBtn(item))}
+                </div>
+
+                {/* Content */}
+                <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+
+                  {/* ── USERS TAB ── */}
+                  {settingsTab === 'users' && (
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+                        <div>
+                          <div style={{ color: 'white', fontSize: 15, fontWeight: 500 }}>Usuarios</div>
+                          <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 4 }}>{settingsUsers.length} usuarios activos en tu plan</div>
+                        </div>
+                        <button type="button" onClick={() => setShowAddUser(true)} style={{ background: '#2563EB', color: 'white', border: 'none', borderRadius: 8, padding: '7px 16px', fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>+ Agregar usuario</button>
+                      </div>
+
+                      {/* Table */}
+                      <div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 1fr 2fr 1fr', padding: '10px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px 8px 0 0', color: 'rgba(255,255,255,0.4)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                          <span>Usuario</span><span>Email</span><span>Rol</span><span>Acceso</span><span>Acción</span>
+                        </div>
+                        {settingsUsers.map(u => (
+                          <div key={u.id} style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 1fr 2fr 1fr', padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'center' }}
+                            onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.02)'}
+                            onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = 'transparent'}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(37,99,235,0.2)', color: '#2563EB', fontSize: 10, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{u.avatar}</div>
+                              <span style={{ color: 'white', fontSize: 13 }}>{u.name}</span>
+                            </div>
+                            <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>{u.email}</span>
+                            <span>{roleBadge(u.role)}</span>
+                            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>{u.modules}</span>
+                            <div style={{ display: 'flex', gap: 12 }}>
+                              {u.role !== 'owner' && <>
+                                <button type="button" onClick={() => openEditUser(u)} style={{ background: 'none', border: 'none', color: '#2563EB', fontSize: 12, cursor: 'pointer', padding: 0 }}>Editar</button>
+                                <button type="button" onClick={() => setDeleteConfirmId(u.id)} style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: 12, cursor: 'pointer', padding: 0 }}>Eliminar</button>
+                              </>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Delete confirmation */}
+                      {deleteConfirmId && (() => {
+                        const target = settingsUsers.find(u => u.id === deleteConfirmId)
+                        return (
+                          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={e => { if (e.target === e.currentTarget) setDeleteConfirmId(null) }}>
+                            <div style={{ background: '#0D0D14', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 14, width: 400, padding: 28 }} onClick={e => e.stopPropagation()}>
+                              <div style={{ color: 'white', fontSize: 16, fontWeight: 500, marginBottom: 8 }}>Eliminar usuario</div>
+                              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, marginBottom: 24 }}>
+                                ¿Seguro que querés eliminar a <span style={{ color: 'white' }}>{target?.name}</span>? Esta acción no se puede deshacer.
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                                <button type="button" onClick={() => setDeleteConfirmId(null)} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)', borderRadius: 8, padding: '8px 18px', fontSize: 13, cursor: 'pointer' }}>Cancelar</button>
+                                <button type="button" onClick={async () => {
+                                  const ok = await fetch(`/api/users?id=${deleteConfirmId}`, { method: 'DELETE' })
+                                  if (ok.ok) {
+                                    setSettingsUsers(prev => prev.filter(x => x.id !== deleteConfirmId))
+                                    setDeleteConfirmId(null)
+                                    showToast('Usuario eliminado')
+                                  } else showToast('Error al eliminar')
+                                }} style={{ background: '#ef4444', color: 'white', border: 'none', borderRadius: 8, padding: '8px 18px', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>Eliminar</button>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })()}
+
+                      {/* Add / edit user modal */}
+                      {showAddUser && (
+                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={e => { if (e.target === e.currentTarget) resetAddUser() }}>
+                          <div style={{ background: '#0D0D14', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 14, width: 560, maxHeight: '85vh', overflowY: 'auto', padding: 28 }} onClick={e => e.stopPropagation()}>
+                            {/* Modal header */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                              <div>
+                                <div style={{ color: 'white', fontSize: 16, fontWeight: 500 }}>{editingUserId ? 'Editar usuario' : 'Agregar usuario'}</div>
+                                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 4 }}>{editingUserId ? 'Modificá los datos del usuario' : 'Invitá a alguien a tu equipo en Pupi'}</div>
+                              </div>
+                              <button type="button" onClick={resetAddUser} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 22, cursor: 'pointer', lineHeight: 1, padding: '2px 6px' }}>×</button>
+                            </div>
+
+                            {/* Section 1 — user data */}
+                            <div style={{ ...sec, marginTop: 20 }}>DATOS DEL USUARIO</div>
+                            <div style={{ marginBottom: 14 }}>
+                              <label style={sl}>Nombre completo</label>
+                              <input style={si} value={newUserName} onChange={e => setNewUserName(e.target.value)} placeholder="Ej: Juan Pérez" />
+                            </div>
+                            <div style={{ marginBottom: 14 }}>
+                              <label style={sl}>Email</label>
+                              <input style={{ ...si, borderColor: newUserEmailError ? '#ef4444' : 'rgba(255,255,255,0.08)' }} type="email" value={newUserEmail} onChange={e => { setNewUserEmail(e.target.value); setNewUserEmailError('') }} placeholder="juan@empresa.com" />
+                              {newUserEmailError && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{newUserEmailError}</div>}
+                            </div>
+
+                            {/* Role field */}
+                            <div style={{ marginBottom: 14 }}>
+                              <label style={sl}>Rol</label>
+                              <input style={si} value={newUserRole === 'employee' ? '' : newUserRole} onChange={e => setNewUserRole(e.target.value)} placeholder="Ej: Gerente, Vendedor, Diseñador..." />
+                            </div>
+
+                            {/* Section 2 — permissions */}
+                            <div style={{ ...sec, marginTop: 24 }}>PERMISOS POR ÁREA</div>
+                            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, marginBottom: 16 }}>Elegí qué puede ver y hacer en cada área</div>
+
+                            {Object.keys(modulesSections).map(mod => {
+                              const perm = newUserPermissions[mod]
+                              const allChecked = perm.sections.length === modulesSections[mod].length
+                              return (
+                                <div key={mod} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, marginBottom: 8, overflow: 'hidden' }}>
+                                  {/* Card header */}
+                                  <div style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                                    {moduleIcons[mod]}
+                                    <span style={{ color: 'white', fontSize: 13, fontWeight: 500, flex: 0 }}>{moduleLabels[mod]}</span>
+                                    <div style={{ flex: 1, display: 'flex', gap: 6, marginLeft: 8 }}>
+                                      {perm.enabled && (['reader', 'editor'] as const).map(a => (
+                                        <button key={a} type="button" onClick={() => setNewUserPermissions(prev => ({ ...prev, [mod]: { ...prev[mod], access: a } }))} style={{ borderRadius: 20, padding: '3px 10px', fontSize: 11, cursor: 'pointer', border: `1px solid ${perm.access === a ? 'rgba(37,99,235,0.3)' : 'rgba(255,255,255,0.08)'}`, background: perm.access === a ? 'rgba(37,99,235,0.2)' : 'rgba(255,255,255,0.05)', color: perm.access === a ? '#2563EB' : 'rgba(255,255,255,0.4)' }}>
+                                          {a === 'reader' ? 'Lector' : 'Editor'}
+                                        </button>
+                                      ))}
+                                    </div>
+                                    {/* Toggle */}
+                                    <div onClick={() => setNewUserPermissions(prev => ({ ...prev, [mod]: { ...prev[mod], enabled: !prev[mod].enabled, sections: !prev[mod].enabled ? [] : prev[mod].sections } }))} style={{ width: 36, height: 20, borderRadius: 10, background: perm.enabled ? '#2563EB' : 'rgba(255,255,255,0.1)', cursor: 'pointer', position: 'relative', transition: 'background 200ms', flexShrink: 0 }}>
+                                      <div style={{ position: 'absolute', top: 2, left: perm.enabled ? 18 : 2, width: 16, height: 16, borderRadius: '50%', background: 'white', transition: 'left 200ms' }} />
+                                    </div>
+                                  </div>
+                                  {/* Sections */}
+                                  {perm.enabled && (
+                                    <div style={{ padding: '0 16px 14px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', cursor: 'pointer' }} onClick={() => {
+                                        const all = modulesSections[mod]
+                                        setNewUserPermissions(prev => ({ ...prev, [mod]: { ...prev[mod], sections: allChecked ? [] : [...all] } }))
+                                      }}>
+                                        <div style={{ width: 16, height: 16, borderRadius: 4, border: `1px solid ${allChecked ? '#2563EB' : 'rgba(255,255,255,0.2)'}`, background: allChecked ? '#2563EB' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                          {allChecked && <span style={{ color: 'white', fontSize: 10, lineHeight: 1 }}>✓</span>}
+                                        </div>
+                                        <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>Seleccionar todo</span>
+                                      </label>
+                                      {modulesSections[mod].map(sec2 => {
+                                        const checked = perm.sections.includes(sec2)
+                                        return (
+                                          <label key={sec2} style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 8, paddingTop: 4, paddingBottom: 4, cursor: 'pointer' }} onClick={() => setNewUserPermissions(prev => ({ ...prev, [mod]: { ...prev[mod], sections: checked ? prev[mod].sections.filter(s => s !== sec2) : [...prev[mod].sections, sec2] } }))}>
+                                            <div style={{ width: 16, height: 16, borderRadius: 4, border: `1px solid ${checked ? '#2563EB' : 'rgba(255,255,255,0.2)'}`, background: checked ? '#2563EB' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                              {checked && <span style={{ color: 'white', fontSize: 10, lineHeight: 1 }}>✓</span>}
+                                            </div>
+                                            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>{sec2}</span>
+                                          </label>
+                                        )
+                                      })}
+                                    </div>
+                                  )}
+                                </div>
+                              )
+                            })}
+
+                            {/* Modal footer */}
+                            <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 20, marginTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <button type="button" onClick={resetAddUser} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)', borderRadius: 8, padding: '9px 20px', fontSize: 13, cursor: 'pointer' }}>Cancelar</button>
+                              <button type="button" onClick={submitAddUser} style={{ background: '#2563EB', color: 'white', border: 'none', borderRadius: 8, padding: '9px 20px', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>{editingUserId ? 'Guardar cambios' : 'Enviar invitación'}</button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* ── PROFILE TAB ── */}
+                  {settingsTab === 'profile' && (
+                    <div style={{ maxWidth: 480 }}>
+                      <div style={{ color: 'white', fontSize: 15, fontWeight: 500, marginBottom: 20 }}>Mi perfil</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 24 }}>
+                        <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(37,99,235,0.2)', color: '#2563EB', fontSize: 24, fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>NA</div>
+                        <button type="button" style={{ background: 'none', border: 'none', color: '#2563EB', fontSize: 11, cursor: 'pointer', marginTop: 6 }}>Cambiar foto</button>
+                      </div>
+                      {[
+                        { label: 'Nombre completo', value: profileName, set: setProfileName, type: 'text' },
+                        { label: 'Email', value: profileEmail, set: null as any, type: 'email' },
+                        { label: 'Cargo', value: profileCargo, set: setProfileCargo, type: 'text' },
+                        { label: 'Teléfono', value: profilePhone, set: setProfilePhone, type: 'tel', placeholder: '+598 99 000 000' },
+                      ].map(f => (
+                        <div key={f.label} style={{ marginBottom: 14 }}>
+                          <label style={sl}>{f.label}</label>
+                          <input style={{ ...si, opacity: f.set ? 1 : 0.5 }} type={f.type} value={f.value} readOnly={!f.set} placeholder={('placeholder' in f ? f.placeholder : '') as string} onChange={f.set ? e => f.set(e.target.value) : undefined} />
+                        </div>
+                      ))}
+                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', margin: '20px 0' }} />
+                      <div style={{ ...sec }}>SEGURIDAD</div>
+                      {[
+                        { label: 'Contraseña actual', value: profilePassCurrent, set: setProfilePassCurrent },
+                        { label: 'Nueva contraseña', value: profilePassNew, set: setProfilePassNew },
+                        { label: 'Confirmar nueva contraseña', value: profilePassConfirm, set: setProfilePassConfirm },
+                      ].map(f => (
+                        <div key={f.label} style={{ marginBottom: 14 }}>
+                          <label style={sl}>{f.label}</label>
+                          <input style={si} type="password" value={f.value} onChange={e => f.set(e.target.value)} />
+                        </div>
+                      ))}
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20 }}>
+                        <button type="button" onClick={async () => {
+                          const ok = await saveProfile({
+                            name: profileName,
+                            phone: profilePhone,
+                            currentPassword: profilePassCurrent,
+                            newPassword: profilePassNew,
+                            confirmPassword: profilePassConfirm,
+                          })
+                          if (ok) {
+                            setProfilePassCurrent(''); setProfilePassNew(''); setProfilePassConfirm('')
+                            showToast('Cambios guardados')
+                          } else showToast('Error al guardar perfil')
+                        }} style={{ background: '#2563EB', color: 'white', border: 'none', borderRadius: 8, padding: '9px 20px', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>Guardar cambios</button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── COMPANY TAB ── */}
+                  {settingsTab === 'company' && (
+                    <div style={{ display: 'flex', gap: 32, maxWidth: 720 }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ color: 'white', fontSize: 15, fontWeight: 500, marginBottom: 20 }}>Empresa</div>
+                        {[
+                          { label: 'Nombre de la empresa', value: wsEmpresaNombre, set: setWsEmpresaNombre, type: 'text' },
+                          { label: 'Rubro / Industria', value: wsEmpresaRubro, set: setWsEmpresaRubro, type: 'text' },
+                          { label: 'Años en el mercado', value: wsEmpresaAnios, set: setWsEmpresaAnios, type: 'number' },
+                          { label: 'Cantidad de empleados', value: wsEmpresaEmpleados, set: setWsEmpresaEmpleados, type: 'number' },
+                          { label: 'Ciudad', value: wsEmpresaCiudad, set: setWsEmpresaCiudad, type: 'text' },
+                          { label: 'Sitio web (opcional)', value: wsEmpresaWeb, set: setWsEmpresaWeb, type: 'text' },
+                        ].map(f => (
+                          <div key={f.label} style={{ marginBottom: 14 }}>
+                            <label style={sl}>{f.label}</label>
+                            <input style={si} type={f.type} value={f.value} onChange={e => f.set(e.target.value)} />
+                          </div>
+                        ))}
+                        <div style={{ marginBottom: 14 }}>
+                          <label style={sl}>País</label>
+                          <select style={{ ...si, appearance: 'none' as const }} value={wsEmpresaPais} onChange={e => setWsEmpresaPais(e.target.value)}>
+                            {['Argentina','Chile','Uruguay'].map(o => <option key={o} value={o} style={{ background: '#0D0D14' }}>{o}</option>)}
+                          </select>
+                        </div>
+                        <div style={{ marginBottom: 14 }}>
+                          <label style={sl}>Descripción breve</label>
+                          <textarea style={{ ...si, minHeight: 80, resize: 'vertical' as const }} value={wsEmpresaDesc} onChange={e => setWsEmpresaDesc(e.target.value)} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20 }}>
+                          <button type="button" onClick={async () => {
+                            const ok = await saveCompany({
+                              name: wsEmpresaNombre,
+                              industry: wsEmpresaRubro,
+                              size: wsEmpresaEmpleados,
+                              anios: wsEmpresaAnios,
+                              ciudad: wsEmpresaCiudad,
+                              pais: wsEmpresaPais,
+                              web: wsEmpresaWeb,
+                              desc: wsEmpresaDesc,
+                            })
+                            showToast(ok ? 'Cambios guardados' : 'Error al guardar empresa')
+                          }} style={{ background: '#2563EB', color: 'white', border: 'none', borderRadius: 8, padding: '9px 20px', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>Guardar cambios</button>
+                        </div>
+                      </div>
+                      <div style={{ width: 200, flexShrink: 0 }}>
+                        <label style={sl}>Logo</label>
+                        <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', border: '1px dashed rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginBottom: 24 }}>
+                          <Camera size={24} style={{ color: 'rgba(255,255,255,0.5)' }} />
+                          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, marginTop: 6 }}>Subir logo</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── BILLING TAB ── */}
+                  {settingsTab === 'billing' && (() => {
+                    const plan = billingData?.plan ?? { id: 'growth', name: 'Growth', price: 199, status: 'active', renewal: null }
+                    const usage = billingData?.usage ?? { users: { used: 4, limit: 15 }, queries: { used: 50, limit: 200 }, storage: { used_gb: 2.1, limit_gb: 20 } }
+                    const invoices = billingData?.invoices?.length ? billingData.invoices : [
+                      { description: 'Plan Growth — Mayo 2026', amount: 199, status: 'paid', date: '2026-05-01' },
+                      { description: 'Plan Growth — Abril 2026', amount: 199, status: 'paid', date: '2026-04-01' },
+                      { description: 'Plan Growth — Marzo 2026', amount: 199, status: 'paid', date: '2026-03-01' },
+                    ]
+                    const renewalLabel = plan.renewal
+                      ? `Renovación: ${new Date(plan.renewal).toLocaleDateString('es-UY', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                      : 'Renovación: 1 Julio 2026'
+                    return (
+                    <div style={{ maxWidth: 720 }}>
+                      <div style={{ background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
+                        <div style={{ color: '#2563EB', fontSize: 11, textTransform: 'uppercase', marginBottom: 8 }}>✦ Plan actual</div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: 8 }}>
+                            <span style={{ color: 'white', fontSize: 22, fontWeight: 600 }}>{plan.name}</span>
+                            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, marginLeft: 4 }}>${plan.price} USD / mes</span>
+                          </div>
+                          <span style={{ background: 'rgba(34,197,94,0.1)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 20, padding: '3px 10px', fontSize: 12 }}>{plan.status === 'active' ? 'Activo' : plan.status}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: 0, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16, marginTop: 16 }}>
+                          {[
+                            { value: `${usage.users.used} / ${usage.users.limit}`, label: 'USUARIOS' },
+                            { value: `${usage.queries.used} / ${usage.queries.limit}`, label: 'CONSULTAS HOY' },
+                            { value: `${usage.storage.used_gb} GB / ${usage.storage.limit_gb} GB`, label: 'STORAGE' },
+                          ].map((stat, i, arr) => (
+                            <div key={stat.label} style={{ flex: 1, textAlign: 'center', borderRight: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
+                              <div style={{ color: 'white', fontSize: 16, fontWeight: 500 }}>{stat.value}</div>
+                              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, textTransform: 'uppercase', marginTop: 4 }}>{stat.label}</div>
+                            </div>
+                          ))}
+                        </div>
+                        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 12, textAlign: 'center' }}>{renewalLabel}</div>
+                      </div>
+
+                      <div style={{ marginTop: 24 }}>
+                        <div style={{ color: 'white', fontSize: 14, fontWeight: 500, marginBottom: 16 }}>Cambiar plan</div>
+                        <div style={{ display: 'flex', gap: 12 }}>
+                          {[
+                            { name: 'Starter', price: 79, features: ['3 usuarios', '50 consultas/día', '5 GB storage', '1.000 emails/mes'], current: plan.id === 'starter', btn: 'Cambiar', btnFilled: false },
+                            { name: 'Growth', price: 199, features: ['15 usuarios', '200 consultas/día', '20 GB storage', '5.000 emails/mes'], current: plan.id === 'growth', btn: null, btnFilled: false },
+                            { name: 'Pro', price: 449, features: ['50 usuarios', '500 consultas/día', '50 GB storage', '20.000 emails/mes'], current: plan.id === 'pro', btn: 'Actualizar', btnFilled: true },
+                          ].map(planCard => (
+                            <div key={planCard.name} style={{ flex: 1, borderRadius: 12, padding: 18, background: planCard.current ? 'rgba(37,99,235,0.08)' : 'rgba(255,255,255,0.02)', border: planCard.current ? '1px solid rgba(37,99,235,0.3)' : '1px solid rgba(255,255,255,0.08)' }}>
+                              <div style={{ color: 'white', fontSize: 14, fontWeight: 600 }}>{planCard.name}</div>
+                              <div style={{ marginTop: 4 }}>
+                                <span style={{ color: 'white', fontSize: 20, fontWeight: 600 }}>${planCard.price}</span>
+                                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginLeft: 4 }}>/mes</span>
+                              </div>
+                              <div style={{ marginTop: 12 }}>
+                                {planCard.features.map(f => (
+                                  <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                                    <Check size={12} style={{ color: '#22c55e', flexShrink: 0 }} />
+                                    <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>{f}</span>
+                                  </div>
+                                ))}
+                              </div>
+                              {planCard.current ? (
+                                <div style={{ color: '#2563EB', fontSize: 12, marginTop: 12, fontWeight: 500 }}>Plan actual</div>
+                              ) : planCard.btn && (
+                                <button type="button" style={{ marginTop: 12, background: planCard.btnFilled ? '#2563EB' : 'transparent', border: planCard.btnFilled ? 'none' : '1px solid rgba(255,255,255,0.12)', color: planCard.btnFilled ? 'white' : 'rgba(255,255,255,0.6)', borderRadius: 8, padding: '7px 16px', fontSize: 13, cursor: 'pointer', width: '100%' }}>{planCard.btn}</button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div style={{ marginTop: 24 }}>
+                        <div style={{ color: 'white', fontSize: 14, fontWeight: 500, marginBottom: 16 }}>Método de pago</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: 16 }}>
+                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <CreditCard size={18} style={{ color: '#2563EB' }} />
+                            <div style={{ marginLeft: 10 }}>
+                              <div style={{ color: 'white', fontSize: 13, fontWeight: 500 }}>•••• •••• •••• 4242</div>
+                              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2 }}>Vence 12/27</div>
+                            </div>
+                          </div>
+                          <button type="button" style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: 12, borderRadius: 6, padding: '5px 12px', cursor: 'pointer' }}>Cambiar</button>
+                        </div>
+                      </div>
+
+                      <div style={{ marginTop: 24 }}>
+                        <div style={{ color: 'white', fontSize: 14, fontWeight: 500, marginBottom: 16 }}>Historial de pagos</div>
+                        {invoices.map(inv => (
+                          <div key={inv.description + inv.date} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                            <div>
+                              <div style={{ color: 'white', fontSize: 13 }}>{inv.description}</div>
+                              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>{new Date(inv.date).toLocaleDateString('es-UY', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                              <span style={{ color: 'white', fontSize: 13, fontWeight: 500 }}>${inv.amount}</span>
+                              <span style={{ color: '#22c55e', fontSize: 11 }}>{inv.status === 'paid' ? 'Pagado' : inv.status}</span>
+                              <Download size={14} style={{ color: 'rgba(255,255,255,0.3)', cursor: 'pointer' }} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    )
+                  })()}
+
+                  {/* ── NOTIFICATIONS TAB ── */}
+                  {settingsTab === 'notifications' && (
+                    <div style={{ maxWidth: 560 }}>
+                      <div style={{ color: 'white', fontSize: 15, fontWeight: 500, marginBottom: 20 }}>Notificaciones</div>
+
+                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, textTransform: 'uppercase', marginBottom: 16 }}>Alertas en tiempo real</div>
+                      {([
+                        { key: 'ventasCerradas' as const, label: 'Ventas cerradas', on: settingsNotifAlerts.ventasCerradas },
+                        { key: 'oportunidadesRiesgo' as const, label: 'Oportunidades en riesgo', on: settingsNotifAlerts.oportunidadesRiesgo },
+                        { key: 'clientesSinContacto' as const, label: 'Clientes sin contacto', on: settingsNotifAlerts.clientesSinContacto },
+                        { key: 'anomaliasFinancieras' as const, label: 'Anomalías financieras', on: settingsNotifAlerts.anomaliasFinancieras },
+                        { key: 'alertasEquipo' as const, label: 'Alertas de equipo', on: settingsNotifAlerts.alertasEquipo },
+                        { key: 'campanasBajoRoi' as const, label: 'Campañas con bajo ROI', on: settingsNotifAlerts.campanasBajoRoi },
+                        { key: 'metasRiesgo' as const, label: 'Metas en riesgo', on: settingsNotifAlerts.metasRiesgo },
+                        { key: 'resumenSemanal' as const, label: 'Resumen semanal automático', on: settingsNotifAlerts.resumenSemanal },
+                      ]).map(row => (
+                        <div key={row.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                          <div style={{ color: 'white', fontSize: 13 }}>{row.label}</div>
+                          <SettingsToggle on={row.on} onToggle={() => setSettingsNotifAlerts(prev => ({ ...prev, [row.key]: !prev[row.key] }))} />
+                        </div>
+                      ))}
+
+                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, textTransform: 'uppercase', marginTop: 24, marginBottom: 16 }}>Canales</div>
+                      {([
+                        { key: 'pupi' as const, label: 'Dentro de Pupi', desc: 'Notificaciones en el dashboard', on: settingsNotifChannels.pupi },
+                        { key: 'email' as const, label: 'Email', desc: 'Resúmenes y alertas importantes', on: settingsNotifChannels.email },
+                        { key: 'whatsapp' as const, label: 'WhatsApp', desc: 'Mensajes directos al celular', on: settingsNotifChannels.whatsapp },
+                      ]).map(row => (
+                        <div key={row.key}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                            <div>
+                              <div style={{ color: 'white', fontSize: 13 }}>{row.label}</div>
+                              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, marginTop: 2 }}>{row.desc}</div>
+                            </div>
+                            <SettingsToggle on={row.on} onToggle={() => setSettingsNotifChannels(prev => ({ ...prev, [row.key]: !prev[row.key] }))} />
+                          </div>
+                          {row.key === 'whatsapp' && settingsNotifChannels.whatsapp && (
+                            <input style={{ ...si, marginBottom: 8 }} value={settingsNotifWhatsAppPhone} onChange={e => setSettingsNotifWhatsAppPhone(e.target.value)} placeholder="+598 99 000 000" />
+                          )}
+                        </div>
+                      ))}
+
+                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, textTransform: 'uppercase', marginTop: 24, marginBottom: 16 }}>Frecuencia de resúmenes</div>
+                      {([
+                        { key: 'diario' as const, label: 'Resumen diario — 8:00 AM', on: settingsNotifFreq.diario },
+                        { key: 'semanal' as const, label: 'Resumen semanal — Lunes 8:00 AM', on: settingsNotifFreq.semanal },
+                        { key: 'mensual' as const, label: 'Resumen mensual — 1er día del mes', on: settingsNotifFreq.mensual },
+                      ]).map(row => (
+                        <div key={row.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                          <div style={{ color: 'white', fontSize: 13 }}>{row.label}</div>
+                          <SettingsToggle on={row.on} onToggle={() => setSettingsNotifFreq(prev => ({ ...prev, [row.key]: !prev[row.key] }))} />
+                        </div>
+                      ))}
+
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
+                        <button type="button" onClick={persistNotifications} style={{ background: '#2563EB', color: 'white', border: 'none', borderRadius: 8, padding: '9px 20px', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>Guardar preferencias</button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── INTEGRATIONS TAB ── */}
+                  {settingsTab === 'integrations' && (
+                    <div style={{ maxWidth: 640 }}>
+                      <div style={{ color: 'white', fontSize: 15, fontWeight: 500, marginBottom: 4 }}>Integraciones</div>
+                      <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, marginBottom: 24 }}>Conectá Pupi con tus herramientas</div>
+                      {[
+                        { id: 'mercadopago', letter: 'MP', color: '#f97316', bg: 'rgba(249,115,22,0.15)', name: 'Mercado Pago', desc: 'Registrá pagos automáticamente' },
+                        { id: 'fiserv', letter: 'F', color: '#2563EB', bg: 'rgba(37,99,235,0.15)', name: 'Fiserv', desc: 'Integrá tu POS Fiserv' },
+                        { id: 'whatsapp', letter: 'WA', color: '#22c55e', bg: 'rgba(34,197,94,0.15)', name: 'WhatsApp Business', desc: 'Recibí y enviá mensajes desde Pupi' },
+                        { id: 'google', letter: 'G', color: '#2563EB', bg: 'rgba(37,99,235,0.15)', name: 'Google Calendar', desc: 'Sincronizá reuniones y eventos' },
+                        { id: 'slack', letter: 'S', color: '#a855f7', bg: 'rgba(168,85,247,0.15)', name: 'Slack', desc: 'Recibí alertas en tu workspace' },
+                        { id: 'zapier', letter: 'Z', color: '#f97316', bg: 'rgba(249,115,22,0.15)', name: 'Zapier', desc: 'Conectá Pupi con miles de apps' },
+                      ].map(integ => {
+                        const connected = settingsIntegrations[integ.id]
+                        return (
+                          <div key={integ.id} style={{ display: 'flex', alignItems: 'center', gap: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: 18, marginBottom: 10 }}>
+                            <div style={{ width: 44, height: 44, borderRadius: '50%', background: integ.bg, color: integ.color, fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{integ.letter}</div>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ color: 'white', fontSize: 14, fontWeight: 500 }}>{integ.name}</div>
+                              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 2 }}>{integ.desc}</div>
+                            </div>
+                            {connected ? (
+                              <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                <div style={{ color: '#22c55e', fontSize: 12 }}>✓ Conectado</div>
+                                <button type="button" onClick={() => persistIntegration(integ.id, false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: 11, marginTop: 4, cursor: 'pointer', padding: 0 }}>Desconectar</button>
+                              </div>
+                            ) : (
+                              <button type="button" onClick={() => persistIntegration(integ.id, true)} style={{ border: '1px solid rgba(37,99,235,0.3)', background: 'transparent', color: '#2563EB', fontSize: 12, borderRadius: 6, padding: '6px 14px', cursor: 'pointer', flexShrink: 0 }}>Conectar →</button>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+
+                  {/* ── VOICE TAB ── */}
+                  {settingsTab === 'voice' && (
+                    <div style={{ maxWidth: 560 }}>
+                      <div style={{ color: 'white', fontSize: 15, fontWeight: 500, marginBottom: 20 }}>Voz y asistente</div>
+
+                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, textTransform: 'uppercase', marginBottom: 16 }}>Activación</div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                        <div>
+                          <div style={{ color: 'white', fontSize: 13 }}>Mantener espacio (push to talk)</div>
+                          <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, marginTop: 2 }}>Mantené ␣ por 2 segundos para hablar</div>
+                        </div>
+                        <SettingsToggle on={voiceSpaceEnabled} onToggle={() => { const v = !voiceSpaceEnabled; setVoiceSpaceEnabled(v); persistVoice({ spaceEnabled: v }) }} />
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                        <div>
+                          <div style={{ color: 'white', fontSize: 13 }}>Palabra de activación — &apos;Pupi&apos;</div>
+                          <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, marginTop: 2 }}>Desactivado: solo te escucha al decir &apos;Pupi&apos;. Activá para que escuche constantemente.</div>
+                        </div>
+                        <SettingsToggle on={voiceWakeEnabled} onToggle={() => { const v = !voiceWakeEnabled; setVoiceWakeEnabled(v); persistVoice({ wakeEnabled: v }) }} />
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                        <div>
+                          <div style={{ color: 'white', fontSize: 13 }}>Respuesta por voz</div>
+                          <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, marginTop: 2 }}>Pupi te responde hablando</div>
+                        </div>
+                        <SettingsToggle on={voiceResponseEnabled} onToggle={() => { const v = !voiceResponseEnabled; setVoiceResponseEnabled(v); persistVoice({ responseEnabled: v }) }} />
+                      </div>
+
+                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, textTransform: 'uppercase', marginTop: 24, marginBottom: 16 }}>Idioma y voz</div>
+                      <div style={{ marginBottom: 14 }}>
+                        <label style={sl}>Idioma de Pupi</label>
+                        <select style={{ ...si, appearance: 'none' as const }} value={voiceIdioma} onChange={e => { setVoiceIdioma(e.target.value); persistVoice({ idioma: e.target.value }) }}>
+                          {['Español (Latino)', 'Español (España)', 'English'].map(o => <option key={o} value={o} style={{ background: '#0D0D14' }}>{o}</option>)}
+                        </select>
+                      </div>
+                      <div style={{ marginBottom: 14 }}>
+                        <label style={sl}>Tipo de voz</label>
+                        <select style={{ ...si, appearance: 'none' as const }} value={voiceTipo} onChange={e => { setVoiceTipo(e.target.value); persistVoice({ tipo: e.target.value }) }}>
+                          {['Natural', 'Formal', 'Rápida'].map(o => <option key={o} value={o} style={{ background: '#0D0D14' }}>{o}</option>)}
+                        </select>
+                      </div>
+
+                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, textTransform: 'uppercase', marginTop: 24, marginBottom: 16 }}>Privacidad</div>
+                      <div style={{ background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 8, padding: 14, display: 'flex', gap: 10 }}>
+                        <Shield size={16} style={{ color: '#2563EB', flexShrink: 0, marginTop: 2 }} />
+                        <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, lineHeight: 1.6 }}>
+                          Pupi solo escucha cuando vos activás el micrófono. Nunca grabamos ni almacenamos audio. Todo se procesa en tiempo real.
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── SECURITY TAB ── */}
+                  {settingsTab === 'security' && (
+                    <div style={{ maxWidth: 560 }}>
+                      <div style={{ color: 'white', fontSize: 15, fontWeight: 500, marginBottom: 20 }}>Seguridad</div>
+
+                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, textTransform: 'uppercase', marginBottom: 16 }}>Autenticación</div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: 16, marginBottom: 10 }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                          <Shield size={18} style={{ color: '#22c55e', flexShrink: 0 }} />
+                          <div style={{ marginLeft: 10 }}>
+                            <div style={{ color: 'white', fontSize: 13, fontWeight: 500 }}>Verificación en dos pasos</div>
+                            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, marginTop: 2 }}>Protegé tu cuenta con un código extra</div>
+                          </div>
+                        </div>
+                        <button type="button" style={{ border: '1px solid rgba(34,197,94,0.3)', background: 'transparent', color: '#22c55e', fontSize: 12, borderRadius: 6, padding: '6px 14px', cursor: 'pointer', flexShrink: 0 }}>Activar</button>
+                      </div>
+
+                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, textTransform: 'uppercase', marginTop: 24, marginBottom: 16 }}>Sesiones activas</div>
+                      {[
+                        { icon: <Monitor size={16} style={{ color: 'rgba(255,255,255,0.4)' }} />, name: 'MacBook Pro · Chrome', location: 'Montevideo, UY · Ahora', current: true },
+                        { icon: <Smartphone size={16} style={{ color: 'rgba(255,255,255,0.4)' }} />, name: 'iPhone · Safari', location: 'Montevideo, UY · Hace 2 horas', current: false },
+                        { icon: <Monitor size={16} style={{ color: 'rgba(255,255,255,0.4)' }} />, name: 'MacBook Pro · Chrome', location: 'Montevideo, UY · Hace 1 día', current: false },
+                      ].map((session, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                            {session.icon}
+                            <div style={{ marginLeft: 10 }}>
+                              <div style={{ color: 'white', fontSize: 13 }}>{session.name}</div>
+                              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2 }}>{session.location}</div>
+                            </div>
+                          </div>
+                          {session.current ? (
+                            <span style={{ background: 'rgba(34,197,94,0.1)', color: '#22c55e', borderRadius: 20, padding: '2px 8px', fontSize: 11 }}>Sesión actual</span>
+                          ) : (
+                            <button type="button" style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: 11, cursor: 'pointer', padding: 0 }}>Cerrar sesión</button>
+                          )}
+                        </div>
+                      ))}
+                      <button type="button" style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: 12, marginTop: 16, cursor: 'pointer', padding: 0 }}>Cerrar todas las otras sesiones</button>
+
+                      <div style={{ color: 'rgba(239,68,68,0.4)', fontSize: 10, textTransform: 'uppercase', marginTop: 24, marginBottom: 16 }}>Zona de peligro</div>
+                      <div style={{ background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 10, padding: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <div style={{ color: 'white', fontSize: 13, fontWeight: 500 }}>Eliminar cuenta</div>
+                          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>Esta acción es irreversible</div>
+                        </div>
+                        <button type="button" style={{ border: '1px solid rgba(239,68,68,0.4)', background: 'transparent', color: '#ef4444', fontSize: 12, borderRadius: 6, padding: '6px 14px', cursor: 'pointer', flexShrink: 0 }}>Eliminar</button>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }
