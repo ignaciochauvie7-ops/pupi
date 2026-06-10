@@ -367,6 +367,20 @@ export default function DashboardPage() {
   const [payrollCargasOn, setPayrollCargasOn] = useState(true)
   const [payrollAntiguedadPct, setPayrollAntiguedadPct] = useState("5")
   const [payrollPresentismoAmt, setPayrollPresentismoAmt] = useState("8000")
+  const [climateSubTab, setClimateSubTab] = useState<'indice'|'equipo'|'encuestas'>('indice')
+  const [climateThermometers, setClimateThermometers] = useState({
+    motivacion: 72,
+    satisfaccion: 68,
+    productividad: 75,
+    ideas: 65,
+    eficacia: 78,
+    carga: 85,
+    burnout: 42,
+  })
+  const [showSurveyAlert, setShowSurveyAlert] = useState(true)
+  const [surveyStatus, setSurveyStatus] = useState<'idle'|'sent'|'collecting'|'done'>('idle')
+  const [showSurveyModal, setShowSurveyModal] = useState(false)
+  const [surveyResponses, setSurveyResponses] = useState(0)
   const [showAssignTaskForm, setShowAssignTaskForm] = useState(false)
   const [newTaskName, setNewTaskName] = useState("")
   const [newTaskPriority, setNewTaskPriority] = useState("Media")
@@ -7182,151 +7196,352 @@ export default function DashboardPage() {
                           const cx2 = pt.x - (pt.x - prev.x) / 3
                           return `${acc} C ${cx1} ${prev.y} ${cx2} ${pt.y} ${pt.x} ${pt.y}`
                         }, "")
+                        const detectWorkloadLevel = () => {
+                          const pendingTasks = realTasks.filter(
+                            t => t.status === 'Pendiente' || t.status === 'En proceso'
+                          ).length
+                          const avgTasksPerEmployee = realEmployees.length > 0
+                            ? pendingTasks / realEmployees.length
+                            : 0
+                          return {
+                            isHigh: avgTasksPerEmployee > 4 || climateThermometers.carga > 80,
+                            level: avgTasksPerEmployee > 6 ? 'crítica' : avgTasksPerEmployee > 4 ? 'alta' : 'normal',
+                            pendingTasks,
+                            avgPerEmployee: Math.round(avgTasksPerEmployee)
+                          }
+                        }
+                        const workload = detectWorkloadLevel()
+                        const thermoColor = (key: string, value: number): string => {
+                          const inverted = key === 'carga' || key === 'burnout'
+                          if (!inverted) {
+                            if (value >= 80) return '#22c55e'
+                            if (value >= 60) return '#2563EB'
+                            if (value >= 40) return '#eab308'
+                            return '#ef4444'
+                          } else {
+                            if (value <= 40) return '#22c55e'
+                            if (value <= 60) return '#eab308'
+                            if (value <= 80) return '#f97316'
+                            return '#ef4444'
+                          }
+                        }
+                        const thermoLabel = (key: string, value: number): string => {
+                          const inverted = key === 'carga' || key === 'burnout'
+                          if (!inverted) {
+                            if (value >= 80) return 'Excelente'
+                            if (value >= 60) return 'Bien'
+                            if (value >= 40) return 'Atención'
+                            return 'Crítico'
+                          } else {
+                            if (value <= 40) return 'Normal'
+                            if (value <= 60) return 'Moderada'
+                            if (value <= 80) return 'Alta'
+                            return 'Crítica'
+                          }
+                        }
+                        const THERMOS: { key: keyof typeof climateThermometers; label: string }[] = [
+                          { key: 'motivacion',    label: 'MOTIVACIÓN' },
+                          { key: 'satisfaccion',  label: 'SATISFACCIÓN' },
+                          { key: 'productividad', label: 'PRODUCTIVIDAD' },
+                          { key: 'ideas',         label: 'IDEAS' },
+                          { key: 'eficacia',      label: 'EFICACIA' },
+                          { key: 'carga',         label: 'CARGA' },
+                          { key: 'burnout',       label: 'RIESGO BURNOUT' },
+                        ]
                         return (
-                          <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
-                            {/* Top bar */}
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-                              <div>
-                                <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Clima laboral</div>
-                                <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 2 }}>Última actualización: hoy</div>
-                              </div>
-                              <button style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Enviar encuesta</button>
-                            </div>
-
-                            {/* Overall score card */}
-                            <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 14, padding: 24, marginBottom: 24, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                              <div>
-                                <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 8 }}>✦ Índice de clima laboral</div>
-                                <div style={{ lineHeight: 1 }}>
-                                  <span style={{ color: "white", fontSize: 48, fontWeight: 600 }}>7.8</span>
-                                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 24, marginLeft: 4 }}>/10</span>
-                                </div>
-                                <div style={{ color: "#22c55e", fontSize: 12, marginTop: 6 }}>↑ 0.4 vs semana anterior</div>
-                                <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, marginTop: 4 }}>Clima positivo</div>
-                              </div>
-                              <div style={{ position: "relative", width: 80, height: 80, borderRadius: "50%", background: "conic-gradient(#2563EB 0deg 281deg, rgba(255,255,255,0.06) 281deg 360deg)", flexShrink: 0 }}>
-                                <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 60, height: 60, borderRadius: "50%", background: "#0D0D14", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 14, fontWeight: 500 }}>78%</div>
-                              </div>
-                            </div>
-
-                            {/* Dimension scores */}
-                            <div style={{ marginBottom: 24 }}>
-                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }}>Por dimensión</div>
-                              {DIMS.map(d => {
-                                const c = dimColor(d.score)
-                                return (
-                                  <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                                    <span style={{ color: "white", fontSize: 13, width: 160, flexShrink: 0 }}>{d.name}</span>
-                                    <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-                                      <div style={{ height: "100%", width: `${d.score / 10 * 100}%`, background: c, borderRadius: 3 }} />
+                          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                            {/* Survey modal */}
+                            {showSurveyModal && (
+                              <div style={{ position: "fixed" as const, inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={(e) => { if (e.target === e.currentTarget) setShowSurveyModal(false) }}>
+                                <div style={{ background: "#1a1a2e", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, padding: 24, width: 480, maxWidth: "90vw", maxHeight: "80vh", overflowY: "auto" }}>
+                                  <div style={{ color: "white", fontSize: 16, fontWeight: 500, marginBottom: 4 }}>Enviar encuesta de clima</div>
+                                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginBottom: 20 }}>Los empleados recibirán una notificación para responder</div>
+                                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.08em", marginBottom: 12 }}>Preguntas de la encuesta</div>
+                                  {[
+                                    "¿Cómo te sentís con tu carga de trabajo esta semana?",
+                                    "¿Te sentís motivado/a con lo que estás haciendo?",
+                                    "¿Tenés todo lo que necesitás para hacer bien tu trabajo?",
+                                    "¿Cómo está tu nivel de energía y bienestar general?",
+                                    "¿Hay algo que te esté frenando o preocupando?",
+                                  ].map((q, i) => (
+                                    <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                                      <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#2563EB", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 11, flexShrink: 0 }}>{i + 1}</div>
+                                      <div style={{ color: "white", fontSize: 13 }}>{q}</div>
                                     </div>
-                                    <span style={{ color: c, fontSize: 12, fontWeight: 500, width: 28, textAlign: "right" as const }}>{d.score.toFixed(1)}</span>
-                                  </div>
-                                )
-                              })}
-                            </div>
-
-                            {/* AI Alerts */}
-                            <div style={{ marginBottom: 24 }}>
-                              <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 12 }}>✦ Alertas de Pupi AI</div>
-                              {[
-                                { color: "#ef4444", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>, title: "Laura Sánchez — Riesgo de renuncia", body: "Satisfacción cayó 1.8 puntos en las últimas 3 semanas. Historial muestra patrón previo a renuncias anteriores.", cta: "Hablar con Laura esta semana →" },
-                                { color: "#eab308", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>, title: "Carlos Acosta — Sobrecargado", body: "Tiene 12 tareas pendientes, 40% más que el promedio del equipo. Productividad bajó un 15% esta semana.", cta: "Redistribuir tareas →" },
-                                { color: "#f97316", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, title: "Posible tensión en área de Ventas", body: "Comunicación entre JP y CA disminuyó un 60% en los últimos 10 días según registro de interacciones.", cta: "Ver detalles →" },
-                              ].map((alert, i) => (
-                                <div key={i} style={{ display: "flex", gap: 12, background: "rgba(255,255,255,0.02)", borderLeft: `3px solid ${alert.color}`, borderTop: "1px solid rgba(255,255,255,0.06)", borderRight: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", borderRadius: "0 10px 10px 0", padding: "14px 16px", marginBottom: 8 }}>
-                                  <div style={{ flexShrink: 0, marginTop: 1 }}>{alert.icon}</div>
-                                  <div>
-                                    <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{alert.title}</div>
-                                    <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{alert.body}</div>
-                                    <div style={{ color: alert.color, fontSize: 11, marginTop: 8, cursor: "pointer" }}>{alert.cta}</div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-
-                            {/* Team satisfaction table */}
-                            <div style={{ marginBottom: 24 }}>
-                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Satisfacción por empleado</div>
-                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 16 }}>Basado en últimas encuestas</div>
-                              {EMP_SAT.map(e => {
-                                const c = dimColor(e.score)
-                                return (
-                                  <div key={e.name} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 11, fontWeight: 500, flexShrink: 0 }}>{e.initials}</div>
-                                    <span style={{ color: "white", fontSize: 13, flex: 1 }}>{e.name}</span>
-                                    <div style={{ width: 120, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.06)", overflow: "hidden", flexShrink: 0 }}>
-                                      <div style={{ height: "100%", width: `${e.score / 10 * 100}%`, background: c, borderRadius: 2 }} />
-                                    </div>
-                                    <span style={{ color: c, fontSize: 12, fontWeight: 500, width: 40, textAlign: "right" as const, flexShrink: 0 }}>{e.score.toFixed(1)}/10</span>
-                                    <span style={{ color: trendColor(e.trend), fontSize: 12, flexShrink: 0, width: 16, textAlign: "center" as const }}>{e.trend}</span>
-                                  </div>
-                                )
-                              })}
-                            </div>
-
-                            {/* Productivity correlation */}
-                            <div style={{ marginBottom: 24 }}>
-                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>✦ Correlación satisfacción vs productividad</div>
-                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 16 }}>Detectada por Pupi AI</div>
-                              <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 10, padding: 16 }}>
-                                <div style={{ display: "flex", gap: 24, marginBottom: 16 }}>
-                                  <div style={{ flex: 1 }}>
-                                    <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Empleados satisfechos (+7/10)</div>
-                                    <div style={{ color: "#22c55e", fontSize: 24, fontWeight: 600 }}>94%</div>
-                                    <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 2 }}>cumplimiento de metas</div>
-                                  </div>
-                                  <div style={{ flex: 1 }}>
-                                    <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Empleados insatisfechos (-6/10)</div>
-                                    <div style={{ color: "#ef4444", fontSize: 24, fontWeight: 600 }}>61%</div>
-                                    <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 2 }}>cumplimiento de metas</div>
-                                  </div>
-                                </div>
-                                <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 12, color: "rgba(255,255,255,0.8)", fontSize: 12, lineHeight: 1.6 }}>
-                                  Los empleados con mayor satisfacción tienen un 54% más de cumplimiento de metas. Mejorar el clima laboral impacta directamente en resultados.
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Weekly pulse chart */}
-                            <div style={{ marginBottom: 24 }}>
-                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 12 }}>Evolución semanal del clima</div>
-                              <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "16px 16px 8px" }}>
-                                <svg viewBox="0 0 500 60" width="100%" height="60" style={{ display: "block" }}>
-                                  <path d={cubicPath} fill="none" stroke="#2563EB" strokeWidth="2" />
-                                  {pts.map((pt, i) => <circle key={i} cx={pt.x} cy={pt.y} r="4" fill="#2563EB" />)}
-                                </svg>
-                                <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 4 }}>
-                                  {["Sem 1","Sem 2","Sem 3","Sem 4","Sem 5","Sem 6"].map(l => (
-                                    <span key={l} style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, flex: 1, textAlign: "center" as const }}>{l}</span>
                                   ))}
+                                  <div style={{ marginTop: 16 }}>
+                                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.08em", marginBottom: 10 }}>Se enviará a</div>
+                                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" as const, alignItems: "center" }}>
+                                      {realEmployees.slice(0, 6).map((emp: any) => (
+                                        <div key={emp.id} style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 10, fontWeight: 500 }}>{emp.initials || emp.name?.slice(0,2).toUpperCase()}</div>
+                                      ))}
+                                      {realEmployees.length > 6 && <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>+{realEmployees.length - 6} más</div>}
+                                    </div>
+                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginTop: 8 }}>{realEmployees.length} empleados recibirán la encuesta</div>
+                                  </div>
+                                  <div style={{ marginTop: 16 }}>
+                                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.08em", marginBottom: 8 }}>Respuestas anónimas</div>
+                                    <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: 12, display: "flex", gap: 8 }}>
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                      <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>Las respuestas son anónimas. El dueño ve los resultados agregados, no individuales.</div>
+                                    </div>
+                                  </div>
+                                  <div style={{ display: "flex", gap: 10, marginTop: 20, justifyContent: "flex-end" }}>
+                                    <button onClick={() => setShowSurveyModal(false)} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)", borderRadius: 8, padding: "9px 18px", fontSize: 13, cursor: "pointer" }}>Cancelar</button>
+                                    <button onClick={() => {
+                                      setShowSurveyModal(false)
+                                      setSurveyStatus('collecting')
+                                      setSurveyResponses(0)
+                                      setShowSurveyAlert(false)
+                                      setClimateSubTab('encuestas')
+                                      setTimeout(() => setSurveyResponses(2), 3000)
+                                      setTimeout(() => setSurveyResponses(4), 6000)
+                                      setTimeout(() => setSurveyResponses(realEmployees.length || 5), 9000)
+                                      setTimeout(() => {
+                                        setSurveyStatus('done')
+                                        setClimateThermometers(prev => ({ ...prev, satisfaccion: 74, motivacion: 76, carga: 78 }))
+                                      }, 10000)
+                                    }} style={{ background: "#eab308", color: "#000000", border: "none", borderRadius: 8, padding: "9px 18px", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>Enviar encuesta →</button>
+                                  </div>
                                 </div>
+                              </div>
+                            )}
+
+                            {/* Fixed header */}
+                            <div style={{ padding: "20px 24px 0", flexShrink: 0 }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                                <div>
+                                  <div style={{ color: "white", fontSize: 15, fontWeight: 500 }}>Clima laboral</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 2 }}>Última actualización: hoy</div>
+                                </div>
+                                <button onClick={() => setShowSurveyModal(true)} style={{ padding: "7px 14px", fontSize: 13, background: "#2563EB", color: "white", border: "none", borderRadius: 8, cursor: "pointer" }}>Enviar encuesta</button>
+                              </div>
+                              {/* Sub-tabs */}
+                              <div style={{ display: "flex", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                                {([ ['indice', 'Índice'], ['equipo', 'Equipo'], ['encuestas', 'Encuestas'] ] as const).map(([tab, label]) => {
+                                  const active = climateSubTab === tab
+                                  return (
+                                    <button key={tab} onClick={() => setClimateSubTab(tab)} style={{ padding: "10px 16px", fontSize: 12, background: "none", border: "none", cursor: "pointer", color: active ? "white" : "rgba(255,255,255,0.35)", borderBottom: `2px solid ${active ? "#2563EB" : "transparent"}`, transition: "color 0.15s, border-color 0.15s", marginBottom: -1, display: "flex", alignItems: "center", gap: 5 }}>
+                                      {label}
+                                      {tab === 'encuestas' && showSurveyAlert && surveyStatus === 'idle' && (
+                                        <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#eab308", display: "inline-block", flexShrink: 0 }} />
+                                      )}
+                                      {tab === 'encuestas' && surveyStatus === 'collecting' && (
+                                        <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#2563EB", display: "inline-block", flexShrink: 0 }} />
+                                      )}
+                                    </button>
+                                  )
+                                })}
                               </div>
                             </div>
 
-                            {/* Pulse survey section */}
-                            <div style={{ marginBottom: 24 }}>
-                              <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Última encuesta enviada</div>
-                              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 16 }}>Hace 3 días · 7 de 8 respondieron</div>
-                              {[
-                                { q: "¿Cómo te sentiste esta semana en el trabajo?", score: 7.6 },
-                                { q: "¿Sentís que tu trabajo es valorado?",           score: 7.1 },
-                                { q: "¿Tenés todo lo que necesitás para hacer bien tu trabajo?", score: 8.1 },
-                              ].map((item, i) => {
-                                const c = dimColor(item.score)
-                                return (
-                                  <div key={i} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 14, marginBottom: 8 }}>
-                                    <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, marginBottom: 10 }}>{item.q}</div>
-                                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                      <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-                                        <div style={{ height: "100%", width: `${item.score / 10 * 100}%`, background: c, borderRadius: 3 }} />
+                            {/* Scrollable content */}
+                            <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+
+                              {/* ── ÍNDICE TAB ── */}
+                              {climateSubTab === 'indice' && (
+                                <>
+                                  <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 14, padding: 24, marginBottom: 24, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                    <div>
+                                      <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 8 }}>✦ Índice de clima laboral</div>
+                                      <div style={{ lineHeight: 1 }}>
+                                        <span style={{ color: "white", fontSize: 48, fontWeight: 600 }}>7.8</span>
+                                        <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 24, marginLeft: 4 }}>/10</span>
                                       </div>
-                                      <span style={{ color: c, fontSize: 12, fontWeight: 500, flexShrink: 0 }}>{item.score.toFixed(1)}</span>
+                                      <div style={{ color: "#22c55e", fontSize: 12, marginTop: 6 }}>↑ 0.4 vs semana anterior</div>
+                                      <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, marginTop: 4 }}>Clima positivo</div>
+                                    </div>
+                                    <div style={{ position: "relative", width: 80, height: 80, borderRadius: "50%", background: "conic-gradient(#2563EB 0deg 281deg, rgba(255,255,255,0.06) 281deg 360deg)", flexShrink: 0 }}>
+                                      <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 60, height: 60, borderRadius: "50%", background: "#0D0D14", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 14, fontWeight: 500 }}>78%</div>
                                     </div>
                                   </div>
-                                )
-                              })}
-                              <div style={{ color: "#2563EB", fontSize: 12, marginTop: 8, cursor: "pointer" }}>Ver respuestas completas →</div>
+                                  <div style={{ marginBottom: 24 }}>
+                                    <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 16 }}>Por dimensión</div>
+                                    {DIMS.map(d => {
+                                      const c = dimColor(d.score)
+                                      return (
+                                        <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                                          <span style={{ color: "white", fontSize: 13, width: 160, flexShrink: 0 }}>{d.name}</span>
+                                          <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+                                            <div style={{ height: "100%", width: `${d.score / 10 * 100}%`, background: c, borderRadius: 3 }} />
+                                          </div>
+                                          <span style={{ color: c, fontSize: 12, fontWeight: 500, width: 28, textAlign: "right" as const }}>{d.score.toFixed(1)}</span>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                  <div style={{ marginBottom: 24 }}>
+                                    <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>✦ Correlación satisfacción vs productividad</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 16 }}>Detectada por Pupi AI</div>
+                                    <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 10, padding: 16 }}>
+                                      <div style={{ display: "flex", gap: 24, marginBottom: 16 }}>
+                                        <div style={{ flex: 1 }}>
+                                          <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Empleados satisfechos (+7/10)</div>
+                                          <div style={{ color: "#22c55e", fontSize: 24, fontWeight: 600 }}>94%</div>
+                                          <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 2 }}>cumplimiento de metas</div>
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                          <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 8 }}>Empleados insatisfechos (-6/10)</div>
+                                          <div style={{ color: "#ef4444", fontSize: 24, fontWeight: 600 }}>61%</div>
+                                          <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 2 }}>cumplimiento de metas</div>
+                                        </div>
+                                      </div>
+                                      <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 12, color: "rgba(255,255,255,0.8)", fontSize: 12, lineHeight: 1.6 }}>
+                                        Los empleados con mayor satisfacción tienen un 54% más de cumplimiento de metas. Mejorar el clima laboral impacta directamente en resultados.
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div style={{ marginBottom: 24 }}>
+                                    <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 12 }}>Evolución semanal del clima</div>
+                                    <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "16px 16px 8px" }}>
+                                      <svg viewBox="0 0 500 60" width="100%" height="60" style={{ display: "block" }}>
+                                        <path d={cubicPath} fill="none" stroke="#2563EB" strokeWidth="2" />
+                                        {pts.map((pt, i) => <circle key={i} cx={pt.x} cy={pt.y} r="4" fill="#2563EB" />)}
+                                      </svg>
+                                      <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 4 }}>
+                                        {["Sem 1","Sem 2","Sem 3","Sem 4","Sem 5","Sem 6"].map(l => (
+                                          <span key={l} style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, flex: 1, textAlign: "center" as const }}>{l}</span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+
+                              {/* ── EQUIPO TAB ── */}
+                              {climateSubTab === 'equipo' && (
+                                <>
+                                  <div style={{ marginBottom: 24 }}>
+                                    <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 12 }}>✦ Alertas de Pupi AI</div>
+                                    {[
+                                      { color: "#ef4444", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>, title: "Laura Sánchez — Riesgo de renuncia", body: "Satisfacción cayó 1.8 puntos en las últimas 3 semanas. Historial muestra patrón previo a renuncias anteriores.", cta: "Hablar con Laura esta semana →" },
+                                      { color: "#eab308", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>, title: "Carlos Acosta — Sobrecargado", body: "Tiene 12 tareas pendientes, 40% más que el promedio del equipo. Productividad bajó un 15% esta semana.", cta: "Redistribuir tareas →" },
+                                      { color: "#f97316", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, title: "Posible tensión en área de Ventas", body: "Comunicación entre JP y CA disminuyó un 60% en los últimos 10 días según registro de interacciones.", cta: "Ver detalles →" },
+                                    ].map((alert, i) => (
+                                      <div key={i} style={{ display: "flex", gap: 12, background: "rgba(255,255,255,0.02)", borderLeft: `3px solid ${alert.color}`, borderTop: "1px solid rgba(255,255,255,0.06)", borderRight: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", borderRadius: "0 10px 10px 0", padding: "14px 16px", marginBottom: 8 }}>
+                                        <div style={{ flexShrink: 0, marginTop: 1 }}>{alert.icon}</div>
+                                        <div>
+                                          <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>{alert.title}</div>
+                                          <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, lineHeight: 1.5, marginTop: 4 }}>{alert.body}</div>
+                                          <div style={{ color: alert.color, fontSize: 11, marginTop: 8, cursor: "pointer" }}>{alert.cta}</div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <div style={{ marginBottom: 24 }}>
+                                    <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Satisfacción por empleado</div>
+                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 16 }}>Basado en últimas encuestas</div>
+                                    {EMP_SAT.map(e => {
+                                      const c = dimColor(e.score)
+                                      return (
+                                        <div key={e.name} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                          <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(37,99,235,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#2563EB", fontSize: 11, fontWeight: 500, flexShrink: 0 }}>{e.initials}</div>
+                                          <span style={{ color: "white", fontSize: 13, flex: 1 }}>{e.name}</span>
+                                          <div style={{ width: 120, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.06)", overflow: "hidden", flexShrink: 0 }}>
+                                            <div style={{ height: "100%", width: `${e.score / 10 * 100}%`, background: c, borderRadius: 2 }} />
+                                          </div>
+                                          <span style={{ color: c, fontSize: 12, fontWeight: 500, width: 40, textAlign: "right" as const, flexShrink: 0 }}>{e.score.toFixed(1)}/10</span>
+                                          <span style={{ color: trendColor(e.trend), fontSize: 12, flexShrink: 0, width: 16, textAlign: "center" as const }}>{e.trend}</span>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                </>
+                              )}
+
+                              {/* ── ENCUESTAS TAB ── */}
+                              {climateSubTab === 'encuestas' && (
+                                <div>
+                                  {showSurveyAlert && surveyStatus === 'idle' && (
+                                    <div style={{ background: "rgba(234,179,8,0.06)", border: "1px solid rgba(234,179,8,0.2)", borderRadius: 12, padding: "16px 20px", marginBottom: 20, display: "flex", gap: 14, alignItems: "flex-start" }}>
+                                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                      <div style={{ flex: 1 }}>
+                                        <div style={{ color: "#eab308", fontSize: 12, textTransform: "uppercase" as const, fontWeight: 500, marginBottom: 6, letterSpacing: "0.05em" }}>✦ Pupi detectó alta carga de trabajo</div>
+                                        <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, lineHeight: 1.6, marginBottom: 12 }}>El equipo tiene una carga de trabajo elevada esta semana. Es un buen momento para enviar una encuesta rápida y saber cómo se están sintiendo antes de que afecte la productividad.</div>
+                                        <div style={{ display: "flex", gap: 8 }}>
+                                          <button onClick={() => setShowSurveyModal(true)} style={{ background: "#eab308", color: "#000000", border: "none", borderRadius: 6, padding: "7px 16px", fontSize: 12, fontWeight: 500, cursor: "pointer" }}>Enviar encuesta ahora</button>
+                                          <button onClick={() => setShowSurveyAlert(false)} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.5)", borderRadius: 6, padding: "7px 16px", fontSize: 12, cursor: "pointer" }}>Ignorar por ahora</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                  {surveyStatus === 'collecting' && (
+                                    <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 12, padding: "16px 20px", marginBottom: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                      <div>
+                                        <div style={{ color: "#2563EB", fontSize: 12, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 4 }}>✦ Encuesta en curso</div>
+                                        <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, marginBottom: 8 }}>{surveyResponses} de {realEmployees.length} empleados respondieron</div>
+                                        <div style={{ width: 200, height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
+                                          <div style={{ height: "100%", width: `${realEmployees.length > 0 ? (surveyResponses / realEmployees.length) * 100 : 0}%`, background: "#2563EB", borderRadius: 2, transition: "width 0.5s ease" }} />
+                                        </div>
+                                      </div>
+                                      <button style={{ border: "1px solid rgba(37,99,235,0.3)", color: "#2563EB", background: "transparent", borderRadius: 6, padding: "6px 14px", fontSize: 12, cursor: "pointer" }}>Ver respuestas →</button>
+                                    </div>
+                                  )}
+                                  {surveyStatus === 'done' && (
+                                    <div style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 12, padding: "16px 20px", marginBottom: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                      <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                        <div>
+                                          <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>Encuesta completada — {realEmployees.length} respuestas</div>
+                                          <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginTop: 2 }}>Los termómetros se actualizaron con los resultados</div>
+                                        </div>
+                                      </div>
+                                      <button onClick={() => { setSurveyStatus('idle'); setShowSurveyAlert(true) }} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "rgba(255,255,255,0.5)", borderRadius: 6, padding: "6px 14px", fontSize: 12, cursor: "pointer" }}>Nueva encuesta</button>
+                                    </div>
+                                  )}
+
+                                  {/* Thermometers as survey results */}
+                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                                    <div style={{ color: "white", fontSize: 14, fontWeight: 500 }}>Termómetros de clima</div>
+                                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>Actualizado con última encuesta</div>
+                                  </div>
+                                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 24 }}>
+                                    {THERMOS.map(({ key, label }) => {
+                                      const value = climateThermometers[key]
+                                      const color = thermoColor(key, value)
+                                      const statusLabel = thermoLabel(key, value)
+                                      return (
+                                        <div key={key} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "16px 14px", textAlign: "center" as const }}>
+                                          <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase" as const, letterSpacing: "0.05em", marginBottom: 12 }}>{label}</div>
+                                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 28, margin: "0 auto" }}>
+                                            <div style={{ width: 12, height: 80, background: "rgba(255,255,255,0.06)", borderRadius: "6px 6px 0 0", position: "relative" as const, overflow: "hidden", margin: "0 auto" }}>
+                                              <div style={{ position: "absolute" as const, bottom: 0, left: 0, width: "100%", borderRadius: "6px 6px 0 0", height: `${value}%`, background: color, transition: "height 800ms ease" }} />
+                                            </div>
+                                            <div style={{ width: 28, height: 28, borderRadius: "50%", background: color, boxShadow: `0 0 10px ${color}`, marginTop: -2, flexShrink: 0 }} />
+                                          </div>
+                                          <div style={{ fontSize: 18, fontWeight: 600, color, marginTop: 8 }}>{value}%</div>
+                                          <div style={{ fontSize: 10, color }}>{statusLabel}</div>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+
+                                  <div style={{ marginBottom: 24 }}>
+                                  <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Última encuesta enviada</div>
+                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginBottom: 16 }}>Hace 3 días · 7 de 8 respondieron</div>
+                                  {[
+                                    { q: "¿Cómo te sentiste esta semana en el trabajo?", score: 7.6 },
+                                    { q: "¿Sentís que tu trabajo es valorado?",           score: 7.1 },
+                                    { q: "¿Tenés todo lo que necesitás para hacer bien tu trabajo?", score: 8.1 },
+                                  ].map((item, i) => {
+                                    const c = dimColor(item.score)
+                                    return (
+                                      <div key={i} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 14, marginBottom: 8 }}>
+                                        <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, marginBottom: 10 }}>{item.q}</div>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                          <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+                                            <div style={{ height: "100%", width: `${item.score / 10 * 100}%`, background: c, borderRadius: 3 }} />
+                                          </div>
+                                          <span style={{ color: c, fontSize: 12, fontWeight: 500, flexShrink: 0 }}>{item.score.toFixed(1)}</span>
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
+                                  <div style={{ color: "#2563EB", fontSize: 12, marginTop: 8, cursor: "pointer" }}>Ver respuestas completas →</div>
+                                  </div>
+                                </div>
+                              )}
+
                             </div>
                           </div>
                         )
