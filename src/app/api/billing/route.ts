@@ -2,19 +2,11 @@ import { NextResponse } from 'next/server'
 import { requireSession } from '@/lib/auth-api'
 import { supabaseAdmin } from '@/lib/supabase-server'
 import { getUsageStats } from '@/lib/company-data'
+import { isPolarConfigured, PLAN_IDS, PLAN_NAMES, PLAN_PRICES, type PlanId } from '@/lib/polar'
 
-const PLAN_PRICES: Record<string, number> = {
-  starter: 79,
-  growth: 199,
-  pro: 449,
-  enterprise: 999,
-}
-
-const PLAN_NAMES: Record<string, string> = {
-  starter: 'Starter',
-  growth: 'Growth',
-  pro: 'Pro',
-  enterprise: 'Enterprise',
+function resolvePlanId(plan: string | null | undefined): PlanId {
+  if (plan && PLAN_IDS.includes(plan as PlanId)) return plan as PlanId
+  return 'growth'
 }
 
 export async function GET() {
@@ -32,14 +24,14 @@ export async function GET() {
 
   const invoices = invoicesRes.error ? [] : (invoicesRes.data || [])
 
-  const plan = subscription?.plan || company?.plan || 'growth'
+  const plan = resolvePlanId(subscription?.plan || company?.plan)
   const limits = usage.planLimits[plan] || usage.planLimits.growth
 
   return NextResponse.json({
     plan: {
       id: plan,
-      name: PLAN_NAMES[plan] || plan,
-      price: subscription?.monthly_price_usd || PLAN_PRICES[plan] || 199,
+      name: PLAN_NAMES[plan],
+      price: subscription?.monthly_price_usd || PLAN_PRICES[plan],
       status: subscription?.status || 'active',
       renewal: subscription?.current_period_end || null,
     },
@@ -48,11 +40,9 @@ export async function GET() {
       queries: { used: usage.queries_today, limit: limits.queries },
       storage: { used_gb: usage.storage_gb, limit_gb: limits.storageGb },
     },
-    payment: {
-      last4: '4242',
-      expiry: '12/27',
-      brand: 'visa',
-    },
+    payment: subscription?.polar_customer_id
+      ? { provider: 'polar' as const }
+      : null,
     invoices: invoices.map(inv => ({
       id: inv.id,
       description: inv.description,
@@ -60,6 +50,8 @@ export async function GET() {
       status: inv.status,
       date: inv.invoice_date,
     })),
-    dodo_configured: Boolean(process.env.DODO_API_KEY?.trim()),
+    polar_configured: isPolarConfigured(),
+    checkout_url: '/api/checkout',
+    portal_url: '/api/portal',
   })
 }

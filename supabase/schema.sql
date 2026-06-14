@@ -439,7 +439,8 @@ CREATE TABLE subscriptions (
   plan TEXT CHECK (plan IN ('starter', 'growth', 'pro', 'enterprise')),
   status TEXT DEFAULT 'active'
     CHECK (status IN ('active', 'cancelled', 'past_due', 'trialing')),
-  dodo_subscription_id TEXT,
+  polar_subscription_id TEXT,
+  polar_customer_id TEXT,
   monthly_price_usd DECIMAL,
   current_period_start TIMESTAMPTZ,
   current_period_end TIMESTAMPTZ,

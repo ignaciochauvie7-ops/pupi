@@ -47,11 +47,11 @@ export const INTEGRATION_CATALOG: IntegrationMeta[] = [
   {
     id: 'google',
     letter: 'G',
-    name: 'Google Calendar',
-    desc: 'Sincronizá reuniones y eventos',
+    name: 'Google Workspace',
+    desc: 'Sheets, Docs, Calendar y Drive',
     color: '#2563EB',
     bg: 'rgba(37,99,235,0.15)',
-    envKeys: ['GOOGLE_CLOUD_API_KEY'],
+    envKeys: ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'],
   },
   {
     id: 'slack',

@@ -65,7 +65,35 @@ export async function fetchBilling() {
     plan: { id: string; name: string; price: number; status: string; renewal: string | null }
     usage: { users: { used: number; limit: number }; queries: { used: number; limit: number }; storage: { used_gb: number; limit_gb: number } }
     invoices: Array<{ description: string; amount: number; status: string; date: string }>
+    polar_configured: boolean
+    checkout_url: string
+    portal_url: string
+    payment: { provider: 'polar' } | null
   }>('/api/billing')
+}
+
+export async function fetchGoogleStatus() {
+  return apiFetch<{
+    configured: boolean
+    connected: boolean
+    email: string | null
+    connectUrl: string
+  }>('/api/google/status')
+}
+
+export async function disconnectGoogle() {
+  return apiFetch('/api/google/disconnect', { method: 'POST' })
+}
+
+export async function runGoogleAction(action: string) {
+  return apiFetch<{ url: string; rowCount?: number; message?: string; error?: string }>('/api/google/actions', {
+    method: 'POST',
+    body: JSON.stringify({ action }),
+  })
+}
+
+export async function exportClientsToGoogle() {
+  return runGoogleAction('clients')
 }
 
 export async function fetchInsights(module: string) {
