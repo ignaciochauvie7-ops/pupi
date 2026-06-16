@@ -1185,6 +1185,29 @@ export default function HomePage() {
           }
         }
 
+        @media (max-width: 640px) {
+          .orbit-center-node {
+            width: 96px;
+            height: 96px;
+          }
+          .orbit-center-label {
+            font-size: 11px;
+          }
+          .orbit-module {
+            width: 60px;
+            height: 60px;
+            margin-left: -30px;
+            margin-top: -30px;
+          }
+          .orbit-module-content {
+            width: 60px;
+            height: 60px;
+          }
+          .orbit-module-label {
+            font-size: 9px;
+          }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .reveal {
             opacity: 1;

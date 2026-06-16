@@ -1,0 +1,265 @@
+/* Pupi — responsive layout (visual only, no behavior changes) */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+/* ── Dashboard shell ── */
+.pupi-dashboard {
+  min-height: 100dvh;
+  height: 100dvh;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.pupi-dash-header {
+  top: max(1rem, env(safe-area-inset-top)) !important;
+  left: 1rem !important;
+  right: 1rem;
+  max-width: calc(100vw - 2rem);
+  font-size: 13px;
+}
+
+.pupi-dash-meta {
+  display: none !important;
+}
+
+@media (min-width: 480px) {
+  .pupi-dash-header {
+    left: 2rem !important;
+    font-size: inherit;
+  }
+
+  .pupi-dash-meta {
+    display: inline !important;
+  }
+
+  .pupi-dash-sep {
+    display: inline-block !important;
+  }
+}
+
+/* Orbit scales to fit narrow viewports */
+.pupi-orbit-stage {
+  transform-origin: center center;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .pupi-orbit-stage {
+    transform: scale(clamp(0.48, calc((100vw - 24px) / 600), 1));
+  }
+
+  .pupi-orbit-stage .pupi-orbit-hint {
+    font-size: 10px !important;
+    max-width: 200px;
+    white-space: normal !important;
+    text-align: center;
+  }
+}
+
+/* ── Module panel (CRM, Ventas, etc.) ── */
+@media (max-width: 768px) {
+  .pupi-module-panel {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+  }
+
+  .pupi-panel-header {
+    height: 56px !important;
+    padding: 0 12px !important;
+    gap: 8px;
+  }
+
+  .pupi-panel-header > div:first-child {
+    min-width: 0;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  /* Module body = 2nd direct child (fragment children) */
+  .pupi-module-panel > div:nth-child(2) {
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
+    min-height: 0;
+  }
+
+  /* Stack common two-column CRM / detail layouts */
+  .pupi-module-panel div[style*="gap: 24"][style*="display: flex"] {
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    height: auto !important;
+  }
+}
+
+/* ── Voice & chat ── */
+.pupi-voice-input {
+  max-width: calc(100vw - 32px);
+}
+
+@media (max-width: 640px) {
+  .pupi-voice-input {
+    width: calc(100vw - 32px) !important;
+    bottom: calc(50% + 60px) !important;
+  }
+
+  .pupi-chat-panel {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: min(72dvh, 560px) !important;
+    border-radius: 16px 16px 0 0 !important;
+    border-bottom: none !important;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .pupi-voice-indicator {
+    bottom: max(88px, calc(72px + env(safe-area-inset-bottom))) !important;
+    left: 16px !important;
+    right: 16px !important;
+    transform: none !important;
+    width: auto !important;
+  }
+
+  .pupi-voice-indicator > div {
+    max-width: 100%;
+  }
+
+  .pupi-voice-indicator span {
+    max-width: none !important;
+    white-space: normal !important;
+  }
+
+  .pupi-settings-fab {
+    bottom: max(16px, env(safe-area-inset-bottom)) !important;
+    right: 16px !important;
+  }
+
+  .pupi-toast {
+    left: 16px !important;
+    right: 16px !important;
+    bottom: max(16px, env(safe-area-inset-bottom)) !important;
+    text-align: center;
+  }
+}
+
+/* ── Settings panel ── */
+@media (max-width: 768px) {
+  .pupi-settings-shell {
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .pupi-settings-body {
+    flex-direction: column !important;
+  }
+
+  .pupi-settings-sidebar {
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 12px !important;
+    flex-shrink: 0 !important;
+    gap: 4px;
+  }
+
+  .pupi-settings-sidebar > button,
+  .pupi-settings-sidebar > div {
+    flex-shrink: 0;
+  }
+
+  .pupi-settings-sidebar button {
+    width: auto !important;
+    white-space: nowrap;
+    margin-bottom: 0 !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+  }
+
+  .pupi-settings-sidebar > div[style*="height: 1"] {
+    display: none !important;
+  }
+
+  .pupi-settings-content {
+    padding: 16px !important;
+  }
+
+  .pupi-settings-users-grid {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pupi-settings-users-grid > div {
+    min-width: 560px;
+  }
+}
+
+/* ── Google Tools panel ── */
+@media (max-width: 640px) {
+  .pupi-google-panel {
+    padding: 12px 12px 16px !important;
+  }
+
+  .pupi-google-tabs {
+    gap: 6px !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap !important;
+  }
+
+  .pupi-google-tabs button {
+    flex: 0 0 auto !important;
+    min-width: 72px;
+    padding: 10px 6px !important;
+  }
+
+  .pupi-google-toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .pupi-google-toolbar > div:last-child {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .pupi-google-item,
+  .pupi-google-export-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .pupi-google-item > div:last-child,
+  .pupi-google-export-row > button {
+    align-self: flex-start;
+  }
+}
+
+/* ── Auth pages ── */
+@media (max-width: 380px) {
+  .pupi-auth-page h1 {
+    font-size: 1.35rem;
+  }
+}

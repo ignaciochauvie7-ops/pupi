@@ -291,7 +291,7 @@ export function GoogleToolsPanel({
   }
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '16px 24px 24px' }}>
+    <div className="pupi-google-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '16px 24px 24px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 16, flexShrink: 0 }}>
         <div style={{ minWidth: 0 }}>
           <div style={{ color: 'white', fontSize: 13, fontWeight: 500 }}>
@@ -350,7 +350,7 @@ export function GoogleToolsPanel({
         )}
       </div>
 
-      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexShrink: 0 }}>
+      <div className="pupi-google-tabs" style={{ display: 'flex', gap: 10, marginBottom: 16, flexShrink: 0 }}>
         {(Object.keys(TAB_CONFIG) as GoogleBrowseTab[]).map(tabId => {
           const config = TAB_CONFIG[tabId]
           const TabIcon = config.Icon
@@ -396,7 +396,7 @@ export function GoogleToolsPanel({
           minHeight: 0,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14, flexShrink: 0 }}>
+        <div className="pupi-google-toolbar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0 }}>
             <ActiveIcon size={36} />
             <div>
@@ -453,6 +453,7 @@ export function GoogleToolsPanel({
               {items.map(item => (
                 <div
                   key={item.id}
+                  className="pupi-google-item"
                   style={{
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -500,6 +501,7 @@ export function GoogleToolsPanel({
             {active.exports.map(item => (
               <div
                 key={item.action}
+                className="pupi-google-export-row"
                 style={{
                   display: 'flex',
                   justifyContent: 'space-between',

@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-brand-950 px-4">
+    <main className="pupi-auth-page flex min-h-screen flex-col items-center justify-center bg-brand-950 px-4">
       <div className="w-full max-w-md">
         <div className="text-center">
           <Link

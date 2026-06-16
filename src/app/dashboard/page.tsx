@@ -1927,7 +1927,7 @@ export default function DashboardPage() {
 
   return (
     <div
-      className="relative w-full h-screen overflow-hidden flex items-center justify-center"
+      className="pupi-dashboard relative w-full h-screen overflow-hidden flex items-center justify-center"
       style={{ backgroundColor: "#0A0A0F" }}
       onClick={(e) => {
         if (showVoiceInput && (e.target as HTMLElement).closest("[data-voice-input]") === null) {
@@ -1937,18 +1937,18 @@ export default function DashboardPage() {
     >
       <style>{`@keyframes orbitSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       {/* Logo */}
-      <div className="absolute top-6 left-8 z-20" style={{ display: "flex", alignItems: "center" }}>
+      <div className="pupi-dash-header absolute top-6 left-8 z-20" style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
         <span style={{ color: "white", fontWeight: 700 }}>Pupi</span>
         <span style={{ color: "#2563EB", fontWeight: 400 }}> AI</span>
-        <span style={{ display: "inline-block", width: 1, height: 14, background: "rgba(255,255,255,0.15)", margin: "0 12px", verticalAlign: "middle" }} />
-        <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, fontWeight: 400 }}>Distribuidora Norte</span>
-        <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, margin: "0 6px" }}>·</span>
-        <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>Dueño</span>
+        <span className="pupi-dash-meta pupi-dash-sep" style={{ width: 1, height: 14, background: "rgba(255,255,255,0.15)", margin: "0 12px", verticalAlign: "middle" }} />
+        <span className="pupi-dash-meta" style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, fontWeight: 400 }}>Distribuidora Norte</span>
+        <span className="pupi-dash-meta" style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, margin: "0 6px" }}>·</span>
+        <span className="pupi-dash-meta" style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>Dueño</span>
       </div>
 
       {/* Orbital container */}
       <div
-        className="relative flex items-center justify-center"
+        className="pupi-orbit-stage relative flex items-center justify-center"
         style={{ width: containerSize, height: containerSize }}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => {
@@ -2139,7 +2139,7 @@ export default function DashboardPage() {
             onMouseLeave={() => setCenterHovered(false)}
             onClick={() => setShowVoiceInput((v) => !v)}
           />
-          <div style={{ position: "absolute", top: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)", whiteSpace: "nowrap", color: "rgba(255,255,255,0.5)", fontSize: 12, textAlign: "center", pointerEvents: "none" }}>
+          <div className="pupi-orbit-hint" style={{ position: "absolute", top: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)", whiteSpace: "nowrap", color: "rgba(255,255,255,0.5)", fontSize: 12, textAlign: "center", pointerEvents: "none" }}>
             Tocá cualquier área para explorar
           </div>
         </div>
@@ -2149,7 +2149,7 @@ export default function DashboardPage() {
       {showVoiceInput && (
         <div
           data-voice-input
-          className="absolute z-30"
+          className="pupi-voice-input absolute z-30"
           style={{
             bottom: "calc(50% + 80px)",
             left: "50%",
@@ -2178,6 +2178,7 @@ export default function DashboardPage() {
 
       {/* Overlay */}
       <div
+        className="pupi-panel-backdrop"
         onClick={closePanel}
         style={{
           position: "fixed",
@@ -2192,6 +2193,7 @@ export default function DashboardPage() {
 
       {/* Panel */}
       <div
+        className="pupi-module-panel"
         style={{
           position: "fixed",
           top: 40,
@@ -2219,6 +2221,7 @@ export default function DashboardPage() {
             <>
               {/* Header */}
               <div
+                className="pupi-panel-header"
                 style={{
                   height: 64,
                   padding: "0 24px",
@@ -2229,10 +2232,10 @@ export default function DashboardPage() {
                   flexShrink: 0,
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
                   <button
                     onClick={closePanel}
-                    style={{ color: "rgba(255,255,255,0.4)", fontSize: 18, lineHeight: 1, background: "none", border: "none", cursor: "pointer", padding: "4px 6px", transition: "color 0.15s" }}
+                    style={{ color: "rgba(255,255,255,0.4)", fontSize: 18, lineHeight: 1, background: "none", border: "none", cursor: "pointer", padding: "4px 6px", transition: "color 0.15s", flexShrink: 0 }}
                     onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")}
                     onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
                   >←</button>
@@ -11030,7 +11033,7 @@ export default function DashboardPage() {
       </div>
 
       {showSuccessToast && (
-        <div style={{
+        <div className="pupi-toast" style={{
           position: 'fixed',
           bottom: '24px',
           right: '24px',
@@ -11049,7 +11052,7 @@ export default function DashboardPage() {
 
       {/* Listening indicator */}
       {isListening && (
-        <div style={{ position: "fixed", bottom: 100, left: "50%", transform: "translateX(-50%)", zIndex: 1001 }}>
+        <div className="pupi-voice-indicator" style={{ position: "fixed", bottom: 100, left: "50%", transform: "translateX(-50%)", zIndex: 1001 }}>
           <div style={{ background: "rgba(10,10,20,0.95)", border: "1px solid rgba(37,99,235,0.4)", borderRadius: 30, padding: "10px 20px", display: "flex", alignItems: "center", gap: 10, backdropFilter: "blur(8px)" }}>
             <style>{`@keyframes pttPulse { 0%,100% { opacity:1; transform:scale(1) } 50% { opacity:0.5; transform:scale(1.2) } }`}</style>
             <Mic size={16} style={{ color: "#2563EB", animation: "pttPulse 1s infinite" }} />
@@ -11066,7 +11069,7 @@ export default function DashboardPage() {
 
       {/* Chat panel */}
       {showChatPanel && (
-        <div style={{ position: "fixed", bottom: 88, right: 24, width: 360, height: 480, background: "#0D0D14", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 16, zIndex: 60, display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
+        <div className="pupi-chat-panel" style={{ position: "fixed", bottom: 88, right: 24, width: 360, height: 480, background: "#0D0D14", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 16, zIndex: 60, display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
           <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span style={{ color: "white", fontSize: 14, fontWeight: 500 }}>Pupi AI</span>
             <button type="button" onClick={toggleChatPanel} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 18, cursor: "pointer", lineHeight: 1 }}>×</button>
@@ -11108,6 +11111,7 @@ export default function DashboardPage() {
       {!showSettings && (
       <button
         type="button"
+        className="pupi-settings-fab"
         onClick={() => setShowSettings(true)}
         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.1)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.2)' }}
         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.12)' }}
@@ -11283,7 +11287,7 @@ export default function DashboardPage() {
 
         return (
           <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={e => { if (e.target === e.currentTarget) setShowSettings(false) }}>
-            <div style={{ position: 'absolute', top: 40, left: 40, right: 40, bottom: 40, background: '#0D0D14', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div className="pupi-settings-shell" style={{ position: 'absolute', top: 40, left: 40, right: 40, bottom: 40, background: '#0D0D14', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               {/* Header */}
               <div style={{ height: 64, padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -11294,16 +11298,16 @@ export default function DashboardPage() {
               </div>
 
               {/* Body */}
-              <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+              <div className="pupi-settings-body" style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
                 {/* Sidebar */}
-                <div style={{ width: 220, flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.06)', padding: 16 }}>
+                <div className="pupi-settings-sidebar" style={{ width: 220, flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.06)', padding: 16 }}>
                   {navItems.map(item => renderSettingsNavBtn(item))}
                   <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '12px 0' }} />
                   {extraNavItems.map(item => renderSettingsNavBtn(item))}
                 </div>
 
                 {/* Content */}
-                <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+                <div className="pupi-settings-content" style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
 
                   {/* ── USERS TAB ── */}
                   {settingsTab === 'users' && (
@@ -11317,7 +11321,7 @@ export default function DashboardPage() {
                       </div>
 
                       {/* Table */}
-                      <div>
+                      <div className="pupi-settings-users-grid">
                         <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 1fr 2fr 1fr', padding: '10px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px 8px 0 0', color: 'rgba(255,255,255,0.4)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                           <span>Usuario</span><span>Email</span><span>Rol</span><span>Acceso</span><span>Acción</span>
                         </div>
