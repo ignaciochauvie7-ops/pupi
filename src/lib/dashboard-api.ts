@@ -115,14 +115,16 @@ export type GoogleWorkspaceItem = {
   name: string
   url: string
   mimeType?: string
+  rawMimeType?: string
   modifiedAt?: string
   start?: string
   end?: string
+  source?: 'drive' | 'calendar'
 }
 
 export async function fetchGoogleWorkspace(tab: GoogleBrowseTab) {
   try {
-    const res = await fetch(`/api/google/browse?tab=${tab}`)
+    const res = await fetch(`/api/google/browse?tab=${tab}&_=${Date.now()}`, { cache: 'no-store' })
     const data = await res.json()
     if (!res.ok) {
       return { items: [] as GoogleWorkspaceItem[], error: data.error || 'No se pudieron cargar los archivos' }
@@ -130,6 +132,21 @@ export async function fetchGoogleWorkspace(tab: GoogleBrowseTab) {
     return { items: (data.items || []) as GoogleWorkspaceItem[], error: null as string | null }
   } catch {
     return { items: [] as GoogleWorkspaceItem[], error: 'No se pudo conectar con Google' }
+  }
+}
+
+export async function deleteGoogleWorkspaceItem(tab: GoogleBrowseTab, itemId: string) {
+  try {
+    const res = await fetch(`/api/google/delete?id=${encodeURIComponent(itemId)}&tab=${tab}`, {
+      method: 'DELETE',
+    })
+    const data = await res.json()
+    if (!res.ok) {
+      return { error: data.error || 'No se pudo eliminar' }
+    }
+    return { deleted: true as const }
+  } catch {
+    return { error: 'No se pudo conectar con Google' }
   }
 }
 

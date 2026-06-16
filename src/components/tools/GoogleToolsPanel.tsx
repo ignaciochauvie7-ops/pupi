@@ -4,12 +4,15 @@ import { useCallback, useEffect, useState } from 'react'
 import { RefreshCw } from 'lucide-react'
 import {
   createGoogleWorkspaceFile,
+  deleteGoogleWorkspaceItem,
   disconnectGoogle,
   fetchGoogleWorkspace,
   runGoogleAction,
   type GoogleBrowseTab,
   type GoogleWorkspaceItem,
 } from '@/lib/dashboard-api'
+
+const SYNC_INTERVAL_MS = 20000
 
 function GoogleSheetsIcon({ size = 28 }: { size?: number }) {
   return (
@@ -151,34 +154,71 @@ export function GoogleToolsPanel({
   const [loading, setLoading] = useState(false)
   const [items, setItems] = useState<GoogleWorkspaceItem[]>([])
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null)
 
   const googleConnected = googleStatus?.connected ?? false
   const googleConfigured = googleStatus?.configured ?? false
   const active = TAB_CONFIG[tab]
   const ActiveIcon = active.Icon
 
-  const loadItems = useCallback(async () => {
+  const loadItems = useCallback(async (silent = false) => {
     if (!googleConnected) {
       setItems([])
       setLoadError(null)
+      setLastSyncedAt(null)
       return
     }
 
-    setLoading(true)
+    if (!silent) setLoading(true)
     const result = await fetchGoogleWorkspace(tab)
     setItems(result.items)
     setLoadError(result.error)
-    setLoading(false)
+    if (!result.error) setLastSyncedAt(new Date())
+    if (!silent) setLoading(false)
   }, [googleConnected, tab])
 
   useEffect(() => {
     loadItems()
   }, [loadItems])
 
-  const actionBtn = (enabled: boolean): React.CSSProperties => ({
-    background: enabled ? '#2563EB' : 'rgba(255,255,255,0.04)',
-    border: 'none',
-    color: enabled ? 'white' : 'rgba(255,255,255,0.3)',
+  useEffect(() => {
+    if (!googleConnected) return
+
+    const interval = window.setInterval(() => {
+      loadItems(true)
+    }, SYNC_INTERVAL_MS)
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        loadItems(true)
+      }
+    }
+
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      window.clearInterval(interval)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [googleConnected, loadItems])
+
+  const actionBtn = (enabled: boolean, variant: 'primary' | 'danger' = 'primary'): React.CSSProperties => ({
+    background:
+      variant === 'danger'
+        ? enabled
+          ? 'rgba(239,68,68,0.15)'
+          : 'rgba(255,255,255,0.04)'
+        : enabled
+          ? '#2563EB'
+          : 'rgba(255,255,255,0.04)',
+    border: variant === 'danger' ? '1px solid rgba(239,68,68,0.25)' : 'none',
+    color:
+      variant === 'danger'
+        ? enabled
+          ? '#f87171'
+          : 'rgba(255,255,255,0.3)'
+        : enabled
+          ? 'white'
+          : 'rgba(255,255,255,0.3)',
     fontSize: 12,
     fontWeight: 500,
     borderRadius: 8,
@@ -187,9 +227,31 @@ export function GoogleToolsPanel({
     flexShrink: 0,
   })
 
+  const handleDelete = async (item: GoogleWorkspaceItem) => {
+    const confirmed = window.confirm(`¿Eliminar "${item.name}" de Google?`)
+    if (!confirmed) return
+
+    setBusy(true)
+    const result = await deleteGoogleWorkspaceItem(tab, item.id)
+    setBusy(false)
+
+    if (result && 'deleted' in result && result.deleted) {
+      showToast('Eliminado de Google')
+      setItems(current => current.filter(entry => entry.id !== item.id))
+      await loadItems(true)
+      return
+    }
+
+    showToast(('error' in result && result.error) || 'No se pudo eliminar')
+  }
+
   const openItem = (item: GoogleWorkspaceItem) => {
     window.open(item.url, '_blank', 'noopener,noreferrer')
   }
+
+  const syncLabel = lastSyncedAt
+    ? `Sincronizado con Google · ${lastSyncedAt.toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit' })}`
+    : 'Sincronizando con Google...'
 
   const handleCreate = async () => {
     setBusy(true)
@@ -199,7 +261,7 @@ export function GoogleToolsPanel({
     if (result && 'url' in result && result.url) {
       showToast(`${active.createLabel} creado`)
       window.open(result.url, '_blank', 'noopener,noreferrer')
-      await loadItems()
+      await loadItems(true)
       return
     }
 
@@ -214,7 +276,7 @@ export function GoogleToolsPanel({
     if (result && 'url' in result && result.url) {
       showToast(`${label} listo`)
       window.open(result.url, '_blank', 'noopener,noreferrer')
-      await loadItems()
+      await loadItems(true)
       return
     }
 
@@ -237,7 +299,7 @@ export function GoogleToolsPanel({
           </div>
           <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11, marginTop: 2 }}>
             {googleConnected
-              ? 'Abrí, creá y exportá desde tu cuenta de Google'
+              ? 'Tus archivos se sincronizan con Google cada pocos segundos'
               : 'Conectá tu cuenta para ver tus archivos y crear nuevos'}
           </div>
         </div>
@@ -340,13 +402,16 @@ export function GoogleToolsPanel({
             <div>
               <div style={{ color: 'white', fontSize: 16, fontWeight: 600 }}>{active.label}</div>
               <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 4 }}>{active.desc}</div>
+              {googleConnected && (
+                <div style={{ color: 'rgba(34,197,94,0.85)', fontSize: 11, marginTop: 6 }}>{syncLabel}</div>
+              )}
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
             <button
               type="button"
               disabled={!googleConnected || busy}
-              onClick={loadItems}
+              onClick={() => loadItems()}
               style={actionBtn(googleConnected && !busy)}
               title="Actualizar"
             >
@@ -408,9 +473,19 @@ export function GoogleToolsPanel({
                       {item.start ? ` · ${formatDate(item.start)}` : item.modifiedAt ? ` · ${formatDate(item.modifiedAt)}` : ''}
                     </div>
                   </div>
-                  <button type="button" onClick={() => openItem(item)} style={actionBtn(true)}>
-                    Abrir
-                  </button>
+                  <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                    <button type="button" onClick={() => openItem(item)} style={actionBtn(true)}>
+                      Abrir
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => handleDelete(item)}
+                      style={actionBtn(!busy, 'danger')}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

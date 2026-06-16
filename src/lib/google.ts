@@ -4,8 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase-server'
 export const GOOGLE_SCOPES = [
   'https://www.googleapis.com/auth/spreadsheets',
   'https://www.googleapis.com/auth/documents',
-  'https://www.googleapis.com/auth/drive.readonly',
-  'https://www.googleapis.com/auth/drive.file',
+  'https://www.googleapis.com/auth/drive',
   'https://www.googleapis.com/auth/calendar',
 ]
 
@@ -468,9 +467,11 @@ export type GoogleWorkspaceItem = {
   name: string
   url: string
   mimeType?: string
+  rawMimeType?: string
   modifiedAt?: string
   start?: string
   end?: string
+  source: 'drive' | 'calendar'
 }
 
 const MIME_BY_TAB: Record<Exclude<GoogleBrowseTab, 'calendar'>, string | undefined> = {
@@ -508,7 +509,8 @@ export async function listCalendarEvents(companyId: string): Promise<GoogleWorks
     url: event.htmlLink || 'https://calendar.google.com',
     start: event.start?.dateTime || event.start?.date || undefined,
     end: event.end?.dateTime || event.end?.date || undefined,
-    mimeType: 'calendar#event',
+    mimeType: 'Evento',
+    source: 'calendar' as const,
   }))
 }
 
@@ -548,8 +550,36 @@ export async function browseGoogleWorkspace(
       name: file.name || 'Sin nombre',
       url: file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`,
       mimeType: formatMimeLabel(file.mimeType || undefined),
+      rawMimeType: file.mimeType || undefined,
       modifiedAt: file.modifiedTime || undefined,
+      source: 'drive' as const,
     }))
+}
+
+export async function deleteGoogleWorkspaceItem(
+  companyId: string,
+  tab: GoogleBrowseTab,
+  itemId: string
+) {
+  const auth = await getGoogleAuthForCompany(companyId)
+  if (!auth) throw new Error('Google no conectado')
+
+  if (tab === 'calendar') {
+    const calendar = google.calendar({ version: 'v3', auth })
+    await calendar.events.delete({
+      calendarId: 'primary',
+      eventId: itemId,
+    })
+    return { deleted: true }
+  }
+
+  const drive = google.drive({ version: 'v3', auth })
+  await drive.files.update({
+    fileId: itemId,
+    requestBody: { trashed: true },
+  })
+
+  return { deleted: true }
 }
 
 export async function createBlankSpreadsheet(companyId: string, title = 'Nuevo Sheet — Pupi') {
