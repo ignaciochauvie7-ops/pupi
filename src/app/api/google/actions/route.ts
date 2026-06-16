@@ -9,6 +9,7 @@ const VALID_ACTIONS: GoogleAction[] = [
   'movements',
   'summary-doc',
   'weekly-event',
+  'calendar-event',
   'drive-folder',
 ]
 

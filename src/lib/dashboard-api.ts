@@ -85,15 +85,69 @@ export async function disconnectGoogle() {
   return apiFetch('/api/google/disconnect', { method: 'POST' })
 }
 
-export async function runGoogleAction(action: string) {
-  return apiFetch<{ url: string; rowCount?: number; message?: string; error?: string }>('/api/google/actions', {
-    method: 'POST',
-    body: JSON.stringify({ action }),
-  })
+export async function runGoogleAction(action: string): Promise<
+  { url: string; rowCount?: number } | { error: string }
+> {
+  try {
+    const res = await fetch('/api/google/actions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action }),
+    })
+    const data = await res.json()
+    if (!res.ok) {
+      return { error: data.error || 'No se pudo ejecutar la acción de Google' }
+    }
+    return data as { url: string; rowCount?: number }
+  } catch {
+    return { error: 'No se pudo conectar con Google' }
+  }
 }
 
 export async function exportClientsToGoogle() {
   return runGoogleAction('clients')
+}
+
+export type GoogleBrowseTab = 'sheets' | 'docs' | 'calendar' | 'drive'
+
+export type GoogleWorkspaceItem = {
+  id: string
+  name: string
+  url: string
+  mimeType?: string
+  modifiedAt?: string
+  start?: string
+  end?: string
+}
+
+export async function fetchGoogleWorkspace(tab: GoogleBrowseTab) {
+  try {
+    const res = await fetch(`/api/google/browse?tab=${tab}`)
+    const data = await res.json()
+    if (!res.ok) {
+      return { items: [] as GoogleWorkspaceItem[], error: data.error || 'No se pudieron cargar los archivos' }
+    }
+    return { items: (data.items || []) as GoogleWorkspaceItem[], error: null as string | null }
+  } catch {
+    return { items: [] as GoogleWorkspaceItem[], error: 'No se pudo conectar con Google' }
+  }
+}
+
+export async function createGoogleWorkspaceFile(type: 'sheet' | 'doc' | 'folder' | 'event', title?: string) {
+  try {
+    const res = await fetch('/api/google/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, title }),
+    })
+    const data = await res.json()
+    if (!res.ok) {
+      return { error: data.error || 'No se pudo crear el archivo' }
+    }
+    return data as { url: string; rowCount?: number }
+  } catch {
+    return { error: 'No se pudo conectar con Google' }
+  }
 }
 
 export async function fetchInsights(module: string) {

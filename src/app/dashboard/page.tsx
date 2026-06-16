@@ -47,9 +47,8 @@ import {
   saveCompany,
   fetchBilling,
   fetchGoogleStatus,
-  disconnectGoogle,
-  runGoogleAction,
 } from '@/lib/dashboard-api'
+import { GoogleToolsPanel } from '@/components/tools/GoogleToolsPanel'
 import {
   APIProvider,
   Map,
@@ -342,55 +341,6 @@ const WS_PARTIAL_SUB_OPTS: Record<string, string[]> = {
 function getInitials(name: string) {
   return name.split(" ").map((w) => w[0]).slice(0, 2).join("")
 }
-
-function GoogleSheetsIcon({ size = 28 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <path fill="#0F9D58" d="M11 4h18l8 8v32a4 4 0 0 1-4 4H11a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z" />
-      <path fill="#87CEAC" d="M29 4v8a4 4 0 0 0 4 4h8L29 4z" />
-      <path fill="#fff" d="M14 22h20v2H14zm0 6h20v2H14zm0 6h14v2H14z" opacity=".9" />
-    </svg>
-  )
-}
-
-function GoogleDocsIcon({ size = 28 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <path fill="#4285F4" d="M11 4h18l8 8v32a4 4 0 0 1-4 4H11a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z" />
-      <path fill="#A1C2FA" d="M29 4v8a4 4 0 0 0 4 4h8L29 4z" />
-      <path fill="#fff" d="M14 22h20v2H14zm0 6h20v2H14zm0 6h12v2H14z" opacity=".9" />
-    </svg>
-  )
-}
-
-function GoogleCalendarIcon({ size = 28 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <path fill="#fff" d="M10 8h28a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V12a4 4 0 0 1 4-4z" />
-      <path fill="#4285F4" d="M6 18h36v22a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V18z" />
-      <path fill="#EA4335" d="M6 12a4 4 0 0 1 4-4h4v8H6z" />
-      <path fill="#FBBC04" d="M18 8h4v8h-4z" />
-      <path fill="#34A853" d="M26 8h4v8h-4z" />
-      <path fill="#4285F4" d="M34 8h4a4 4 0 0 1 4 4v4h-8V8z" />
-      <rect fill="#fff" x="14" y="24" width="6" height="6" rx="1" />
-      <rect fill="#fff" x="22" y="24" width="6" height="6" rx="1" opacity=".85" />
-      <rect fill="#fff" x="30" y="24" width="6" height="6" rx="1" opacity=".7" />
-    </svg>
-  )
-}
-
-function GoogleDriveIcon({ size = 28 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden>
-      <path fill="#4285F4" d="M6 32 16 8h16l10 24z" />
-      <path fill="#FBBC04" d="M6 32h32l-8 14H14z" />
-      <path fill="#34A853" d="M16 8 6 32h16z" />
-      <path fill="#fff" opacity=".25" d="M16 8h16l10 24H26z" />
-    </svg>
-  )
-}
-
-type GoogleToolsTab = 'sheets' | 'docs' | 'calendar' | 'drive'
 
 export default function DashboardPage() {
   const { data: session } = useSession()
@@ -743,8 +693,6 @@ export default function DashboardPage() {
     connected: boolean
     email: string | null
   } | null>(null)
-  const [googleBusy, setGoogleBusy] = useState(false)
-  const [googleToolsTab, setGoogleToolsTab] = useState<GoogleToolsTab>('sheets')
 
   // Push-to-talk state
   const [isListening, setIsListening] = useState(false)
@@ -11044,149 +10992,16 @@ export default function DashboardPage() {
                   )
                 })()
               ) : activeNode.id === 7 ? (
-                // ── HERRAMIENTAS MODULE ──
-                (() => {
-                  const googleConnected = googleStatus?.connected ?? false
-                  const googleConfigured = googleStatus?.configured ?? false
-                  const actionBtn = (enabled: boolean): React.CSSProperties => ({
-                    background: enabled ? '#2563EB' : 'rgba(255,255,255,0.04)',
-                    border: 'none',
-                    color: enabled ? 'white' : 'rgba(255,255,255,0.3)',
-                    fontSize: 13,
-                    fontWeight: 500,
-                    borderRadius: 8,
-                    padding: '8px 18px',
-                    cursor: enabled ? 'pointer' : 'not-allowed',
-                    flexShrink: 0,
-                  })
-                  const runAction = async (action: string, successMsg: string) => {
-                    setGoogleBusy(true)
-                    const result = await runGoogleAction(action)
-                    setGoogleBusy(false)
-                    if (result?.url) {
-                      showToast(successMsg)
-                      window.open(result.url, '_blank')
-                    } else {
-                      showToast('Conectá Google primero o revisá los permisos')
-                    }
-                  }
-                  const googleApps: Record<GoogleToolsTab, {
-                    label: string
-                    desc: string
-                    Icon: typeof GoogleSheetsIcon
-                    actions: { label: string; action: string; detail: string }[]
-                  }> = {
-                    sheets: {
-                      label: 'Sheets',
-                      desc: 'Exportá datos de Pupi a hojas de cálculo',
-                      Icon: GoogleSheetsIcon,
-                      actions: [
-                        { label: 'Clientes CRM', action: 'clients', detail: `${realClients.length} clientes` },
-                        { label: 'Pipeline ventas', action: 'opportunities', detail: `${realOpportunities.length} oportunidades` },
-                        { label: 'Movimientos', action: 'movements', detail: `${realMovements.length} registros` },
-                      ],
-                    },
-                    docs: {
-                      label: 'Docs',
-                      desc: 'Informes y resúmenes de tu empresa',
-                      Icon: GoogleDocsIcon,
-                      actions: [
-                        { label: 'Resumen operativo', action: 'summary-doc', detail: 'CRM, ventas y finanzas' },
-                      ],
-                    },
-                    calendar: {
-                      label: 'Calendar',
-                      desc: 'Agendá revisiones y seguimientos',
-                      Icon: GoogleCalendarIcon,
-                      actions: [
-                        { label: 'Revisión semanal', action: 'weekly-event', detail: 'Próximo lunes 10:00' },
-                      ],
-                    },
-                    drive: {
-                      label: 'Drive',
-                      desc: 'Carpeta para archivos generados por Pupi',
-                      Icon: GoogleDriveIcon,
-                      actions: [
-                        { label: 'Crear carpeta Pupi', action: 'drive-folder', detail: 'Organizá exports y docs' },
-                      ],
-                    },
-                  }
-                  const tabs: GoogleToolsTab[] = ['sheets', 'docs', 'calendar', 'drive']
-                  const activeApp = googleApps[googleToolsTab]
-                  const ActiveIcon = activeApp.Icon
-                  return (
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '16px 24px 24px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 16, flexShrink: 0 }}>
-                        <div style={{ minWidth: 0 }}>
-                          <div style={{ color: 'white', fontSize: 13, fontWeight: 500 }}>
-                            {googleConnected ? (googleStatus?.email || 'Google conectado') : 'Google no conectado'}
-                          </div>
-                          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11, marginTop: 2 }}>
-                            {googleConnected ? 'Listo para usar Sheets, Docs, Calendar y Drive' : 'Conectá tu cuenta para habilitar las herramientas'}
-                          </div>
-                        </div>
-                        {googleConnected ? (
-                          <button type="button" disabled={googleBusy} onClick={async () => { setGoogleBusy(true); await disconnectGoogle(); await refreshGoogleStatus(); setGoogleBusy(false); showToast('Google desconectado') }} style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', fontSize: 12, borderRadius: 8, padding: '7px 14px', cursor: 'pointer', flexShrink: 0 }}>Desconectar</button>
-                        ) : (
-                          <button type="button" disabled={!googleConfigured || googleBusy} onClick={() => { window.location.href = '/api/google/connect' }} style={{ background: googleConfigured ? '#2563EB' : 'rgba(255,255,255,0.06)', border: 'none', color: googleConfigured ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 12, borderRadius: 8, padding: '7px 14px', cursor: googleConfigured ? 'pointer' : 'not-allowed', flexShrink: 0 }}>Conectar Google</button>
-                        )}
-                      </div>
-
-                      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexShrink: 0 }}>
-                        {tabs.map(tabId => {
-                          const tab = googleApps[tabId]
-                          const TabIcon = tab.Icon
-                          const active = googleToolsTab === tabId
-                          return (
-                            <button
-                              key={tabId}
-                              type="button"
-                              onClick={() => setGoogleToolsTab(tabId)}
-                              style={{
-                                flex: 1,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: 8,
-                                padding: '14px 8px',
-                                borderRadius: 12,
-                                border: active ? '1px solid rgba(37,99,235,0.45)' : '1px solid rgba(255,255,255,0.08)',
-                                background: active ? 'rgba(37,99,235,0.12)' : 'rgba(255,255,255,0.02)',
-                                cursor: 'pointer',
-                                transition: 'background 0.15s, border-color 0.15s',
-                              }}
-                            >
-                              <TabIcon size={32} />
-                              <span style={{ color: active ? 'white' : 'rgba(255,255,255,0.55)', fontSize: 12, fontWeight: active ? 600 : 500 }}>{tab.label}</span>
-                            </button>
-                          )
-                        })}
-                      </div>
-
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '20px 24px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16, flexShrink: 0 }}>
-                          <ActiveIcon size={36} />
-                          <div>
-                            <div style={{ color: 'white', fontSize: 16, fontWeight: 600 }}>{activeApp.label}</div>
-                            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 4 }}>{activeApp.desc}</div>
-                          </div>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1, justifyContent: 'center' }}>
-                          {activeApp.actions.map(item => (
-                            <div key={item.action} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, padding: '14px 16px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10 }}>
-                              <div>
-                                <div style={{ color: 'white', fontSize: 14, fontWeight: 500 }}>{item.label}</div>
-                                <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, marginTop: 3 }}>{item.detail}</div>
-                              </div>
-                              <button type="button" disabled={!googleConnected || googleBusy} onClick={() => runAction(item.action, `${activeApp.label}: listo`)} style={actionBtn(googleConnected && !googleBusy)}>Usar</button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })()
+                <GoogleToolsPanel
+                  googleStatus={googleStatus}
+                  onRefreshStatus={refreshGoogleStatus}
+                  showToast={showToast}
+                  exportCounts={{
+                    clients: realClients.length,
+                    opportunities: realOpportunities.length,
+                    movements: realMovements.length,
+                  }}
+                />
               ) : (
                 // ── PLACEHOLDER for other modules ──
                 <div

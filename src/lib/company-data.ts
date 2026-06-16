@@ -1,5 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase-server'
 import { mergeCompanySettings } from '@/lib/settings'
+import { getGoogleConnectionSummary } from '@/lib/google'
+import { getRecentGoogleActions } from '@/lib/google-chat'
 
 export async function getCompanyContext(companyId: string) {
   const [
@@ -37,6 +39,11 @@ export async function getCompanyContext(companyId: string) {
     .select('provider, connected, connected_at')
     .eq('company_id', companyId)
 
+  const [google, recentGoogleActions] = await Promise.all([
+    getGoogleConnectionSummary(companyId),
+    getRecentGoogleActions(companyId, 5),
+  ])
+
   const company = companyRes.data
   const clients = clientsRes.data || []
   const opportunities = opportunitiesRes.data || []
@@ -67,6 +74,8 @@ export async function getCompanyContext(companyId: string) {
     notifications: notificationsRes.data || [],
     subscription: subscriptionsRes.data?.[0] || null,
     integrations: integrationsRes.error ? [] : (integrationsRes.data || []),
+    google,
+    recent_google_actions: recentGoogleActions,
     recent_chat: (chatRes.data || []).reverse(),
     memory: memoryRes.data || [],
     research: researchRes.data || [],

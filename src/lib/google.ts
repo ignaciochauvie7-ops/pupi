@@ -4,6 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase-server'
 export const GOOGLE_SCOPES = [
   'https://www.googleapis.com/auth/spreadsheets',
   'https://www.googleapis.com/auth/documents',
+  'https://www.googleapis.com/auth/drive.readonly',
   'https://www.googleapis.com/auth/drive.file',
   'https://www.googleapis.com/auth/calendar',
 ]
@@ -324,22 +325,42 @@ export async function createCompanySummaryDoc(companyId: string, companyName: st
   }
 }
 
-export async function createWeeklyReviewEvent(companyId: string, companyName: string) {
+export type GoogleActionResult = {
+  url: string
+  rowCount?: number
+  spreadsheetId?: string
+}
+
+export type GoogleActionParams = {
+  title?: string
+  description?: string
+  start?: string
+  durationMinutes?: number
+}
+
+export async function createCalendarEvent(
+  companyId: string,
+  params: GoogleActionParams & { summary: string }
+) {
   const auth = await getGoogleAuthForCompany(companyId)
   if (!auth) throw new Error('Google no conectado')
 
-  const start = new Date()
-  start.setDate(start.getDate() + ((8 - start.getDay()) % 7 || 7))
-  start.setHours(10, 0, 0, 0)
+  const start = params.start ? new Date(params.start) : (() => {
+    const date = new Date()
+    date.setDate(date.getDate() + 1)
+    date.setHours(10, 0, 0, 0)
+    return date
+  })()
+
   const end = new Date(start)
-  end.setHours(11, 0, 0, 0)
+  end.setMinutes(end.getMinutes() + (params.durationMinutes || 60))
 
   const calendar = google.calendar({ version: 'v3', auth })
   const event = await calendar.events.insert({
     calendarId: 'primary',
     requestBody: {
-      summary: `Revisión semanal — ${companyName}`,
-      description: 'Evento creado desde Pupi AI. Revisá CRM, ventas y finanzas de la semana.',
+      summary: params.summary,
+      description: params.description || 'Evento creado desde Pupi AI.',
       start: { dateTime: start.toISOString(), timeZone: 'America/Montevideo' },
       end: { dateTime: end.toISOString(), timeZone: 'America/Montevideo' },
     },
@@ -348,14 +369,27 @@ export async function createWeeklyReviewEvent(companyId: string, companyName: st
   return { url: event.data.htmlLink || 'https://calendar.google.com' }
 }
 
-export async function createPupiDriveFolder(companyId: string, companyName: string) {
+export async function createWeeklyReviewEvent(companyId: string, companyName: string) {
+  const start = new Date()
+  start.setDate(start.getDate() + ((8 - start.getDay()) % 7 || 7))
+  start.setHours(10, 0, 0, 0)
+
+  return createCalendarEvent(companyId, {
+    summary: `Revisión semanal — ${companyName}`,
+    description: 'Evento creado desde Pupi AI. Revisá CRM, ventas y finanzas de la semana.',
+    start: start.toISOString(),
+    durationMinutes: 60,
+  })
+}
+
+export async function createPupiDriveFolder(companyId: string, folderName: string) {
   const auth = await getGoogleAuthForCompany(companyId)
   if (!auth) throw new Error('Google no conectado')
 
   const drive = google.drive({ version: 'v3', auth })
   const folder = await drive.files.create({
     requestBody: {
-      name: `Pupi AI — ${companyName}`,
+      name: folderName,
       mimeType: 'application/vnd.google-apps.folder',
     },
     fields: 'id, webViewLink',
@@ -372,9 +406,36 @@ export type GoogleAction =
   | 'movements'
   | 'summary-doc'
   | 'weekly-event'
+  | 'calendar-event'
   | 'drive-folder'
 
-export async function runGoogleAction(companyId: string, companyName: string, action: GoogleAction) {
+export async function isGoogleConnected(companyId: string): Promise<boolean> {
+  const auth = await getGoogleAuthForCompany(companyId)
+  return Boolean(auth)
+}
+
+export async function getGoogleConnectionSummary(companyId: string) {
+  const { data } = await supabaseAdmin
+    .from('google_connections')
+    .select('google_email, scopes, updated_at')
+    .eq('company_id', companyId)
+    .maybeSingle()
+
+  return {
+    configured: isGoogleConfigured(),
+    connected: Boolean(data),
+    email: data?.google_email || null,
+    scopes: data?.scopes || [],
+    connectedAt: data?.updated_at || null,
+  }
+}
+
+export async function runGoogleAction(
+  companyId: string,
+  companyName: string,
+  action: GoogleAction,
+  params?: GoogleActionParams
+): Promise<GoogleActionResult> {
   switch (action) {
     case 'clients':
       return exportClientsToSheet(companyId, companyName)
@@ -386,9 +447,178 @@ export async function runGoogleAction(companyId: string, companyName: string, ac
       return createCompanySummaryDoc(companyId, companyName)
     case 'weekly-event':
       return createWeeklyReviewEvent(companyId, companyName)
+    case 'calendar-event':
+      return createCalendarEvent(companyId, {
+        summary: params?.title || `Tarea — ${companyName}`,
+        description: params?.description,
+        start: params?.start,
+        durationMinutes: params?.durationMinutes,
+      })
     case 'drive-folder':
-      return createPupiDriveFolder(companyId, companyName)
+      return createPupiDriveFolder(companyId, `Pupi AI — ${companyName}`)
     default:
       throw new Error('Acción no válida')
+  }
+}
+
+export type GoogleBrowseTab = 'sheets' | 'docs' | 'calendar' | 'drive'
+
+export type GoogleWorkspaceItem = {
+  id: string
+  name: string
+  url: string
+  mimeType?: string
+  modifiedAt?: string
+  start?: string
+  end?: string
+}
+
+const MIME_BY_TAB: Record<Exclude<GoogleBrowseTab, 'calendar'>, string | undefined> = {
+  sheets: 'application/vnd.google-apps.spreadsheet',
+  docs: 'application/vnd.google-apps.document',
+  drive: undefined,
+}
+
+function formatMimeLabel(mimeType?: string) {
+  if (!mimeType) return 'Archivo'
+  if (mimeType.includes('spreadsheet')) return 'Hoja de cálculo'
+  if (mimeType.includes('document')) return 'Documento'
+  if (mimeType.includes('folder')) return 'Carpeta'
+  if (mimeType.includes('pdf')) return 'PDF'
+  return 'Archivo'
+}
+
+export async function listCalendarEvents(companyId: string): Promise<GoogleWorkspaceItem[]> {
+  const auth = await getGoogleAuthForCompany(companyId)
+  if (!auth) throw new Error('Google no conectado')
+
+  const calendar = google.calendar({ version: 'v3', auth })
+  const now = new Date().toISOString()
+  const response = await calendar.events.list({
+    calendarId: 'primary',
+    timeMin: now,
+    maxResults: 25,
+    singleEvents: true,
+    orderBy: 'startTime',
+  })
+
+  return (response.data.items || []).map(event => ({
+    id: event.id || `event-${event.summary}-${event.start?.dateTime || event.start?.date}`,
+    name: event.summary || 'Evento sin título',
+    url: event.htmlLink || 'https://calendar.google.com',
+    start: event.start?.dateTime || event.start?.date || undefined,
+    end: event.end?.dateTime || event.end?.date || undefined,
+    mimeType: 'calendar#event',
+  }))
+}
+
+export async function browseGoogleWorkspace(
+  companyId: string,
+  tab: GoogleBrowseTab
+): Promise<GoogleWorkspaceItem[]> {
+  if (tab === 'calendar') {
+    return listCalendarEvents(companyId)
+  }
+
+  const auth = await getGoogleAuthForCompany(companyId)
+  if (!auth) throw new Error('Google no conectado')
+
+  const drive = google.drive({ version: 'v3', auth })
+  const mime = MIME_BY_TAB[tab]
+  let q = 'trashed=false'
+
+  if (mime) {
+    q += ` and mimeType='${mime}'`
+  } else {
+    q +=
+      " and (mimeType='application/vnd.google-apps.folder' or mimeType='application/vnd.google-apps.spreadsheet' or mimeType='application/vnd.google-apps.document' or mimeType='application/pdf')"
+  }
+
+  const response = await drive.files.list({
+    q,
+    pageSize: 25,
+    orderBy: 'modifiedTime desc',
+    fields: 'files(id,name,mimeType,webViewLink,modifiedTime)',
+  })
+
+  return (response.data.files || [])
+    .filter(file => file.id)
+    .map(file => ({
+      id: file.id!,
+      name: file.name || 'Sin nombre',
+      url: file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`,
+      mimeType: formatMimeLabel(file.mimeType || undefined),
+      modifiedAt: file.modifiedTime || undefined,
+    }))
+}
+
+export async function createBlankSpreadsheet(companyId: string, title = 'Nuevo Sheet — Pupi') {
+  const auth = await getGoogleAuthForCompany(companyId)
+  if (!auth) throw new Error('Google no conectado')
+
+  const sheets = google.sheets({ version: 'v4', auth })
+  const created = await sheets.spreadsheets.create({
+    requestBody: { properties: { title } },
+  })
+
+  const spreadsheetId = created.data.spreadsheetId
+  if (!spreadsheetId) throw new Error('No se pudo crear la hoja')
+
+  return {
+    id: spreadsheetId,
+    url: created.data.spreadsheetUrl || `https://docs.google.com/spreadsheets/d/${spreadsheetId}`,
+  }
+}
+
+export async function createBlankDocument(companyId: string, title = 'Nuevo Doc — Pupi') {
+  const auth = await getGoogleAuthForCompany(companyId)
+  if (!auth) throw new Error('Google no conectado')
+
+  const docs = google.docs({ version: 'v1', auth })
+  const created = await docs.documents.create({
+    requestBody: { title },
+  })
+
+  const documentId = created.data.documentId
+  if (!documentId) throw new Error('No se pudo crear el documento')
+
+  return {
+    id: documentId,
+    url: `https://docs.google.com/document/d/${documentId}/edit`,
+  }
+}
+
+export async function createBlankCalendarEvent(companyId: string, title = 'Nuevo evento — Pupi') {
+  const start = new Date()
+  start.setDate(start.getDate() + 1)
+  start.setHours(10, 0, 0, 0)
+
+  return createCalendarEvent(companyId, {
+    summary: title,
+    description: 'Evento creado desde Pupi AI.',
+    start: start.toISOString(),
+    durationMinutes: 60,
+  })
+}
+
+export type GoogleCreateType = 'sheet' | 'doc' | 'folder' | 'event'
+
+export async function createGoogleWorkspaceFile(
+  companyId: string,
+  companyName: string,
+  type: GoogleCreateType,
+  title?: string
+): Promise<GoogleActionResult> {
+  switch (type) {
+    case 'sheet':
+      return createBlankSpreadsheet(companyId, title || `Nuevo Sheet — ${companyName}`)
+    case 'doc':
+      return createBlankDocument(companyId, title || `Nuevo Doc — ${companyName}`)
+    case 'folder':
+      return createPupiDriveFolder(companyId, title || `Pupi AI — ${companyName}`)
+    case 'event':
+      return createBlankCalendarEvent(companyId, title || `Evento — ${companyName}`)
+    default:
+      throw new Error('Tipo no válido')
   }
 }
