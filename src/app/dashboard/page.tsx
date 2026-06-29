@@ -3337,51 +3337,62 @@ export default function DashboardPage() {
                         width: "25%", flexShrink: 0,
                         background: "rgba(255,255,255,0.02)",
                         borderRight: "1px solid rgba(255,255,255,0.06)",
-                        padding: "20px 16px", display: "flex", flexDirection: "column", overflowY: "auto",
+                        padding: "22px 18px", display: "flex", flexDirection: "column", gap: 4, overflowY: "auto",
                       }}>
-                        <input
-                          type="text"
-                          placeholder="Buscar cliente..."
-                          value={crmSearch}
-                          onChange={(e) => setCrmSearch(e.target.value)}
-                          style={{
-                            width: "100%", padding: "8px 12px",
-                            background: "rgba(255,255,255,0.05)",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            borderRadius: 8, color: "white", fontSize: 13,
-                            outline: "none", boxSizing: "border-box",
-                          }}
-                        />
-                        <div style={{ marginTop: 20, marginBottom: 6, color: "rgba(255,255,255,0.6)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em" }}>Temperatura</div>
+                        <div style={{ position: "relative", marginBottom: 8 }}>
+                          <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.4)", fontSize: 14, pointerEvents: "none" }}>🔍</span>
+                          <input
+                            type="text"
+                            placeholder="Buscar cliente..."
+                            value={crmSearch}
+                            onChange={(e) => setCrmSearch(e.target.value)}
+                            style={{ width: "100%", padding: "10px 14px 10px 38px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 24, color: "white", fontSize: 13, outline: "none", boxSizing: "border-box", transition: "border-color .15s, background .15s" }}
+                            onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(59,130,246,0.5)"; e.currentTarget.style.background = "rgba(255,255,255,0.06)" }}
+                            onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)" }}
+                          />
+                        </div>
+                        <div style={{ marginTop: 22, marginBottom: 10, color: "rgba(255,255,255,0.5)", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>Temperatura</div>
                         {(["Todos", "Caliente 🔴", "Tibio 🟡", "Frío 🔵"] as const).map((label) => {
                           const key = label.split(" ")[0] as Temp
                           const selected = crmTempFilter === key
                           return (
                             <button key={key} onClick={() => setCrmTempFilter(key)} style={{
-                              width: "100%", textAlign: "left", padding: "7px 10px", borderRadius: 6, fontSize: 13,
-                              background: selected ? "rgba(37,99,235,0.15)" : "transparent",
-                              color: selected ? "#2563EB" : "rgba(255,255,255,0.4)",
-                              border: "none", cursor: "pointer", marginBottom: 2,
-                              transition: "background 0.15s, color 0.15s",
-                            }}>{label}</button>
+                              width: "100%", textAlign: "left", padding: "9px 14px", borderRadius: 24, fontSize: 13, fontWeight: 500, marginBottom: 5,
+                              background: selected ? "rgba(37,99,235,0.18)" : "rgba(255,255,255,0.03)",
+                              color: selected ? "#93c5fd" : "rgba(255,255,255,0.7)",
+                              border: selected ? "1px solid rgba(59,130,246,0.45)" : "1px solid rgba(255,255,255,0.06)",
+                              cursor: "pointer", transition: "all .15s",
+                            }}
+                              onMouseEnter={(e) => { if (!selected) { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.color = "rgba(255,255,255,0.9)" } }}
+                              onMouseLeave={(e) => { if (!selected) { e.currentTarget.style.background = "rgba(255,255,255,0.03)"; e.currentTarget.style.color = "rgba(255,255,255,0.7)" } }}
+                            >{label}</button>
                           )
                         })}
-                        <div style={{ marginTop: 20, marginBottom: 8, color: "rgba(255,255,255,0.6)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em" }}>Etiquetas</div>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                        <div style={{ marginTop: 22, marginBottom: 10, color: "rgba(255,255,255,0.5)", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>Etiquetas</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                           {["Cliente VIP", "Distribuidor", "Nuevo"].map((tag) => (
-                            <button key={tag} style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", borderRadius: 20, padding: "4px 10px", fontSize: 11, border: "none", cursor: "pointer" }}>{tag}</button>
+                            <button key={tag} style={{ background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.65)", borderRadius: 24, padding: "6px 14px", fontSize: 12, fontWeight: 500, border: "1px solid rgba(255,255,255,0.08)", cursor: "pointer", transition: "all .15s" }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(59,130,246,0.12)"; e.currentTarget.style.borderColor = "rgba(59,130,246,0.35)"; e.currentTarget.style.color = "rgba(255,255,255,0.9)" }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "rgba(255,255,255,0.65)" }}
+                            >{tag}</button>
                           ))}
                         </div>
-                        <div style={{ marginTop: 20, marginBottom: 8, color: "rgba(255,255,255,0.6)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em" }}>Vista</div>
-                        {(["todos", "empresa"] as const).map((v) => (
-                          <button key={v} onClick={() => setCrmGroupBy(v)} style={{
-                            width: "100%", textAlign: "left", padding: "7px 10px", borderRadius: 6, fontSize: 13,
-                            background: crmGroupBy === v ? "rgba(37,99,235,0.15)" : "transparent",
-                            color: crmGroupBy === v ? "#2563EB" : "rgba(255,255,255,0.4)",
-                            border: "none", cursor: "pointer", marginBottom: 2,
-                            transition: "background 0.15s, color 0.15s",
-                          }}>{v === "todos" ? "Todos los clientes" : "Agrupar por empresa"}</button>
-                        ))}
+                        <div style={{ marginTop: 22, marginBottom: 10, color: "rgba(255,255,255,0.5)", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>Vista</div>
+                        {(["todos", "empresa"] as const).map((v) => {
+                          const selected = crmGroupBy === v
+                          return (
+                            <button key={v} onClick={() => setCrmGroupBy(v)} style={{
+                              width: "100%", textAlign: "left", padding: "9px 14px", borderRadius: 24, fontSize: 13, fontWeight: 500, marginBottom: 5,
+                              background: selected ? "rgba(37,99,235,0.18)" : "rgba(255,255,255,0.03)",
+                              color: selected ? "#93c5fd" : "rgba(255,255,255,0.7)",
+                              border: selected ? "1px solid rgba(59,130,246,0.45)" : "1px solid rgba(255,255,255,0.06)",
+                              cursor: "pointer", transition: "all .15s",
+                            }}
+                              onMouseEnter={(e) => { if (!selected) { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.color = "rgba(255,255,255,0.9)" } }}
+                              onMouseLeave={(e) => { if (!selected) { e.currentTarget.style.background = "rgba(255,255,255,0.03)"; e.currentTarget.style.color = "rgba(255,255,255,0.7)" } }}
+                            >{v === "todos" ? "Todos los clientes" : "Agrupar por empresa"}</button>
+                          )
+                        })}
                       </div>
 
                       {/* Right — client list / ranking */}
