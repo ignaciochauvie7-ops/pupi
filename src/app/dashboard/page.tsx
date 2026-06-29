@@ -2383,23 +2383,22 @@ export default function DashboardPage() {
                                 <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "0 0 16px" }} />
 
                                 {/* Info rows */}
-                                {[
-                                  ["ÚLTIMO CONTACTO", c.lastContact],
-                                  ["TICKET PROMEDIO", c.ticket],
-                                  ["FRECUENCIA DE COMPRA", "Cada 28 días"],
-                                  ["VENDEDOR ASIGNADO", `${c.seller} — María Ruiz`],
-                                  ["ETIQUETA", "Cliente VIP"],
-                                ].map(([label, value]) => (
-                                  <div key={label} style={{ marginBottom: 12 }}>
-                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>{label}</div>
-                                    <div style={{ color: "white", fontSize: 13 }}>{value}</div>
-                                  </div>
-                                ))}
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 16px", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px 16px", marginBottom: 16 }}>
+                                  {[
+                                    ["ÚLTIMO CONTACTO", c.lastContact],
+                                    ["TICKET PROMEDIO", c.ticket],
+                                    ["FRECUENCIA DE COMPRA", "Cada 28 días"],
+                                    ["VENDEDOR ASIGNADO", `${c.seller} — María Ruiz`],
+                                    ["ETIQUETA", "Cliente VIP"],
+                                  ].map(([label, value]) => (
+                                    <div key={label}>
+                                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", textTransform: "uppercase", fontWeight: 600, marginBottom: 3 }}>{label}</div>
+                                      <div style={{ fontSize: 13.5, color: "rgba(255,255,255,0.92)", fontWeight: 500 }}>{value}</div>
+                                    </div>
+                                  ))}
+                                </div>
 
                                 <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", margin: "16px 0" }} />
-
-                                {/* AI section */}
-                                <div style={{ color: "#2563EB", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>✦ Inteligencia Pupi</div>
 
                                 {/* Temperature bar */}
                                 {(() => {
@@ -2417,49 +2416,6 @@ export default function DashboardPage() {
                                     </div>
                                   )
                                 })()}
-
-                                {/* Card 1 — Próxima compra */}
-                                <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }}>
-                                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                    <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Próxima compra</span>
-                                  </div>
-                                  <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>En 6 días</div>
-                                </div>
-
-                                {/* Card 2 — Riesgo de abandono */}
-                                {(() => {
-                                  const riskColor = c.temp === "Caliente" ? "#22c55e" : c.temp === "Tibio" ? "#eab308" : "#ef4444"
-                                  const riskLabel = c.temp === "Caliente" ? "Bajo" : c.temp === "Tibio" ? "Medio" : "Alto"
-                                  return (
-                                    <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }}>
-                                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={riskColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                                        <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Riesgo de abandono</span>
-                                      </div>
-                                      <div style={{ color: riskColor, fontSize: 13, fontWeight: 500 }}>{riskLabel}</div>
-                                    </div>
-                                  )
-                                })()}
-
-                                {/* Card 3 — Valor del cliente */}
-                                <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }}>
-                                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                    <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Valor del cliente</span>
-                                  </div>
-                                  <div style={{ color: "white", fontSize: 13, fontWeight: 500 }}>Alto — top 15%</div>
-                                </div>
-
-                                {/* Card 4 — Acción sugerida */}
-                                <div style={{ background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", borderRadius: 8, padding: "10px 12px", marginBottom: 6 }}>
-                                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                                    <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Acción sugerida</span>
-                                  </div>
-                                  <div style={{ color: "white", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Llamar esta semana</div>
-                                  <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>No compra desde hace 28 días, su ciclo promedio es 28 días</div>
-                                </div>
                               </>
                             )
                           })()}
@@ -2487,6 +2443,49 @@ export default function DashboardPage() {
 
                         {/* Right column — tabs */}
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                          {(() => {
+                            const c = crmSelectedClient
+                            const riskColor = c.temp === "Caliente" ? "#22c55e" : c.temp === "Tibio" ? "#eab308" : "#ef4444"
+                            const riskLabel = c.temp === "Caliente" ? "Bajo" : c.temp === "Tibio" ? "Medio" : "Alto"
+                            const cardShell = { background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px 16px", boxShadow: "0 4px 14px rgba(0,0,0,0.3)", display: "flex" as const, flexDirection: "column" as const, gap: 6 }
+                            const cardLabel = { fontSize: 10, textTransform: "uppercase" as const, color: "rgba(255,255,255,0.5)", fontWeight: 600 }
+                            return (
+                              <>
+                                <div style={{ color: "#60a5fa", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>✦ Inteligencia Pupi</div>
+                                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
+                                  <div style={cardShell}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                      <span style={cardLabel}>Próxima compra</span>
+                                    </div>
+                                    <div style={{ color: "white", fontSize: 15, fontWeight: 700 }}>En 6 días</div>
+                                  </div>
+                                  <div style={cardShell}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={riskColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                      <span style={cardLabel}>Riesgo de abandono</span>
+                                    </div>
+                                    <div style={{ color: riskColor, fontSize: 15, fontWeight: 700 }}>{riskLabel}</div>
+                                  </div>
+                                  <div style={cardShell}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                      <span style={cardLabel}>Valor del cliente</span>
+                                    </div>
+                                    <div style={{ color: "white", fontSize: 15, fontWeight: 700 }}>Alto — top 15%</div>
+                                  </div>
+                                  <div style={cardShell}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                      <span style={cardLabel}>Acción sugerida</span>
+                                    </div>
+                                    <div style={{ color: "white", fontSize: 15, fontWeight: 700 }}>Llamar esta semana</div>
+                                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, marginTop: 2 }}>No compra desde hace 28 días, su ciclo promedio es 28 días</div>
+                                  </div>
+                                </div>
+                              </>
+                            )
+                          })()}
                           {/* Tab bar */}
                           <div style={{ display: "flex", gap: 24, borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: 20, flexShrink: 0 }}>
                             {(["Historial", "Ciclo de vida", "Interacciones", "Documentos", "Notas"] as const).map((tab) => (
