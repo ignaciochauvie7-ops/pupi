@@ -2030,6 +2030,20 @@ export default function DashboardPage() {
             }
 
             const orbitAnim = isPaused ? "paused" : "running"
+            const glassBackground = "linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.015) 30%, rgba(255,255,255,0) 60%), rgba(14,20,38,0.78)"
+            const glassBorder = "1px solid rgba(59,130,246,0.32)"
+            const glassShadow = "0 6px 16px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.10), 0 0 20px rgba(37,99,235,0.09)"
+            const insetHighlight = "inset 0 1px 0 rgba(255,255,255,0.10)"
+            const blueHalo = "0 0 20px rgba(37,99,235,0.09)"
+            const nodeBackground = isActive ? "#2563EB" : isRelated ? "rgba(37,99,235,0.25)" : glassBackground
+            const nodeBorder = isActive ? "1px solid #2563EB" : isRelated ? "1px solid rgba(37,99,235,0.3)" : glassBorder
+            const nodeBoxShadow = isActive
+              ? `${glowSize} ${glowColor}`
+              : isHovered
+                ? `0 6px 16px rgba(0,0,0,0.45), ${glowSize} ${glowColor}, ${blueHalo}, ${insetHighlight}`
+                : isRelated
+                  ? `${glowSize} ${glowColor}`
+                  : glassShadow
             return (
               <div
                 key={node.id}
@@ -2067,14 +2081,14 @@ export default function DashboardPage() {
                       style={{
                         width: 72,
                         height: 72,
-                        backgroundColor: isActive ? "#2563EB" : isRelated ? "rgba(37,99,235,0.25)" : "rgba(37,99,235,0.1)",
-                        border: `1px solid ${isActive ? "#2563EB" : "rgba(37,99,235,0.3)"}`,
-                        boxShadow: `${glowSize} ${glowColor}`,
+                        background: nodeBackground,
+                        border: nodeBorder,
+                        boxShadow: nodeBoxShadow,
                         transform: isActive ? "scale(1.12)" : isHovered ? "scale(1.07)" : "scale(1)",
-                        transition: "background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.4s ease, transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1)",
+                        transition: "background 0.3s ease, border-color 0.3s ease, box-shadow 0.4s ease, transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1)",
                       }}
                     >
-                      <Icon size={30} style={{ color: "white" }} />
+                      <Icon size={30} style={{ color: isActive ? "#FFFFFF" : "#3B82F6" }} />
                     </div>
                     <span style={{ color: "white", fontSize: 15, fontWeight: 500, whiteSpace: "nowrap" }}>
                       {node.title}
@@ -2130,9 +2144,10 @@ export default function DashboardPage() {
               backgroundSize: "108%",
               backgroundPosition: "center center",
               backgroundRepeat: "no-repeat",
+              border: "1px solid rgba(96,140,230,0.35)",
               boxShadow: centerHovered
-                ? "0 0 40px #2563EB, 0 0 90px rgba(37,99,235,0.5)"
-                : "0 0 30px #2563EB, 0 0 70px rgba(37,99,235,0.35)",
+                ? "inset 0 1px 0 rgba(255,255,255,0.22), inset 0 10px 20px -10px rgba(255,255,255,0.16), 0 10px 30px rgba(0,0,0,0.55), 0 0 55px rgba(37,99,235,0.30), 0 0 120px rgba(37,99,235,0.16)"
+                : "inset 0 1px 0 rgba(255,255,255,0.18), inset 0 10px 20px -10px rgba(255,255,255,0.14), 0 10px 30px rgba(0,0,0,0.55), 0 0 45px rgba(37,99,235,0.20), 0 0 100px rgba(37,99,235,0.10)",
               transition: "box-shadow 0.2s",
             }}
             onMouseEnter={() => setCenterHovered(true)}
