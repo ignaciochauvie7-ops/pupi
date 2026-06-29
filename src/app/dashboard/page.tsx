@@ -3505,19 +3505,36 @@ export default function DashboardPage() {
                               return (
                                 <div
                                   onClick={() => { setCrmSelectedClient(client); setCrmView("detail"); setCrmTab("Historial") }}
-                                  style={{ height: 56, display: "flex", alignItems: "center", gap: 12, paddingLeft: indent ? 24 : 12, paddingRight: 12, borderBottom: "1px solid rgba(255,255,255,0.04)", cursor: "pointer", borderRadius: 6, transition: "background 0.15s" }}
-                                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
-                                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                                  style={{ position: "relative", overflow: "hidden", display: "flex", alignItems: "center", gap: 16, padding: "16px 18px", paddingLeft: indent ? 42 : 18, marginBottom: 12, background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, boxShadow: "0 4px 16px rgba(0,0,0,0.35)", cursor: "pointer", transition: "transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease" }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = "translateY(-3px)"
+                                    e.currentTarget.style.background = "rgba(255,255,255,0.04)"
+                                    e.currentTarget.style.borderColor = "rgba(59,130,246,0.4)"
+                                    e.currentTarget.style.boxShadow = "0 10px 28px rgba(0,0,0,0.45), 0 0 22px rgba(37,99,235,0.18)"
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = "translateY(0)"
+                                    e.currentTarget.style.background = "rgba(255,255,255,0.025)"
+                                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"
+                                    e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.35)"
+                                  }}
                                 >
-                                  <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(37,99,235,0.2)", color: "#2563EB", fontSize: 12, fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{getInitials(client.name)}</div>
+                                  <div aria-hidden="true" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 4, background: ts.color }} />
+                                  <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(37,99,235,0.18)", color: "#60a5fa", fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{getInitials(client.name)}</div>
                                   <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ color: "white", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{client.name}</div>
-                                    <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{client.company}</div>
+                                    <div style={{ fontSize: 15, fontWeight: 600, color: "rgba(255,255,255,0.95)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{client.name}</div>
+                                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{client.company}</div>
                                   </div>
-                                  <div style={{ background: ts.bg, color: ts.color, fontSize: 11, padding: "2px 8px", borderRadius: 20, flexShrink: 0 }}>{client.temp}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, flexShrink: 0, width: 90, textAlign: "right" }}>{client.lastContact}</div>
-                                  <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12, flexShrink: 0, width: 70, textAlign: "right" }}>{client.ticket}</div>
-                                  <div style={{ width: 24, height: 24, borderRadius: "50%", background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)", fontSize: 11, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{client.seller}</div>
+                                  <div style={{ width: 120, flexShrink: 0 }}>
+                                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6, background: ts.bg, color: ts.color, fontSize: 11.5, fontWeight: 600, padding: "3px 11px", borderRadius: 20 }}>
+                                      <span style={{ width: 7, height: 7, borderRadius: "50%", background: ts.color }} />{client.temp}
+                                    </span>
+                                  </div>
+                                  <div style={{ width: 130, flexShrink: 0, textAlign: "right", color: "rgba(255,255,255,0.5)", fontSize: 12.5, fontVariantNumeric: "tabular-nums" }}>{client.lastContact}</div>
+                                  <div style={{ width: 110, flexShrink: 0, textAlign: "right", color: "#fff", fontSize: 18, fontWeight: 700, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.3px" }}>{client.ticket}</div>
+                                  <div title={"Responsable: " + client.seller} style={{ width: 46, flexShrink: 0, display: "flex", justifyContent: "center" }}>
+                                    <div style={{ width: 26, height: 26, borderRadius: "50%", background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.65)", fontSize: 10.5, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>{client.seller}</div>
+                                  </div>
                                 </div>
                               )
                             }
@@ -3539,7 +3556,19 @@ export default function DashboardPage() {
                               ))
                             }
 
-                            return filtered.map((client) => <ClientRow key={client.id} client={client} />)
+                            return (
+                              <div style={{}}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "0 18px", height: 30, marginBottom: 8, color: "rgba(255,255,255,0.38)", fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.8px" }}>
+                                  <div style={{ width: 54, flexShrink: 0 }} />
+                                  <div style={{ flex: 1, minWidth: 0 }}>Cliente</div>
+                                  <div style={{ width: 120, flexShrink: 0 }}>Temperatura</div>
+                                  <div style={{ width: 130, flexShrink: 0, textAlign: "right" }}>Último contacto</div>
+                                  <div style={{ width: 110, flexShrink: 0, textAlign: "right" }}>Ticket</div>
+                                  <div style={{ width: 46, flexShrink: 0, textAlign: "center" }}>Resp.</div>
+                                </div>
+                                {filtered.map((client) => <ClientRow key={client.id} client={client} />)}
+                              </div>
+                            )
                           })()}
                         </div>
                       </div>
